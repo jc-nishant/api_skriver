@@ -16,12 +16,7 @@ module.exports = {
     fullName: {
       type: 'string',
     },
-    groupName: {
-      type: 'string',
-    },
-    type: {
-      type: 'string',
-    },
+
     email: {
       type: 'string',
       isEmail: true,
@@ -36,9 +31,6 @@ module.exports = {
       type: 'string',
     },
     countryCode: {
-      type: 'string',
-    },
-    recordType: {
       type: 'string',
     },
     image: {
@@ -79,32 +71,13 @@ module.exports = {
       model: 'users',
     },
 
-    facultyId: {
-      model: 'users',
-    },
-
-    collegeId: {
-      model: 'users',
-    },
-
     deletedBy: {
       model: 'users',
     },
     updatedBy: {
       model: 'users',
     },
-    bio: {
-      type: 'string',
-    },
-    intrests: {
-      type: 'json',
-    },
-    graduation: {
-      type: 'string',
-    },
-    linkedin: {
-      type: 'string',
-    },
+
     address: {
       type: 'string',
     },
@@ -120,6 +93,9 @@ module.exports = {
     pincode: {
       type: 'string',
     },
+    lastLogin: {
+      type: 'ref',
+    },
     createdAt: {
       type: 'ref',
       autoCreatedAt: true,
@@ -130,12 +106,6 @@ module.exports = {
     updatedAt: {
       type: 'ref',
       autoCreatedAt: true,
-    },
-    position: {
-      type: 'string',
-    },
-    message: {
-      type: 'string',
     },
   },
 
