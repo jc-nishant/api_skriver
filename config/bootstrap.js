@@ -9,10 +9,9 @@
  * https://sailsjs.com/config/bootstrap
  */
 
-const smtpTransport = require("nodemailer-smtp-transport");
+const smtpTransport = require('nodemailer-smtp-transport');
 
-module.exports.bootstrap = async function() {
-
+module.exports.bootstrap = async function () {
   // By convention, this is a good place to set up fake data during development.
   //
   // For example:
@@ -24,34 +23,59 @@ module.exports.bootstrap = async function() {
   //
 
   /**Seeding the user in db  */
-  Users.findOne({"email":"amit@yopmail.com"}).then(async user=>{
-    if(!user){
+  Users.count().then(async (user) => {
+    if (user == 0) {
       await Users.createEach([
-        { email: 'amit@yopmail.com', firstName: 'Amit', lastName: 'Kumar', status:'active',password:'123456789',isVerified:'Y',date_verified: new Date(), role:'admin' },
-        { email: 'user@yopmail.com', firstName: 'Amit', lastName: 'Kumar', status:'active',password:'amit@17231',isVerified:'Y',date_verified: new Date(), role:'user' }
-      
+        {
+          email: 'amit@yopmail.com',
+          firstName: 'Amit',
+          lastName: 'Kumar',
+          status: 'active',
+          password: 'Jc@12345',
+          isVerified: 'Y',
+          date_verified: new Date(),
+          role: 'admin',
+        },
+        {
+          email: 'jc_admin@yopmail.com',
+          firstName: 'Amit',
+          lastName: 'Kumar',
+          status: 'active',
+          password: 'Jc@12345',
+          isVerified: 'Y',
+          date_verified: new Date(),
+          role: 'admin',
+        },
+
+        {
+          email: 'user@yopmail.com',
+          firstName: 'Amit',
+          lastName: 'Kumar',
+          status: 'active',
+          password: 'amit@17231',
+          isVerified: 'Y',
+          date_verified: new Date(),
+          role: 'user',
+        },
+
         // etc.
       ]);
     }
-  })
+  });
 
   /**Seeding SMTP Detail into db */
 
-  if(await Smtp.count() == 0){
-    var smtp = await Smtp.create({"service" : "Gmail",
-    "host" : "smtp.gmail.com",
-    "port" : 587,
-    "debug" : true,
-    "sendmail" : true,
-    "requiresAuth" : true,
-    "domains" : [ 
-        "gmail.com", 
-        "googlemail.com"
-    ],
-    "user" : "test@gmail.com",
-    "pass" : "test!234"})
+  if ((await Smtp.count()) == 0) {
+    var smtp = await Smtp.create({
+      service: 'Gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      debug: true,
+      sendmail: true,
+      requiresAuth: true,
+      domains: ['gmail.com', 'googlemail.com'],
+      user: 'test@gmail.com',
+      pass: 'test!234',
+    });
   }
-  
-
-
 };
