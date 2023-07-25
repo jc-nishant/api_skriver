@@ -68,5 +68,11 @@ module.exports.routes = {
   'delete /category': 'CategoryController.deleteCategory',
   'get /category': 'CategoryController.categoryDetail',
 
+    /**Roles And Permissions Routes */
+    'post /role': "RolesController.addRole",
+    'get /roles': "RolesController.getRoleslisting",
+    'get /role': "RolesController.getRole",
+    'put /role': "RolesController.editRole",
+
 
 };
