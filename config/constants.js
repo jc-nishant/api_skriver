@@ -76,4 +76,10 @@ module.exports.constants = {
         ALREADY_IN_USE: 'Group is already in use',
         DELETED: 'Group deleted successfully',
       },
+      roles: {
+        PAYLOAD_MISSING:'Payload missing',
+        UPDATE_SUCCESS:'Data updated Successfully',
+        DETAILS_FOUND:'Details Found',
+        FAILED:'Failed,Maybe id is wrong'
+      }
 }
