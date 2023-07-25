@@ -938,7 +938,7 @@ module.exports = {
         bcrypt.genSaltSync(10)
       );
       await Users.update(
-        { _id: user.id },
+        { id: user.id },
         { password: password, verificationCode: '' }
       );
 
