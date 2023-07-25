@@ -911,42 +911,46 @@ module.exports = {
   },
 
   resetPassword: async (req, res) => {
-    let data = req.body;
     try {
-      var code = data.verificationCode;
-      var newPassword = data.newPassword;
+      const id = req.body.id;
 
-      let user = await Users.findOne({ id: data.id, isDeleted: false });
+      if (!req.body.password || !req.body.verificationCode) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 400, message: '' },
+        });
+      }
 
-      console.log(data.verificationCode);
-      console.log(code);
+      const user = await Users.findOne({ id: id });
 
-      if (!user || user.verificationCode !== code) {
-        return res.status(404).json({
+      if (user.verificationCode != req.body.verificationCode) {
+        return res.status(400).json({
           success: false,
           error: {
-            code: 404,
+            code: 400,
             message: 'Verification code wrong.',
           },
         });
-      } else {
-        const encryptedPassword = bcrypt.hashSync(
-          newPassword,
-          bcrypt.genSaltSync(10)
-        );
-        Users.updateOne({ id: user.id }, { password: encryptedPassword }).then(
-          (updatedUser) => {
-            return res.status(200).json({
-              success: true,
-              message: 'Password reset successfully.',
-            });
-          }
-        );
       }
+
+      const password = await bcrypt.hashSync(
+        req.body.password,
+        bcrypt.genSaltSync(10)
+      );
+      await Users.update(
+        { _id: user.id },
+        { password: password, verificationCode: '' }
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: 'Password reset successfully.',
+      });
     } catch (err) {
-      return res
-        .status(400)
-        .json({ success: true, error: { code: 400, message: '' + err } });
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: err.toString() },
+      });
     }
   },
 
