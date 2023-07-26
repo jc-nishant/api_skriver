@@ -75,4 +75,13 @@ module.exports.routes = {
     'put /role': "RolesController.editRole",
 
 
+    /**License Routes */
+    'post /license': "LicenseController.addLicense",
+    'get /licenses': "LicenseController.getLicenselisting",
+    'get /license': "LicenseController.getLicense",
+    'put /license': "LicenseController.editLicense",
+    'delete /license': "LicenseController.deleteLicense",
+
+
+
 };

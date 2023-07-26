@@ -81,5 +81,13 @@ module.exports.constants = {
         UPDATE_SUCCESS:'Data updated Successfully',
         DETAILS_FOUND:'Details Found',
         FAILED:'Failed,Maybe id is wrong'
+      },
+      license: {
+        ID_MISSING:'Id is missing',
+        UPDATE_SUCCESS:'Data updated Successfully',
+        DETAILS_FOUND:'Details Found',
+        FAILED:'Failed.Maybe id is wrong',
+        FAILED_:'Failed',
+        DELETED:'Deleted successfully'
       }
 }

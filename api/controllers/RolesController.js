@@ -19,7 +19,7 @@ module.exports = {
             return res.status(200).json({
                 success: true,
                 data: role,
-                message: "Role added successfully"
+                message: constantObj.roles.UPDATE_SUCCESS
             })
         } catch (err) {
             return res.status(400).json({
@@ -96,7 +96,6 @@ module.exports = {
                     role: "$role",
                     updatedBy: "$updatedBy",
                     isDeleted: "$isDeleted",
-                    //deletedAt: "$deletedAt",
                     updatedAt: "$updatedAt",
                     createdAt: "$createdAt"
                 },
@@ -118,10 +117,8 @@ module.exports = {
                                 $project: {
                                     id: "$_id",
                                     role: "$role",
-
                                     updatedBy: "$updatedBy",
                                     isDeleted: "$isDeleted",
-                                    //deletedAt: "$deletedAt",
                                     updatedAt: "$updatedAt",
                                     createdAt: "$createdAt"
                                 }
@@ -154,7 +151,7 @@ module.exports = {
                         });
                 });
         } catch (err) {
-            return res.status(400).json({
+            return res.status(400).json({   
                 success: false,
                 error: { code: 400, message: "" + err }
             })
