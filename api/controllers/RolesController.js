@@ -94,6 +94,7 @@ module.exports = {
                 $project: {
                     id: "$_id",
                     role: "$role",
+                    permission:"$permission",
                     updatedBy: "$updatedBy",
                     isDeleted: "$isDeleted",
                     updatedAt: "$updatedAt",
@@ -117,6 +118,7 @@ module.exports = {
                                 $project: {
                                     id: "$_id",
                                     role: "$role",
+                                    permission:"$permission",
                                     updatedBy: "$updatedBy",
                                     isDeleted: "$isDeleted",
                                     updatedAt: "$updatedAt",
