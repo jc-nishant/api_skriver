@@ -77,21 +77,33 @@ module.exports.routes = {
 
 
 
-
-  // license routes
-  'post /license': 'LicenseController.addlicense',
-  'get /license': 'LicenseController.listCategory',
-  'put /license': 'LicenseController.editCategory',
-  'delete /license': 'LicenseController.deleteCategory',
-  'get /license': 'LicenseController.categoryDetail',
-
-
     /**License Routes */
     'post /license': "LicenseController.addLicense",
     'get /licenses': "LicenseController.getLicenselisting",
     'get /license': "LicenseController.getLicense",
     'put /license': "LicenseController.editLicense",
     'delete /license': "LicenseController.deleteLicense",
+
+
+
+  // Stripe Controller routes
+  'post /add/card': 'StripeController.addCard',
+  'get /getCards': 'StripeController.getCards',
+  'delete /Cards': 'StripeController.deleteCard',
+  // 'post /subscribe/newsletter':
+  //   'NewsletterSubscriptionController.subscribeToNewsLetter',
+
+
+
+  /**SubscriptionPlansController routes */
+
+  'post /subscriptionplan': 'SubscriptionPlansController.addSubscriptionPlan',
+  'get /subscriptionplan': 'SubscriptionPlansController.getPlanById',
+  'put /subscriptionplan': 'SubscriptionPlansController.editsubscriptionPlan',
+  'get /subscriptionplans': 'SubscriptionPlansController.getAllPlans',
+  // 'get /subscriptionplans/frontend':'SubscriptionPlansController.getAllPlansFrontend',
+  'delete /subscriptionplan': 'SubscriptionPlansController.removePlans',
+  'post /purchaseplan': 'SubscriptionPlansController.purchaseplan',
 
 
 
