@@ -6,20 +6,18 @@
  */
 
 module.exports = {
-
   attributes: {
-
     license_number: {
-      type: 'string'
+      type: 'string',
     },
     license_name: {
-      type: 'string'
+      type: 'string',
     },
     front_img: {
-      type: 'string'
+      type: 'string',
     },
     back_img: {
-      type: 'string'
+      type: 'string',
     },
     status: {
       type: 'string',
@@ -27,23 +25,13 @@ module.exports = {
       defaultsTo: 'deactive',
     },
     isDeleted: {
-      type: "Boolean",
-      defaultsTo: false
+      type: 'Boolean',
+      defaultsTo: false,
     },
-    updatedBy:{
-      model:'users'
+    updatedBy: {
+      model: 'users',
     },
-    createdAt: {
-      type: "ref",
-      autoCreatedAt: true,
-    },
-    updatedAt: {
-      type: "ref",
-      autoUpdatedAt: true,
-    },
-
-
+    createdAt: { type: 'ref', columnType: 'date' },
+    updatedAt: { type: 'ref', columnType: 'date' },
   },
-
 };
-

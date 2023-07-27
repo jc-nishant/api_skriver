@@ -6,32 +6,21 @@
  */
 
 module.exports = {
-
   attributes: {
-
     role: {
-      type: 'string'
+      type: 'string',
     },
-    permission:{
+    permission: {
       type: 'json',
-     },
+    },
     isDeleted: {
-      type: "Boolean",
-      defaultsTo: false
+      type: 'Boolean',
+      defaultsTo: false,
     },
-    updatedBy:{
-      model:'users'
+    updatedBy: {
+      model: 'users',
     },
-    createdAt: {
-      type: "ref",
-      autoCreatedAt: true,
-    },
-    updatedAt: {
-      type: "ref",
-      autoUpdatedAt: true,
-    },
-
+    createdAt: { type: 'ref', columnType: 'date' },
+    updatedAt: { type: 'ref', columnType: 'date' },
   },
-
 };
-

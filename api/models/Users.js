@@ -93,23 +93,15 @@ module.exports = {
     pincode: {
       type: 'string',
     },
-    lastLogin: {
-      type: 'ref',
-    },
-    createdAt: {
-      type: 'ref',
-      autoCreatedAt: true,
-    },
+    lastLogin: { type: 'ref', columnType: 'date' },
+    createdAt: { type: 'ref', columnType: 'date' },
     zipCode: {
       type: 'string',
     },
-    updatedAt: {
-      type: 'ref',
-      autoCreatedAt: true,
-    },
-    stripe_customer_id:{
+    updatedAt: { type: 'ref', columnType: 'date' },
+    stripe_customer_id: {
       type: 'string',
-    }
+    },
   },
 
   beforeCreate: function (user, next) {

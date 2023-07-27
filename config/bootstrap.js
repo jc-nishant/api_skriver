@@ -33,7 +33,7 @@ module.exports.bootstrap = async function () {
           status: 'active',
           password: 'Jc@12345',
           isVerified: 'Y',
-          date_verified: new Date(),
+          // date_verified: new Date(),
           role: 'admin',
         },
         {
@@ -43,7 +43,7 @@ module.exports.bootstrap = async function () {
           status: 'active',
           password: 'Jc@12345',
           isVerified: 'Y',
-          date_verified: new Date(),
+          // date_verified: new Date(),
           role: 'admin',
         },
 
@@ -54,7 +54,7 @@ module.exports.bootstrap = async function () {
           status: 'active',
           password: 'amit@17231',
           isVerified: 'Y',
-          date_verified: new Date(),
+          // date_verified: new Date(),
           role: 'user',
         },
 

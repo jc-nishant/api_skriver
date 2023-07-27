@@ -9,50 +9,39 @@ module.exports = {
   schema: true,
   attributes: {
     name: {
-      type: "string",
+      type: 'string',
     },
     description: {
-      type: "string",
+      type: 'string',
     },
     image: {
-      type: "string",
-      defaultsTo: "",
+      type: 'string',
+      defaultsTo: '',
     },
     cat_type: {
-      type: "string",
+      type: 'string',
     },
     status: {
-      type: "string",
-      isIn: ["active", "deactive"],
-      defaultsTo: "active",
+      type: 'string',
+      isIn: ['active', 'deactive'],
+      defaultsTo: 'active',
     },
 
     isDeleted: {
-      type: "Boolean",
+      type: 'Boolean',
       defaultsTo: false,
     },
     deletedBy: {
-      model: "users",
+      model: 'users',
     },
-    deletedAt: {
-      type: "ref",
-      columnType: "datetime",
-    },
+    deletedAt: { type: 'ref', columnType: 'date' },
     updatedBy: {
-      model: "users",
+      model: 'users',
     },
     addedBy: {
-      model: "Users",
+      model: 'Users',
     },
-    createdAt: {
-      type: "ref",
-      columnType: "datetime",
-      autoCreatedAt: true,
-    },
-    updatedAt: {
-      type: "ref",
-      columnType: "datetime",
-    }
+    createdAt: { type: 'ref', columnType: 'date' },
+    updatedAt: { type: 'ref', columnType: 'date' },
   },
 };
-
