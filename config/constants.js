@@ -81,5 +81,15 @@ module.exports.constants = {
         UPDATE_SUCCESS:'Data updated Successfully',
         DETAILS_FOUND:'Details Found',
         FAILED:'Failed,Maybe id is wrong'
-      }
+      },
+      License: {
+        NAME_REQUIRED: 'Name is required',
+        ID_REQUIRED: 'Id is required',
+        NAME_EXIST: 'Category with same name already exists',
+        UPDATED: 'Category updated successfully',
+        ADDED: 'Category added successfully',
+        INVALID_ID: 'Invalid id',
+        ALREADY_IN_USE: 'Category is already in use',
+        DELETED: 'Category deleted successfully',
+      },
 }

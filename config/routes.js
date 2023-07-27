@@ -68,11 +68,22 @@ module.exports.routes = {
   'delete /category': 'CategoryController.deleteCategory',
   'get /category': 'CategoryController.categoryDetail',
 
-    /**Roles And Permissions Routes */
-    'post /role': "RolesController.addRole",
-    'get /roles': "RolesController.getRoleslisting",
-    'get /role': "RolesController.getRole",
-    'put /role': "RolesController.editRole",
+  /**Roles And Permissions Routes */
+  'post /role': "RolesController.addRole",
+  'get /roles': "RolesController.getRoleslisting",
+  'get /role': "RolesController.getRole",
+  'put /role': "RolesController.editRole",
+
+
+
+
+
+  // license routes
+  'post /license': 'LicenseController.addlicense',
+  'get /license': 'LicenseController.listCategory',
+  'put /license': 'LicenseController.editCategory',
+  'delete /license': 'LicenseController.deleteCategory',
+  'get /license': 'LicenseController.categoryDetail',
 
 
 };
