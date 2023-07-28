@@ -59,8 +59,6 @@ module.exports = {
             })
         }
     },
-    // getRolesListing: async (req, res) => {
-
     getRolesListing: async (req, res) => {
         try {
             var search = req.param('search');
@@ -87,9 +85,6 @@ module.exports = {
             }
 
             query.isDeleted = isDeleted
-            if (type) {
-                query.type = type;
-            }
             let sortquery = {};
             if (sortBy) {
                 let typeArr = [];
