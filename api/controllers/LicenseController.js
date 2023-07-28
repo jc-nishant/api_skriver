@@ -87,6 +87,8 @@ module.exports = {
                 sortBy = 'createdAt desc';
             }
 
+            
+            
             if (search) {
                 // query.or = [{
                 //     // license_number: { 'like': `%${search}%` },
