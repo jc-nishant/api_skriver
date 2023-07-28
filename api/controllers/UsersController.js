@@ -829,7 +829,7 @@ module.exports = {
 
         var newUser = await Users.create(req.body).fetch();
         if (newUser) {
-          //.log(newUser, "-------------------->newUser")
+          console.log(newUser, "--------------------newUser")
           addUserEmail({
             email: newUser.email,
             fullName: newUser.fullName,
@@ -847,6 +847,30 @@ module.exports = {
       }
     } catch (err) {
       return res.status(400).json({ success: true, code: 400, error: err });
+    }
+  },
+  deleteuser: async (req, res) => {
+    let data = req.body;
+    try {
+      var id = req.param('id');
+      if (!id || id == undefined) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 404, message: constantObj.user.ID_REQUIRED },
+        });
+      }
+      Users.updateOne({ id: id }, { isDeleted: true }).then(async (user) => {
+        return res.status(200).json({
+          success: true,
+          data: user,
+          message: constantObj.user.UPDATED_USER,
+        });
+      });
+    } catch (err) {
+      //.log(err);
+      return res
+        .status(400)
+        .json({ success: false, error: { code: 400, message: '' + err } });
     }
   },
 

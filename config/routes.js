@@ -46,10 +46,7 @@ module.exports.routes = {
   'get /profile': 'UsersController.userProfileData',
   'get /user/detail': 'UsersController.userDetail',
   'put /edit/profile': 'UsersController.editProfile',
-  'post /upload/csv': 'UsersController.uploadCSVToDB',
-  'post /bulk/upload': 'UsersController.bulkUpload',
-  'post /contact/email': 'UsersController.contactEmail',
-  'get /contact/list': 'UsersController.contactList',
+  'put /edit/profile': 'UsersController.deleteuser',
 
   /** CommonController */
 

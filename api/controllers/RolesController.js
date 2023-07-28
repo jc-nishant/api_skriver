@@ -104,12 +104,12 @@ module.exports = {
             } else {
                 sortquery = { updatedAt: -1 };
             }
-            let findusers = await Roles.find(query).sort(sortBy).skip(page).limit(count)
-            console.log(Roles,"==============Roles")
+            let findroles = await Roles.find(query).sort(sortBy).skip(page).limit(count)
+            // console.log(Roles,"==============Roles")
             return res.status(200).json({
                 "success": true,
-                "total": findusers.length,
-                "data": findusers
+                "total": findroles.length,
+                "data": findroles
             })
         }
         catch (err) {
