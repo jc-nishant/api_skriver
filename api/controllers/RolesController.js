@@ -10,7 +10,7 @@ const db = sails.getDatastore().manager;
 var constantObj = sails.config.constants;
 
 module.exports = {
-  
+
     addRole: async (req, res) => {
         try {
             const data = req.body;
@@ -40,18 +40,18 @@ module.exports = {
             req.body.updatedBy = req.identity.id;
             delete req.body.role;
 
-            let update_details = await Roles.updateOne({ id: id },req.body);
-            if(update_details){
-            return res.status(200).json({
-                success: true,
-                message: constantObj.roles.UPDATE_SUCCESS
-            })
-        }else{
-            return res.status(400).json({
-                success: false,
-                message: constantObj.roles.FAILED
-            })
-        }
+            let update_details = await Roles.updateOne({ id: id }, req.body);
+            if (update_details) {
+                return res.status(200).json({
+                    success: true,
+                    message: constantObj.roles.UPDATE_SUCCESS
+                })
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: constantObj.roles.FAILED
+                })
+            }
         } catch (err) {
             return res.status(400).json({
                 success: false,
@@ -62,73 +62,64 @@ module.exports = {
     // getRolesListing: async (req, res) => {
 
     getRolesListing: async (req, res) => {
-    try {
-      var search = req.param('search');
-      var role = req.param('role');
-      var isDeleted = req.param('isDeleted');
-      var page = req.param('page');
-      var recordType = req.param('recordType');
-      var type = req.param('type');
-      var sortBy = req.param('sortBy');
+        try {
+            var search = req.param('search');
+            var isDeleted = req.param('isDeleted');
+            var page = req.param('page');
+            var type = req.param('type');
+            var sortBy = req.param('sortBy');
 
-      if (!page) {
-        page = 1;
-      }
-      var count = parseInt(req.param('count'));
-      if (!count) {
-        count = 10;
-      }
-      var skipNo = (page - 1) * count;
-      var query = {};
-      if (search) {
-        query.$or = [
-          { fullName: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { name: { $regex: search, $options: 'i' } },
-        ];
-      }
-      query.role = { "!=": 'admin' };
-      if (role) {
-        query.role = role;
-      }
+            if (!page) {
+                page = 1;
+            }
+            var count = parseInt(req.param('count'));
+            if (!count) {
+                count = 10;
+            }
+            var skipNo = (page - 1) * count;
+            var query = {};
+            if (search) {
+                query.$or = [
+                    { fullName: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' } },
+                    { name: { $regex: search, $options: 'i' } },
+                ];
+            }
 
-      query.isDeleted = isDeleted
-      if (recordType) {
-        query.recordType = recordType;
-      }
-      if (type) {
-        query.type = type;
-      }
-      let sortquery = {};
-      if (sortBy) {
-        let typeArr = [];
-        typeArr = sortBy.split(' ');
-        let sortType = typeArr[1];
-        let field = typeArr[0];
-        sortquery[field ? field : 'updatedAt'] = sortType
-          ? sortType == 'desc'
-            ? -1
-            : 1
-          : -1;
-      } else {
-        sortquery = { updatedAt: -1 };
-      }
-      let findusers = await Roles.find(query).sort(sortBy).skip(page).limit(count)
-      return res.status(200).json({
-        "success": true,
-        "total": findusers.length,
-        "data": findusers
-      })
-    }
-    catch (err) {
-      console.log(err, "----------err")
-      return res.status(400).json({
-        success: false,
-        error: { code: 400, message: err.toString() },
-      });
-    }
-  },
-    //     try {
+            query.isDeleted = isDeleted
+            if (type) {
+                query.type = type;
+            }
+            let sortquery = {};
+            if (sortBy) {
+                let typeArr = [];
+                typeArr = sortBy.split(' ');
+                let sortType = typeArr[1];
+                let field = typeArr[0];
+                sortquery[field ? field : 'updatedAt'] = sortType
+                    ? sortType == 'desc'
+                        ? -1
+                        : 1
+                    : -1;
+            } else {
+                sortquery = { updatedAt: -1 };
+            }
+            let findusers = await Roles.find(query).sort(sortBy).skip(page).limit(count)
+            console.log(Roles,"==============Roles")
+            return res.status(200).json({
+                "success": true,
+                "total": findusers.length,
+                "data": findusers
+            })
+        }
+        catch (err) {
+            console.log(err, "----------err")
+            return res.status(400).json({
+                success: false,
+                error: { code: 400, message: err.toString() },
+            });
+        }
+    },
     //         let search = req.param('search');
     //         let sortBy = req.param('sortBy');
     //         let page = req.param('page');
@@ -236,16 +227,16 @@ module.exports = {
             if (get_permission) {
                 return res.status(200).json({
                     success: true,
-                    message:constantObj.roles.DETAILS_FOUND,
+                    message: constantObj.roles.DETAILS_FOUND,
                     data: get_permission
                 })
-            }else{
+            } else {
                 return res.status(400).json({
                     success: false,
-                    message:constantObj.roles.FAILED
-            })
-        }
-    }catch (err) {
+                    message: constantObj.roles.FAILED
+                })
+            }
+        } catch (err) {
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
