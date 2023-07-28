@@ -62,59 +62,59 @@ module.exports = {
             })
         }
     },
-    getLicenselisting: async (req, res) => {
-        try {
-            let search = req.param('search');
-            let sortBy = req.param('sortBy');
-            let page = req.param('page');
-            let count = req.param('count');
+    // getLicenselisting: async (req, res) => {
+    //     try {
+    //         let search = req.param('search');
+    //         let sortBy = req.param('sortBy');
+    //         let page = req.param('page');
+    //         let count = req.param('count');
 
-            if (!page) { page = 1 }
-            if (!count) { count = 10 }
-            let skipNo = (page - 1) * count;
-            let query = {};
+    //         if (!page) { page = 1 }
+    //         if (!count) { count = 10 }
+    //         let skipNo = (page - 1) * count;
+    //         let query = {};
 
-            if (sortBy) {
-                sortBy = sortBy.toString();
-            } else {
-                sortBy = 'createdAt desc';
-            }
+    //         if (sortBy) {
+    //             sortBy = sortBy.toString();
+    //         } else {
+    //             sortBy = 'createdAt desc';
+    //         }
 
-            if (search) {
-                // query.or = [{
-                //     // license_number: { 'like': `%${search}%` },
-                //     license_name: { 'like': `%${search}%` },
-                // }]
-                query.or = [
-                    { license_name: { 'like': `%${search}%` } },
-                    { license_number: { 'like': `%${search}%` } },
-                ]
-            }
+    //         if (search) {
+    //             // query.or = [{
+    //             //     // license_number: { 'like': `%${search}%` },
+    //             //     license_name: { 'like': `%${search}%` },
+    //             // }]
+    //             query.or = [
+    //                 { license_name: { 'like': `%${search}%` } },
+    //                 { license_number: { 'like': `%${search}%` } },
+    //             ]
+    //         }
 
-            query.isDeleted = false
+    //         query.isDeleted = false
 
-            // console.log(JSON.stringify(query));
-            const all_users_licenses = await License.find(query).sort(sortBy).limit(count).skip((page-1)*count);
+    //         // console.log(JSON.stringify(query));
+    //         const all_users_licenses = await License.find(query).sort(sortBy).limit(count).skip((page-1)*count);
 
-            if (all_users_licenses) {
-                return res.status(200).json({
-                    success: true,
-                    message: constantObj.license.DETAILS_FOUND,
-                    data: all_users_licenses
-                })
-            } else {
-                return res.status(400).json({
-                    success: false,
-                    message: constantObj.license.FAILED
-                })
-            }
-        } catch (err) {
-            return res.status(400).json({
-                success: false,
-                error: { code: 400, message: "" + err }
-            })
-        }
-    },
+    //         if (all_users_licenses) {
+    //             return res.status(200).json({
+    //                 success: true,
+    //                 message: constantObj.license.DETAILS_FOUND,
+    //                 data: all_users_licenses
+    //             })
+    //         } else {
+    //             return res.status(400).json({
+    //                 success: false,
+    //                 message: constantObj.license.FAILED
+    //             })
+    //         }
+    //     } catch (err) {
+    //         return res.status(400).json({
+    //             success: false,
+    //             error: { code: 400, message: "" + err }
+    //         })
+    //     }
+    // },
     editLicense: async (req, res) => {
         try {
             let { id } = req.body;

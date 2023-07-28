@@ -160,144 +160,144 @@ exports.editsubscriptionPlan = async (req, res) => {
     }
 };
 
-exports.getAllPlans = async (req, res) => {
-    try {
+// exports.getAllPlans = async (req, res) => {
+//     try {
 
-        let search = req.param('search');
-        let page = req.param('page');
-        let count = req.param('count');
-        let status = req.param('status');
-        if (!page) {
-            page = 1;
-        }
-        if (!count) {
-            count = 10;
-        }
-        let skipNo = (page - 1) * count;
-        let query = {};
+//         let search = req.param('search');
+//         let page = req.param('page');
+//         let count = req.param('count');
+//         let status = req.param('status');
+//         if (!page) {
+//             page = 1;
+//         }
+//         if (!count) {
+//             count = 10;
+//         }
+//         let skipNo = (page - 1) * count;
+//         let query = {};
 
-        if (search) {
-            query.$or = [
-                { name: { $regex: search, '$options': 'i' } },
-            ]
-        }
+//         if (search) {
+//             query.$or = [
+//                 { name: { $regex: search, '$options': 'i' } },
+//             ]
+//         }
 
-        if (status) {
-            query.status = status
-        }
+//         if (status) {
+//             query.status = status
+//         }
 
-        // query.$and.push({ isDeleted: false })
-        // console.log(query,"=================query")
+//         // query.$and.push({ isDeleted: false })
+//         // console.log(query,"=================query")
 
-        db.collection("subscriptionplans").aggregate([
-            {
-                $project: {
-                    id: "$_id",
-                    name: "$name",
-                    amount: "$amount",
-                    interval: "$interval",
-                    interval_count: "$interval_count",
-                    addedBy: "$addedBy",
-                    stripe_plan_id: "$stripe_plan_id",
-                    stripe_product_id: "$stripe_product_id",
-                    createdAt: "$createdAt",
-                    updatedAt: "$updatedAt",
-                    status: "$status",
-                    trial_period_days: "$trial_period_days",
-                    user: "$user",
-                    description: "$description",
-                    updatedBy: "$updatedBy",
-                    deletedBy: "$deletedBy"
-                },
-            },
-            {
-                $match: query,
-            },
-            {
-                $sort: { createdAt: -1 },
-            },
-        ]).toArray((err, totalResult) => {
+//         db.collection("subscriptionplans").aggregate([
+//             {
+//                 $project: {
+//                     id: "$_id",
+//                     name: "$name",
+//                     amount: "$amount",
+//                     interval: "$interval",
+//                     interval_count: "$interval_count",
+//                     addedBy: "$addedBy",
+//                     stripe_plan_id: "$stripe_plan_id",
+//                     stripe_product_id: "$stripe_product_id",
+//                     createdAt: "$createdAt",
+//                     updatedAt: "$updatedAt",
+//                     status: "$status",
+//                     trial_period_days: "$trial_period_days",
+//                     user: "$user",
+//                     description: "$description",
+//                     updatedBy: "$updatedBy",
+//                     deletedBy: "$deletedBy"
+//                 },
+//             },
+//             {
+//                 $match: query,
+//             },
+//             {
+//                 $sort: { createdAt: -1 },
+//             },
+//         ]).toArray((err, totalResult) => {
             
-            if (err) {
-                return res.status(400).json({
-                    success: false,
-                    error: { message: err },
-                });
-            }
-            db.collection("subscriptionplans").aggregate([
-                {
-                    $project: {
-                        id: "$_id",
-                        name: "$name",
-                        amount: "$amount",
-                        interval: "$interval",
-                        interval_count: "$interval_count",
-                        addedBy: "$addedBy",
-                        stripe_plan_id: "$stripe_plan_id",
-                        stripe_product_id: "$stripe_product_id",
-                        createdAt: "$createdAt",
-                        updatedAt: "$updatedAt",
-                        status: "$status",
-                        trial_period_days: "$trial_period_days",
-                        user: "$user",
-                        description: "$description",
-                        updatedBy: "$updatedBy",
-                        deletedBy: "$deletedBy"
-                    },
-                },
-                {
-                    $match: query,
-                },
-                {
-                    $sort: { createdAt: -1 },
-                },
-                {
-                    $skip: skipNo,
-                },
-                {
-                    $limit: Number(count),
-                },
-            ]).toArray((err, result) => {
-                if (err) {
-                    return res.status(400).json({
-                        success: false,
-                        error: { message: err },
-                    });
-                } else {
+//             if (err) {
+//                 return res.status(400).json({
+//                     success: false,
+//                     error: { message: err },
+//                 });
+//             }
+//             db.collection("subscriptionplans").aggregate([
+//                 {
+//                     $project: {
+//                         id: "$_id",
+//                         name: "$name",
+//                         amount: "$amount",
+//                         interval: "$interval",
+//                         interval_count: "$interval_count",
+//                         addedBy: "$addedBy",
+//                         stripe_plan_id: "$stripe_plan_id",
+//                         stripe_product_id: "$stripe_product_id",
+//                         createdAt: "$createdAt",
+//                         updatedAt: "$updatedAt",
+//                         status: "$status",
+//                         trial_period_days: "$trial_period_days",
+//                         user: "$user",
+//                         description: "$description",
+//                         updatedBy: "$updatedBy",
+//                         deletedBy: "$deletedBy"
+//                     },
+//                 },
+//                 {
+//                     $match: query,
+//                 },
+//                 {
+//                     $sort: { createdAt: -1 },
+//                 },
+//                 {
+//                     $skip: skipNo,
+//                 },
+//                 {
+//                     $limit: Number(count),
+//                 },
+//             ]).toArray((err, result) => {
+//                 if (err) {
+//                     return res.status(400).json({
+//                         success: false,
+//                         error: { message: err },
+//                     });
+//                 } else {
 
-                    let resData = {
-                        total_count: totalResult.length,
-                        data: result
-                    }
+//                     let resData = {
+//                         total_count: totalResult.length,
+//                         data: result
+//                     }
 
-                    if (!req.param('page') && !req.param('count')) {
-                        resData = {
-                            total_count: totalResult.length,
-                            data: result
-                        }
-                        return res.status(200).json({
-                            success: true,
-                            message: constants.subscriptionplan.ALL_PLAN_DATA,
-                            data: resData
-                        });
-                    }
+//                     if (!req.param('page') && !req.param('count')) {
+//                         resData = {
+//                             total_count: totalResult.length,
+//                             data: result
+//                         }
+//                         return res.status(200).json({
+//                             success: true,
+//                             message: constants.subscriptionplan.ALL_PLAN_DATA,
+//                             data: resData
+//                         });
+//                     }
 
-                    return res.status(200).json({
-                        success: true,
-                        message: constants.subscriptionplan.ALL_PLAN_DATA,
-                        data: resData
-                    });
-                }
-            });
-        })
-    }
-    catch (err) {
-        return res.status(400).json({
-            success: false,
-            error: { message: err },
-        });
-    }
-};
+//                     return res.status(200).json({
+//                         success: true,
+//                         message: constants.subscriptionplan.ALL_PLAN_DATA,
+//                         data: resData
+//                     });
+//                 }
+//             });
+//         })
+//     }
+//     catch (err) {
+//         return res.status(400).json({
+//             success: false,
+//             error: { message: err },
+//         });
+//     }
+// };
 // exports.getAllPlansFrontend = async (req, res) => {
 //     try {
 //         let search = req.param('search');

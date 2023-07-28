@@ -20,7 +20,7 @@ module.exports = {
     updatedBy: {
       model: 'users',
     },
-    createdAt: { type: 'ref', columnType: 'date' },
-    updatedAt: { type: 'ref', columnType: 'date' },
+    createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
+    updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
   },
 };
