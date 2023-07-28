@@ -502,7 +502,6 @@ module.exports = {
       })
     }
     catch (err) {
-      console.log(err, "----------err")
       return res.status(400).json({
         success: false,
         error: { code: 400, message: err.toString() },
