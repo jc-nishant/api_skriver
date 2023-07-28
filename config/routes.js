@@ -102,12 +102,14 @@ module.exports.routes = {
   'delete /subscriptionplan': 'SubscriptionPlansController.removePlans',
   'post /purchaseplan': 'SubscriptionPlansController.purchaseplan',
 
-  /**
-   * @SecretKeys
-   */
-  // Stripe Controller routes
-  'post /secret-key': 'SecretekeysController.generateKey',
-  'get /secret-key': 'SecretekeysController.getkeysById',
-  'get /secret-key/all': 'SecretekeysController.getAllKeys',
+
+    /**Features */
+    "post /feature": "FeaturesController.addFeatures",
+    "put /feature": "FeaturesController.editfeature",
+    "get /features": "FeaturesController.getAllFeatures",
+    "get /feature": "FeaturesController.findSingleFeature",
+    'delete /feature': "FeaturesController.deleteFeature",
+
+
 
 };
