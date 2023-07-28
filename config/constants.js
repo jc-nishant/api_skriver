@@ -88,7 +88,8 @@ module.exports.constants = {
     DETAILS_FOUND: 'Details Found',
     FAILED: 'Failed.Maybe id is wrong',
     FAILED_: 'Failed',
-    DELETED: 'Deleted successfully'
+    DELETED: 'Deleted successfully',
+    ALREADY_EXIST:"License Already Exist."
   },
   CARD: {
     "CARD_ADDED": "Card added successfully",

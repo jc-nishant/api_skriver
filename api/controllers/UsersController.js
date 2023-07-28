@@ -736,7 +736,7 @@ module.exports = {
           }
         });
     } catch (error) {
-      //.log(error)
+      console.log(error)
       return res.status(400).json({
         success: false,
         code: 400,
