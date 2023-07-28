@@ -74,12 +74,12 @@ module.exports.routes = {
 
 
 
-    /**License Routes */
-    'post /license': "LicenseController.addLicense",
-    'get /licenses': "LicenseController.getLicenselisting",
-    'get /license': "LicenseController.getLicense",
-    'put /license': "LicenseController.editLicense",
-    'delete /license': "LicenseController.deleteLicense",
+  /**License Routes */
+  'post /license': "LicenseController.addLicense",
+  'get /licenses': "LicenseController.getLicenselisting",
+  'get /license': "LicenseController.getLicense",
+  'put /license': "LicenseController.editLicense",
+  'delete /license': "LicenseController.deleteLicense",
 
 
 
@@ -102,6 +102,12 @@ module.exports.routes = {
   'delete /subscriptionplan': 'SubscriptionPlansController.removePlans',
   'post /purchaseplan': 'SubscriptionPlansController.purchaseplan',
 
-
+  /**
+   * @SecretKeys
+   */
+  // Stripe Controller routes
+  'post /secret-key': 'SecretekeysController.generateKey',
+  'get /secret-key': 'SecretekeysController.getkeysById',
+  'get /secret-key/all': 'SecretekeysController.getAllKeys',
 
 };
