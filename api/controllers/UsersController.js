@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+const credentials = require('../../config/local.js');
 const bcrypt = require('bcrypt-nodejs');
 var constantObj = sails.config.constants;
 var constant = require('../../config/local.js');
@@ -115,7 +115,6 @@ module.exports = {
         // if (req.body.firstName && req.body.lastName) {
         //     req.body["fullName"] = req.body.firstName + ' ' + req.body.lastName
         // }
-
         var newUser = await Users.create(req.body).fetch();
         if (newUser) {
           userVerifyLink({
@@ -309,15 +308,14 @@ module.exports = {
       }
 
       // , select: ['email', 'role', 'status', 'isVerified', 'password', 'firstName', 'lastName', 'fullName', 'image']
-      var userDetails = await Users.find({
+      let user = await Users.findOne({
         where: {
           email: req.body.email.toLowerCase(),
           isDeleted: false,
           role: req.body.role,
         },
       });
-      var user = userDetails[0];
-
+      console.log(user, "==============user")
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -445,7 +443,6 @@ module.exports = {
    */
 
   getAllUsers: async (req, res) => {
-    //.log("In Get all user");
     try {
       var search = req.param('search');
       var role = req.param('role');
@@ -453,7 +450,6 @@ module.exports = {
       var page = req.param('page');
       var recordType = req.param('recordType');
       var type = req.param('type');
-      var faculty = req.param('faculty');
       var sortBy = req.param('sortBy');
 
       if (!page) {
@@ -472,278 +468,48 @@ module.exports = {
           { name: { $regex: search, $options: 'i' } },
         ];
       }
-      query.role = { $ne: 'admin' };
+      query.role = { "!=": 'admin' };
       if (role) {
         query.role = role;
       }
 
-      query.isDeleted = false;
+      query.isDeleted = isDeleted
       if (recordType) {
         query.recordType = recordType;
       }
       if (type) {
         query.type = type;
       }
-      sortquery = {};
+      let sortquery = {};
       if (sortBy) {
-        var order = sortBy.split(' ');
-
-        var field = order[0];
-        var sortType = order[1];
+        let typeArr = [];
+        typeArr = sortBy.split(' ');
+        let sortType = typeArr[1];
+        let field = typeArr[0];
+        sortquery[field ? field : 'updatedAt'] = sortType
+          ? sortType == 'desc'
+            ? -1
+            : 1
+          : -1;
+      } else {
+        sortquery = { updatedAt: -1 };
       }
-      sortquery[field ? field : 'createdAt'] = sortType
-        ? sortType == 'desc'
-          ? -1
-          : 1
-        : -1;
-
-      if (faculty) {
-        query.faculty_id = ObjectId(faculty);
-      }
-      console.log(query, '-------------------------query');
-      db.collection('users')
-        .aggregate([
-          {
-            $lookup: {
-              from: 'scmanagement',
-              localField: 'scType',
-              foreignField: '_id',
-              as: 'scType',
-            },
-          },
-          {
-            $unwind: {
-              path: '$scType',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'addedBy',
-              foreignField: '_id',
-              as: 'addedBy',
-            },
-          },
-          {
-            $unwind: {
-              path: '$addedBy',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'deletedBy',
-              foreignField: '_id',
-              as: 'deletedBy',
-            },
-          },
-          {
-            $unwind: {
-              path: '$deletedBy',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'facultyId',
-              foreignField: '_id',
-              as: 'facultyId',
-            },
-          },
-          {
-            $unwind: {
-              path: '$facultyId',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'collegeId',
-              foreignField: '_id',
-              as: 'collegeId',
-            },
-          },
-          {
-            $unwind: {
-              path: '$collegeId',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $project: {
-              role: '$role',
-              isDeleted: '$isDeleted',
-              firstName: '$firstName',
-              lastName: '$lastName',
-              fullName: '$fullName',
-              name: '$name',
-              email: '$email',
-              type: '$type',
-              position: '$position',
-              facultyId: '$facultyId',
-              collegeId: '$collegeId',
-              role: '$role',
-              scType: '$scType',
-              addedBy: '$addedBy',
-              recordType: '$recordType',
-              status: '$status',
-              createdAt: '$createdAt',
-              deletedBy: '$deletedBy.fullName',
-              deletedAt: '$deletedAt',
-              faculty_id: '$facultyId._id',
-            },
-          },
-          {
-            $match: query,
-          },
-        ])
-        .toArray((err, totalResult) => {
-          db.collection('users')
-            .aggregate([
-              {
-                $lookup: {
-                  from: 'scmanagement',
-                  localField: 'scType',
-                  foreignField: '_id',
-                  as: 'scType',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$scType',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'addedBy',
-                  foreignField: '_id',
-                  as: 'addedBy',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$addedBy',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'deletedBy',
-                  foreignField: '_id',
-                  as: 'deletedBy',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$deletedBy',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'facultyId',
-                  foreignField: '_id',
-                  as: 'facultyId',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$facultyId',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'collegeId',
-                  foreignField: '_id',
-                  as: 'collegeId',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$collegeId',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $project: {
-                  role: '$role',
-                  isDeleted: '$isDeleted',
-                  firstName: '$firstName',
-                  lastName: '$lastName',
-                  fullName: '$fullName',
-                  name: '$name',
-                  email: '$email',
-                  type: '$type',
-                  position: '$position',
-                  facultyId: '$facultyId',
-                  collegeId: '$collegeId',
-                  role: '$role',
-                  scType: '$scType',
-                  addedBy: '$addedBy',
-                  recordType: '$recordType',
-                  status: '$status',
-                  createdAt: '$createdAt',
-                  deletedBy: '$deletedBy.fullName',
-                  deletedAt: '$deletedAt',
-                  faculty_id: '$facultyId._id',
-                },
-              },
-              {
-                $match: query,
-              },
-              {
-                $sort: sortquery,
-              },
-
-              {
-                $skip: Number(skipNo),
-              },
-              {
-                $limit: Number(count),
-              },
-            ])
-            .toArray((err, result) => {
-              // //.log(err)
-              if (err) {
-                return res.status(400).json({
-                  success: false,
-                  code: { code: 400, error: err },
-                });
-              }
-              return res.status(200).json({
-                success: true,
-                code: 200,
-                data: result,
-                total: totalResult.length,
-              });
-            });
-
-          if (err) {
-            return res.status(400).json({
-              success: false,
-              code: { code: 400, error: err },
-            });
-          }
-        });
-    } catch (error) {
-      //.log(error)
+      let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count)
+      return res.status(200).json({
+        "success": true,
+        "total": findusers.length,
+        "data": findusers
+      })
+    }
+    catch (err) {
+      console.log(err, "----------err")
       return res.status(400).json({
         success: false,
-        code: 400,
-        error: error,
+        error: { code: 400, message: err.toString() },
       });
     }
   },
+
 
   /*
    *For Check Email Address Exit or not
@@ -873,8 +639,9 @@ module.exports = {
     Users.findOne({
       email: data.email.toLowerCase(),
       isDeleted: false,
-      role: { in: ['student', 'faculty'] },
+      role: { in: ['user'] },
     }).then((data) => {
+      // console.log(data,"==============data")
       if (data === undefined) {
         return res.status(404).json({
           success: false,
@@ -957,8 +724,10 @@ module.exports = {
   verifyUser: (req, res) => {
     var id = req.param('id');
     Users.findOne({ id: id }).then((user) => {
+      // console.log(user, "===========user")
       if (user) {
         Users.update({ id: id }, { isVerified: 'Y' }).then((verified) => {
+          // console.log(verified, "==============verified")
           return res.redirect(constant.FRONT_WEB_URL);
         });
       } else {
@@ -1081,552 +850,8 @@ module.exports = {
     }
   },
 
-  uploadCSVToDB: async (req, res) => {
-    try {
-      var modelName = 'users';
 
-      req
-        .file('file')
-        .upload(
-          { dirname: '../../assets/' + modelName + '/' },
-          async (err, file) => {
-            if (err) {
-              //.log(err, "err 1");
-            }
-            console.log(file);
-            file.forEach(async (element, index) => {
-              typeArr = element.type.split('/');
-              fileExt = typeArr[1];
-              ////.log(element.fd);
-              const file = reader.readFile(element.fd);
-              let data = [];
-              const sheets = file.SheetNames;
-              for (let i = 0; i < sheets.length; i++) {
-                const temp = reader.utils.sheet_to_json(
-                  file.Sheets[file.SheetNames[i]]
-                );
-                temp.forEach((res) => {
-                  data.push(res);
-                });
-              }
-              var date = new Date();
-              var failedEmail = [];
-              await (async function () {
-                for await (const singleResult of data) {
-                  var email = singleResult.email;
-                  var usercheck = await Users.findOne({
-                    email: email.toLowerCase(),
-                  });
-                  if (usercheck == undefined) {
-                    singleResult.email = email.toLowerCase();
-                    const newPassword = generatePassword();
-
-                    singleResult.fullName = singleResult.fullName;
-
-                    singleResult.date_registered = date;
-                    singleResult.date_verified = date;
-                    singleResult.status = 'active';
-                    singleResult.isVerified = 'Y';
-                    singleResult.role = singleResult.type;
-                    singleResult.recordType = singleResult.recordType;
-                    singleResult.mobileNo = singleResult.mobileNo;
-                    singleResult.password = newPassword;
-                    var addUsers = await Users.create(singleResult).fetch();
-                    welcomeEmail({
-                      email: addUsers.email,
-                      fullName: addUsers.fullName,
-                      password: newPassword,
-                    });
-                  } else {
-                    failedEmail.push(email.toLowerCase());
-                  }
-                }
-              })();
-              return res.status(200).json({
-                success: true,
-                message: 'Data uploaded successfully',
-                existEmail: failedEmail,
-              });
-            });
-          }
-        );
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        error: { message: error },
-      });
-    }
-  },
-
-  bulkUpload: async (req, res) => {
-    try {
-      req
-        .file('file')
-        .upload(
-          { maxBytes: 5242880, dirname: '../../assets/csv' },
-          async (err, file) => {
-            ////(file)
-            if (err) {
-              if (err.code == 'E_EXCEEDS_UPLOAD_LIMIT') {
-                return res.status(404).json({
-                  success: false,
-                  error: {
-                    code: 404,
-                    message: 'Image size must be less than 5 MB',
-                  },
-                });
-              }
-            }
-
-            var responseData = {};
-            var roles = req.param('role');
-            var userId = req.identity.id;
-            // console.log(userId)
-            var date = new Date();
-            file.forEach(async (element, index) => {
-              var name = generateName();
-              //(element.fd);
-              typeArr = element.type.split('/');
-              fileExt = typeArr[1];
-              if (
-                // fileExt === 'csv' ||
-                fileExt ==
-                'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-              ) {
-                fs.readFile(file[index].fd, async (err, data) => {
-                  if (err) {
-                    return res.status(403).json({
-                      success: false,
-                      error: {
-                        code: 403,
-                        message: err,
-                      },
-                    });
-                  } else {
-                    if (data) {
-                      var path = file[index].fd;
-
-                      if (
-                        fileExt ==
-                        'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                      ) {
-                        fileExt = 'xlsx';
-                      }
-                      fs.writeFileSync(
-                        'assets/csv/' + name + '.' + fileExt,
-                        data,
-
-                        function (err, image) {
-                          if (err) {
-                            //(err);
-                            return res.status(400).json({
-                              success: false,
-                              error: {
-                                code: 400,
-                                message: err,
-                              },
-                            });
-                          }
-                        }
-                      );
-                      fs.writeFileSync(
-                        './.tmp/public/csv/' + name + '.' + fileExt,
-                        data,
-
-                        async function (err, image) {
-                          if (err) {
-                            //(err);
-                            return res.status(400).json({
-                              success: false,
-                              error: {
-                                code: 400,
-                                message: err,
-                              },
-                            });
-                          }
-                        }
-                      );
-
-                      responseData.fullpath = name + '.' + fileExt;
-                      const csvFilePath = 'assets/csv/' + name + '.' + fileExt;
-
-                      readXlsxFile(csvFilePath).then(async (rows) => {
-                        // `rows` is an array of rows
-                        // each row being an array of cells.
-
-                        var counter = 0;
-                        var labels = [];
-                        if (rows && rows.length > 0) {
-                          for await (let itm of rows) {
-                            if (counter == 0) {
-                              labels = itm;
-                            } else {
-                              if (itm && itm.length > 0) {
-                                var index = 0;
-                                var obj = {};
-                                const newPassword = generatePassword();
-
-                                for await (let data of itm) {
-                                  let keyLabel = labels[index];
-
-                                  if (keyLabel == 'Faculty') {
-                                    var faculty = await Users.findOne({
-                                      email: data,
-                                    });
-                                    var id = faculty.id;
-                                    obj.facultyId = id;
-                                  }
-
-                                  // console.log(faculty,"-----------------faculty.")
-                                  obj.date_registered = date;
-                                  obj.date_verified = date;
-                                  obj.role = roles;
-                                  obj.addedBy = userId;
-                                  obj.isDeleted = 'false';
-                                  obj.status = 'active';
-                                  obj.isVerified = 'Y';
-                                  obj.password = newPassword;
-
-                                  if (keyLabel == 'First Name') {
-                                    obj.firstName = data;
-                                  }
-                                  if (keyLabel == 'Last Name') {
-                                    obj.lastName = data;
-                                  }
-                                  if (keyLabel == 'Full Name') {
-                                    obj.fullName = data;
-                                  }
-                                  if (keyLabel == 'Type') {
-                                    obj.type = data;
-                                  }
-                                  if (keyLabel == 'Email') {
-                                    obj.email = data;
-                                  }
-                                  if (keyLabel == 'Mobile No') {
-                                    obj.mobileNo = data;
-                                  }
-                                  if (keyLabel == 'Password') {
-                                    obj.password = newPassword;
-                                  }
-                                  if (keyLabel == 'Country Code') {
-                                    obj.countryCode = data;
-                                  }
-                                  if (keyLabel == 'Record Type') {
-                                    obj.recordType = data;
-                                  }
-                                  //  if (keyLabel == 'Verified') { obj.isVerified = "Y" }
-                                  //  if (keyLabel == 'Role') { obj.role = roles }
-                                  //  if (keyLabel == 'Status') { obj.status = "active" }
-                                  if (keyLabel == 'Domain') {
-                                    obj.domain = data;
-                                  }
-                                  //  if (keyLabel == 'Deleted') { obj.isDeleted = "false" }
-                                  if (keyLabel == 'Bio') {
-                                    obj.bio = data;
-                                  }
-                                  if (keyLabel == 'Intrests') {
-                                    obj.intrests = data;
-                                  }
-                                  if (keyLabel == 'Graduation') {
-                                    obj.graduation = data;
-                                  }
-                                  if (keyLabel == 'Linkedin') {
-                                    obj.linkedin = data;
-                                  }
-                                  if (keyLabel == 'City') {
-                                    obj.city = data;
-                                  }
-                                  if (keyLabel == 'State') {
-                                    obj.state = data;
-                                  }
-                                  if (keyLabel == 'Country') {
-                                    obj.country = data;
-                                  }
-                                  if (keyLabel == 'Pincode') {
-                                    obj.pincode = data;
-                                  }
-                                  if (keyLabel == 'position') {
-                                    obj.position = data;
-                                  }
-                                  if (keyLabel == 'scType') {
-                                    obj.scType = data;
-                                  }
-                                  //  if (keyLabel == 'addedBy') { obj.addedBy = user }
-                                  //   if (keyLabel == 'Faculty') { obj.facultyId = facultyId }
-                                  //  if (keyLabel == 'collegeId') { obj.collegeId = data }
-                                  //  if (keyLabel == 'deletedBy') { obj.deletedBy = data }
-                                  //  if (keyLabel == 'updatedBy') { obj.updatedBy = data }
-                                  //  if (keyLabel == 'updatedBy') { obj.updatedBy = data }
-
-                                  index++;
-                                }
-                                try {
-                                  console.log(
-                                    obj.type,
-                                    '---------------------------obj.type'
-                                  );
-                                  //   console.log(obj.facultyId,"---------------------------obj.facultyId");
-                                  Object.keys(obj).forEach((key) => {
-                                    if (obj[key] === null) {
-                                      delete obj[key];
-                                    }
-                                  });
-                                  const existedUser = await Users.findOne({
-                                    email: obj.email.toLowerCase(),
-                                    isDeleted: false,
-                                  });
-
-                                  if (existedUser) {
-                                  } else {
-                                    const createdUser = await Users.create(
-                                      obj
-                                    ).fetch();
-                                    // console.log(createdUser,"CreatedUSer")
-                                    if (createdUser)
-                                      addUserEmail({
-                                        email: createdUser.email,
-                                        fullName: createdUser.fullName,
-                                        password: newPassword,
-                                      });
-                                  }
-                                } catch (err) {
-                                  console.log(err);
-                                  // return res.status(404).json({
-                                  //     success:false,
-                                  //     // data:createdUser,
-                                  //     error:{code:404, message:err}
-                                  //   })
-                                }
-                              }
-                            }
-                            counter++;
-                          }
-
-                          return res.status(200).json({
-                            success: true,
-                            message: 'Data uploaded successfully.',
-                          });
-                        } else {
-                          return res.status(200).json({
-                            success: true,
-                            message: 'Data uploaded successfully.',
-                          });
-                        }
-                      });
-                    }
-                  }
-                }); //end of loop
-              } else {
-                return res.status(404).json({
-                  success: false,
-                  error: {
-                    code: 404,
-                    message: constantObj.messages.NOT_VALID_FILE,
-                  },
-                });
-              }
-            });
-          }
-        );
-    } catch (err) {
-      //(err);
-      return res
-        .status(500)
-        .json({ success: false, error: { code: 500, message: '' + err } });
-    }
-  },
-
-  // contactUs: async (req, res) => {
-  //     // const name = req.body.name;
-  //     const email = req.body.email;
-  //     const mobileNo = req.body.mobileNo;
-  //     const messages = req.body.message;
-
-  //     sendEmail()
-
-  // },
-
-  contactEmail: async function (req, res) {
-    var data = req.body;
-    if (!data.firstName || data.firstName == undefined) {
-      return res.status(400).json({
-        success: false,
-        code: 400,
-        message: constantObj.user.FIRSTNAME_REQUIRED,
-      });
-    }
-    if (!data.lastName || data.lastName == undefined) {
-      return res.status(400).json({
-        success: false,
-        code: 400,
-        message: constantObj.user.LASTNAME_REQUIRED,
-      });
-    }
-    if (!data.email || data.email == undefined) {
-      return res.status(400).json({
-        success: false,
-        code: 400,
-        message: constantObj.user.EMAIL_REQUIRED,
-      });
-    }
-    if (!data.message || data.message == undefined) {
-      return res
-        .status(400)
-        .json({ success: false, code: 400, message: 'message is required' });
-    }
-
-    if (!data.mobileNo || data.mobileNo == undefined) {
-      return res.status(400).json({
-        success: false,
-        code: 400,
-        message: constantObj.user.PHONE_REQUIRED,
-      });
-    }
-
-    try {
-      const sendData = await ContactUs.create(data).fetch();
-      if (sendData) {
-        contactUsEmail({
-          email: data.email,
-          fullName: data.firstName + ' ' + data.lastName,
-          mobileNo: data.mobileNo,
-          message: data.message,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        code: 200,
-        data: sendData,
-        message: constantObj.user.SUCCESSFULLY_SENT,
-      });
-    } catch (err) {
-      return res
-        .status(400)
-        .json({ success: false, code: 400, message: '' + err });
-    }
-  },
-  contactList: async (req, res) => {
-    try {
-      var search = req.param('search');
-      var page = req.param('page');
-      var sortBy = req.param('sortBy');
-
-      if (!page) {
-        page = 1;
-      }
-      var count = parseInt(req.param('count'));
-      if (!count) {
-        count = 10;
-      }
-      var skipNo = (page - 1) * count;
-      var query = {};
-      if (search) {
-        query.$or = [
-          { firstName: { $regex: search, $options: 'i' } },
-          { lastName: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-        ];
-      }
-      sortquery = {};
-      if (sortBy) {
-        var order = sortBy.split(' ');
-
-        var field = order[0];
-        var sortType = order[1];
-      }
-      sortquery[field ? field : 'createdAt'] = sortType
-        ? sortType == 'descending'
-          ? -1
-          : 1
-        : -1;
-
-      // query.isDeleted = false
-
-      console.log(sortquery);
-      db.collection('contactus')
-        .aggregate([
-          {
-            $project: {
-              isDeleted: '$isDeleted',
-              firstName: '$firstName',
-              lastName: '$lastName',
-              fullName: '$fullName',
-              email: '$email',
-              mobileNo: '$mobileNo',
-              message: '$message',
-              createdAt: '$createdAt',
-              updatedAt: '$updatedAt',
-            },
-          },
-          {
-            $match: query,
-          },
-        ])
-        .toArray((err, totalResult) => {
-          console.log(err);
-          if (err) {
-            return res.status(400).json({
-              success: false,
-              error: { code: 400, message: '' + err },
-            });
-          }
-
-          db.collection('contactus')
-            .aggregate([
-              {
-                $project: {
-                  isDeleted: '$isDeleted',
-                  firstName: '$firstName',
-                  lastName: '$lastName',
-                  fullName: '$fullName',
-                  email: '$email',
-                  mobileNo: '$mobileNo',
-                  message: '$message',
-                  createdAt: '$createdAt',
-                  updatedAt: '$updatedAt',
-                },
-              },
-
-              {
-                $match: query,
-              },
-              {
-                $sort: sortquery,
-              },
-
-              {
-                $skip: Number(skipNo),
-              },
-              {
-                $limit: Number(count),
-              },
-            ])
-            .toArray((err, result) => {
-              console.log(err);
-              if (err) {
-                return res.status(400).json({
-                  success: false,
-                  code: 400,
-                  message: '' + err,
-                });
-              }
-              console.log(result);
-              return res.status(200).json({
-                success: true,
-                data: result,
-                total: totalResult.length,
-              });
-            });
-        });
-    } catch (error) {
-      console.log(error);
-      return res
-        .status(400)
-        .json({ success: false, code: 400, error: '' + error });
-    }
-  },
-};
+}
 
 welcomeEmail = function (options) {
   console.log('we are here');
@@ -1867,110 +1092,40 @@ userVerifyLink = function (options) {
 
   SmtpController.sendEmail(email, 'Email Verification', message);
 };
+forgotPasswordEmail = async (options) => {
+  let email = options.email;
+  let verificationCode = options.verificationCode;
+  let firstName = options.firstName;
 
-forgotPasswordEmail = function (options) {
-  console.log(options);
-
-  var email = options.email;
-  var verificationCode = options.verificationCode;
-  var fullName = options.fullName;
-
-  if (!fullName) {
-    fullName = email;
+  if (!firstName) {
+    firstName = email;
   }
   message = '';
 
-  message +=
-    ` 
-   
-     <!DOCTYPE html>
-     <html lang="en">
-     <head>
-         <meta charset="UTF-8">
-         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-         <title>Signup Email Template</title>
-     </head>
-     <body style="margin: 0px; padding:0; background-color: #f2f3f8;">
-         <table width="100%" style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans',sans-serif; font-family: 'Open Sans', sans-serif;">
-             <tr>
-                 <td>
-                     <table style="max-width:670px; margin:0 auto;" width="100%">
-                         <tr>
-                             <td style="height:20px;">&nbsp;</td>
-                         </tr>
-                         <tr>
-                             <td style="text-align:center;">
-                                 <a href="` +
-    constant.FRONT_WEB_URL +
-    `" title="Goodclean" target="_blank">
-                                 <img  style="margin-bottom:20px; height: 67%; width: 66%;" src="` +
-    constant.FRONT_WEB_URL +
-    `assets/img/logo.jpeg" title="Goodclean" alt="logo">
-                               </a>
-                             </td>
-                         </tr>
-                         <tr>
-                             <td style="height:10px;">&nbsp;</td>
-                         </tr>
-                         <tr>
-                             <td>
-                                 <table width="100%"
-                                 style="max-width:670px; background:#fff; border-radius:3px; -webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);    border: 1px solid #e1e1e1;">
-                                 <tr>
-                                     <td style="height:40px;">&nbsp;</td>
-                                 </tr>
-                                 <tr>
-                                     <td style="padding:0 35px;">
-                                         <h1 style="color:#1e1e2d; font-weight:600; margin:0;font-size:22px;font-family:'Rubik',sans-serif;">Reset Password
-                                         </h1>
-                                         <span
-                                         style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                         <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                             Hi ${fullName}  </p>
-                                        
-                                                 <span
-                                                 style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                 <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                 We have received your request to reset your password. Your verification code is ${verificationCode}</p>
-                                                 <span
-                                                 style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                 <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                   <strong>Regards</strong><br>Support Team</p> 
-   
-                                     </td>
-                                 </tr>
-                                 <tr>
-                                     <td style="height:40px;">&nbsp;</td>
-                                 </tr>
-                             
-                             </table>
-                             </td>
-                         </tr>
-                         <tr>
-                             <td style="height:20px;">&nbsp;</td>
-                         </tr>
-                         <tr>
-                             <td>
-                               
-                                <span
-                                style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-     
-                                <h3 style="margin-bottom: 10px;">Need Support?</h3>
-                                <p style="font-size:15px; color:#455056; margin:8px 0 0; line-height:24px;">Feel free to email us if you have any questions, comments or suggestions. We'll be happy to resolve your issues.</p>
-                             </td>
-                         </tr>
-                         <tr>
-                             <td style="height:20px;">&nbsp;</td>
-                         </tr>
-                     </table>
-                 </td>
-             </tr>
-         </table>
-     </body>
-     </html>
-     `;
+  message += ` <body>
+        <div style="border: 1px solid #000; margin:2rem auto; max-width: 800px; width: 800px; height: auto; background-color: #000; border-radius: 19px; align-items: center;">
+        <div class="maindiv" style="align-items: center; box-shadow: 0px 0px 8px 0px #8080808a; height: auto; background-color: #fff; margin:2rem; max-width: 710px; width: 710px;  border-radius: 20px; padding:12px 12px">
+            <div style="text-align: center;">
+                <img src="${credentials.BACK_WEB_URL}/images/check_mark.png" class="tikimg" style="width: 60px;"/>
+                <h3 style="font-size: 20px; margin-top:0px">Reset Password</h3>
+                <p style="font-size: 15px;"> We have received your request to reset your password.</p>
+ 
+                <div style="margin-bottom: 14px; ">
+                    <img src="${credentials.BACK_WEB_URL}/images/logo.png" style="width: 80px;"/>
+                </div>
+                <div style="padding: 15px; border:3px solid rgba(11, 10, 10, 0.54); border-radius: 8px; max-width: 356px; color: #000; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #8080808a;">
+                Your verification code is <b>${verificationCode}</b>
+                </div>
+                <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
+                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
+                    Got Questions? <a href="mailto:imaging@davemeffert.com" mailto:style="text-decoration:none"><b>imaging@davemeffert.com</b>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    </body>
+      `;
 
   SmtpController.sendEmail(email, 'Reset Password', message);
 };
