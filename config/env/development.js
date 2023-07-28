@@ -65,6 +65,7 @@ module.exports = {
         safeCred.DB_PORT +
         '/' +
         safeCred.DB_NAME,
+        poolSize:10,
 
       //--------------------------------------------------------------------------
       //  /\   To avoid checking it in to version control, you might opt to set
@@ -102,7 +103,7 @@ module.exports = {
      * https://sailsjs.com/docs/concepts/models-and-orm/model-settings#?migrate *
      *                                                                          *
      ***************************************************************************/
-    migrate: 'alter',
+    migrate: 'safe',
 
     /***************************************************************************
      *                                                                          *
