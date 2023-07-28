@@ -55,6 +55,8 @@ module.exports.constants = {
     INVALID_ID: 'Invalid id',
     ALREADY_IN_USE: 'Category is already in use',
     DELETED: 'Category deleted successfully',
+    ALL_DATA:"All Categories",
+    FAILED: "No Data"
   },
   campaign: {
     NAME_REQUIRED: 'Name is required',

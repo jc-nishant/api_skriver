@@ -7,6 +7,7 @@
 
 var constantObj = sails.config.constants;
 const db = sails.getDatastore().manager;
+// console.log(db, "database");
 
 module.exports = {
 
