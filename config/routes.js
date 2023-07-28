@@ -74,12 +74,12 @@ module.exports.routes = {
 
 
 
-    /**License Routes */
-    'post /license': "LicenseController.addLicense",
-    'get /licenses': "LicenseController.getLicenselisting",
-    'get /license': "LicenseController.getLicense",
-    'put /license': "LicenseController.editLicense",
-    'delete /license': "LicenseController.deleteLicense",
+  /**License Routes */
+  'post /license': "LicenseController.addLicense",
+  'get /licenses': "LicenseController.getLicenselisting",
+  'get /license': "LicenseController.getLicense",
+  'put /license': "LicenseController.editLicense",
+  'delete /license': "LicenseController.deleteLicense",
 
 
 
@@ -101,14 +101,6 @@ module.exports.routes = {
   // 'get /subscriptionplans/frontend':'SubscriptionPlansController.getAllPlansFrontend',
   'delete /subscriptionplan': 'SubscriptionPlansController.removePlans',
   'post /purchaseplan': 'SubscriptionPlansController.purchaseplan',
-
-
-    /**Features */
-    "post /feature": "FeaturesController.addFeatures",
-    "put /feature": "FeaturesController.editfeature",
-    "get /features": "FeaturesController.getAllFeatures",
-    "get /feature": "FeaturesController.findSingleFeature",
-    'delete /feature': "FeaturesController.deleteFeature",
 
 
 

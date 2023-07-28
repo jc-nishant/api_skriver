@@ -100,9 +100,8 @@ module.exports = {
     },
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
     updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
-    stripe_customer_id: {
-      type: 'string',
-    },
+    stripe_customer_id: {type: 'string',},
+
   },
 
   beforeCreate: function (user, next) {

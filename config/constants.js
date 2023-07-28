@@ -55,7 +55,7 @@ module.exports.constants = {
     INVALID_ID: 'Invalid id',
     ALREADY_IN_USE: 'Category is already in use',
     DELETED: 'Category deleted successfully',
-    ALL_DATA:"All Categories",
+    ALL_DATA: "All Categories",
     FAILED: "No Data"
   },
   campaign: {
@@ -91,7 +91,7 @@ module.exports.constants = {
     FAILED: 'Failed.Maybe id is wrong',
     FAILED_: 'Failed',
     DELETED: 'Deleted successfully',
-    ALREADY_EXIST:"License Already Exist."
+    ALREADY_EXIST: "License Already Exist."
   },
   CARD: {
     "CARD_ADDED": "Card added successfully",
