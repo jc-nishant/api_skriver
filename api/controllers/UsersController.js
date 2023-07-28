@@ -494,15 +494,243 @@ module.exports = {
       } else {
         sortquery = { updatedAt: -1 };
       }
-      let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count)
-      return res.status(200).json({
-        "success": true,
-        "total": findusers.length,
-        "data": findusers
-      })
-    }
-    catch (err) {
-      console.log(err, "----------err")
+      console.log(query, '-------------------------query');
+      db.collection('users')
+        .aggregate([
+          {
+            $lookup: {
+              from: 'scmanagement',
+              localField: 'scType',
+              foreignField: '_id',
+              as: 'scType',
+            },
+          },
+          {
+            $unwind: {
+              path: '$scType',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'addedBy',
+              foreignField: '_id',
+              as: 'addedBy',
+            },
+          },
+          {
+            $unwind: {
+              path: '$addedBy',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'deletedBy',
+              foreignField: '_id',
+              as: 'deletedBy',
+            },
+          },
+          {
+            $unwind: {
+              path: '$deletedBy',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'facultyId',
+              foreignField: '_id',
+              as: 'facultyId',
+            },
+          },
+          {
+            $unwind: {
+              path: '$facultyId',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'collegeId',
+              foreignField: '_id',
+              as: 'collegeId',
+            },
+          },
+          {
+            $unwind: {
+              path: '$collegeId',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $project: {
+              role: '$role',
+              isDeleted: '$isDeleted',
+              firstName: '$firstName',
+              lastName: '$lastName',
+              fullName: '$fullName',
+              name: '$name',
+              email: '$email',
+              type: '$type',
+              position: '$position',
+              facultyId: '$facultyId',
+              collegeId: '$collegeId',
+              role: '$role',
+              scType: '$scType',
+              addedBy: '$addedBy',
+              recordType: '$recordType',
+              status: '$status',
+              createdAt: '$createdAt',
+              deletedBy: '$deletedBy.fullName',
+              deletedAt: '$deletedAt',
+              faculty_id: '$facultyId._id',
+            },
+          },
+          {
+            $match: query,
+          },
+        ])
+        .toArray((err, totalResult) => {
+          db.collection('users')
+            .aggregate([
+              {
+                $lookup: {
+                  from: 'scmanagement',
+                  localField: 'scType',
+                  foreignField: '_id',
+                  as: 'scType',
+                },
+              },
+              {
+                $unwind: {
+                  path: '$scType',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'addedBy',
+                  foreignField: '_id',
+                  as: 'addedBy',
+                },
+              },
+              {
+                $unwind: {
+                  path: '$addedBy',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'deletedBy',
+                  foreignField: '_id',
+                  as: 'deletedBy',
+                },
+              },
+              {
+                $unwind: {
+                  path: '$deletedBy',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'facultyId',
+                  foreignField: '_id',
+                  as: 'facultyId',
+                },
+              },
+              {
+                $unwind: {
+                  path: '$facultyId',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'collegeId',
+                  foreignField: '_id',
+                  as: 'collegeId',
+                },
+              },
+              {
+                $unwind: {
+                  path: '$collegeId',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
+                $project: {
+                  role: '$role',
+                  isDeleted: '$isDeleted',
+                  firstName: '$firstName',
+                  lastName: '$lastName',
+                  fullName: '$fullName',
+                  name: '$name',
+                  email: '$email',
+                  type: '$type',
+                  position: '$position',
+                  facultyId: '$facultyId',
+                  collegeId: '$collegeId',
+                  role: '$role',
+                  scType: '$scType',
+                  addedBy: '$addedBy',
+                  recordType: '$recordType',
+                  status: '$status',
+                  createdAt: '$createdAt',
+                  deletedBy: '$deletedBy.fullName',
+                  deletedAt: '$deletedAt',
+                  faculty_id: '$facultyId._id',
+                },
+              },
+              {
+                $match: query,
+              },
+              {
+                $sort: sortquery,
+              },
+
+              {
+                $skip: Number(skipNo),
+              },
+              {
+                $limit: Number(count),
+              },
+            ])
+            .toArray((err, result) => {
+              // //.log(err)
+              if (err) {
+                return res.status(400).json({
+                  success: false,
+                  code: { code: 400, error: err },
+                });
+              }
+              return res.status(200).json({
+                success: true,
+                code: 200,
+                data: result,
+                total: totalResult.length,
+              });
+            });
+
+          if (err) {
+            return res.status(400).json({
+              success: false,
+              code: { code: 400, error: err },
+            });
+          }
+        });
+    } catch (error) {
+      console.log(error)
       return res.status(400).json({
         success: false,
         error: { code: 400, message: err.toString() },
