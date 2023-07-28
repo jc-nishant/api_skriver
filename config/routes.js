@@ -103,5 +103,13 @@ module.exports.routes = {
   'post /purchaseplan': 'SubscriptionPlansController.purchaseplan',
 
 
+    /**Features */
+    "post /feature": "FeaturesController.addFeatures",
+    "put /feature": "FeaturesController.editfeature",
+    "get /features": "FeaturesController.getAllFeatures",
+    "get /feature": "FeaturesController.findSingleFeature",
+    'delete /feature': "FeaturesController.deleteFeature",
+
+
 
 };

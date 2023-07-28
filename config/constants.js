@@ -108,4 +108,23 @@ module.exports.constants = {
     ALL_PLAN_DATA: 'All SubscriptionPlan fetch successfully.',
     DELETE_PLAN: 'SubscriptionPlan deleted successfully.',
   },
+
+
+  features: {
+    FEATURES_SAVED: "Features saved successfully.",
+    ALREADY_EXIST: "This Features already exist",
+    UPDATED_FEATURES: "Features updated successfully.",
+    GET_DATA: "Features data fetch successfully.",
+    ID_REQUIRED: "Features id required.",
+    NO_RESULT: "No Features found.",
+    INVALID_ID: "Invalid Id.",
+    ALL_FEATURES: "All Features found successfully.",
+    DELETED_FEATURES: "Features deleted successfully",
+    NOT_FOUND:"Data not found.",
+    ID_MISSING: 'Id is missing',
+    UPDATE_SUCCESS: 'Data updated Successfully',
+    DETAILS_FOUND: 'Details Found',
+    DELETED: 'Deleted successfully',
+  },
+
 }
