@@ -52,152 +52,152 @@ module.exports = {
 
   /*For list category*/
 
-  listCategory: async (req, res) => {
-      try {
+//   listCategory: async (req, res) => {
+//       try {
 
-          var search = req.param('search');
-          var isDeleted = req.param('isDeleted');
-          var page = req.param('page');
-          var type = req.param('type');
-          var categoryId = req.param('categoryId');
-          var cat_type = req.param('cat_type');
-          var sortBy = req.param('sortBy');
-          let status = req.param('status')
-          let language = req.param("language")
-          let Parent_category_id = req.param("Parent_category_id")
+//           var search = req.param('search');
+//           var isDeleted = req.param('isDeleted');
+//           var page = req.param('page');
+//           var type = req.param('type');
+//           var categoryId = req.param('categoryId');
+//           var cat_type = req.param('cat_type');
+//           var sortBy = req.param('sortBy');
+//           let status = req.param('status')
+//           let language = req.param("language")
+//           let Parent_category_id = req.param("Parent_category_id")
 
-          if (!page) {
-              page = 1
-          }
-          var count = parseInt(req.param('count'));
-          if (!count) {
-              count = 10000
-          }
-          var skipNo = (page - 1) * count;
-          var query = {};
+//           if (!page) {
+//               page = 1
+//           }
+//           var count = parseInt(req.param('count'));
+//           if (!count) {
+//               count = 10000
+//           }
+//           var skipNo = (page - 1) * count;
+//           var query = {};
 
 
-          if (Parent_category_id) {
-              query.Parent_category_id = ObjectId(Parent_category_id);
-          }
-          if(type){
-              query.Parent_category_id=null
-          }
-          // console.log(sub_category,"======================sub_category")
-          // console.log(query,"========================================query")
+//           if (Parent_category_id) {
+//               query.Parent_category_id = ObjectId(Parent_category_id);
+//           }
+//           if(type){
+//               query.Parent_category_id=null
+//           }
+//           // console.log(sub_category,"======================sub_category")
+//           // console.log(query,"========================================query")
 
-          if (search) {
-              query.$or = [
-                  { name: { $regex: search, '$options': 'i' } }
-              ]
-          }
+//           if (search) {
+//               query.$or = [
+//                   { name: { $regex: search, '$options': 'i' } }
+//               ]
+//           }
 
-          query.isDeleted = false
+//           query.isDeleted = false
 
-          if (cat_type) {
-              query.cat_type_id = ObjectId(cat_type);
-          }
-          console.log(cat_type)
-          // if(Parent_category_id==null||!Parent_category_id){
+//           if (cat_type) {
+//               query.cat_type_id = ObjectId(cat_type);
+//           }
+//           console.log(cat_type)
+//           // if(Parent_category_id==null||!Parent_category_id){
 
-          // }
+//           // }
 
-          sortquery = {};
-          if (sortBy) {
-            var order = sortBy.split(" ");
-            var field = order[0];
-            var sortType = order[1];
-          }
+//           sortquery = {};
+//           if (sortBy) {
+//             var order = sortBy.split(" ");
+//             var field = order[0];
+//             var sortType = order[1];
+//           }
     
-          sortquery[field ? field : 'updatedAt'] = sortType ? (sortType == 'descending' ? -1 : 1) : -1;
-          // console.log(sortquery, "===================================")
-          if (status) {
-              query.status = status
-          }
+//           sortquery[field ? field : 'updatedAt'] = sortType ? (sortType == 'descending' ? -1 : 1) : -1;
+//           // console.log(sortquery, "===================================")
+//           if (status) {
+//               query.status = status
+//           }
 
-          console.log(query)
-          db.collection('category').aggregate([
+//           console.log(query)
+//           db.collection('category').aggregate([
               
-              {
-                  $project: {
-                      id: "$_id",
-                      isDeleted: "$isDeleted", 
-                      name: "$name",
-                      description:"$description",
-                      cat_type:"$cat_type",
-                      image:"$image",
-                      status: "$status",
-                      createdAt: "$createdAt",
-                      deletedBy: "$deletedBy.fullName",
-                      deletedAt: '$deletedAt',
-                      addedBy: "$addedBy",
-                      updatedBy: "$updatedBy", 
-                      updatedAt:"$updatedAt",
+//               {
+//                   $project: {
+//                       id: "$_id",
+//                       isDeleted: "$isDeleted", 
+//                       name: "$name",
+//                       description:"$description",
+//                       cat_type:"$cat_type",
+//                       image:"$image",
+//                       status: "$status",
+//                       createdAt: "$createdAt",
+//                       deletedBy: "$deletedBy.fullName",
+//                       deletedAt: '$deletedAt',
+//                       addedBy: "$addedBy",
+//                       updatedBy: "$updatedBy", 
+//                       updatedAt:"$updatedAt",
 
-                  }
-              },
-              {
-                  $match: query
-              },
-          ]).toArray((err, totalResult) => {
+//                   }
+//               },
+//               {
+//                   $match: query
+//               },
+//           ]).toArray((err, totalResult) => {
 
-              db.collection('category').aggregate([
+//               db.collection('category').aggregate([
                  
 
-                {
-                  $project: {
-                      id: "$_id",
-                      isDeleted: "$isDeleted", 
-                      name: "$name",
-                      description:"$description",
-                      cat_type:"$cat_type",
-                      image:"$image",
-                      status: "$status",
-                      createdAt: "$createdAt",
-                      deletedBy: "$deletedBy.fullName",
-                      deletedAt: '$deletedAt',
-                      addedBy: "$addedBy",
-                      updatedBy: "$updatedBy", 
-                      updatedAt:"$updatedAt",
+//                 {
+//                   $project: {
+//                       id: "$_id",
+//                       isDeleted: "$isDeleted", 
+//                       name: "$name",
+//                       description:"$description",
+//                       cat_type:"$cat_type",
+//                       image:"$image",
+//                       status: "$status",
+//                       createdAt: "$createdAt",
+//                       deletedBy: "$deletedBy.fullName",
+//                       deletedAt: '$deletedAt',
+//                       addedBy: "$addedBy",
+//                       updatedBy: "$updatedBy", 
+//                       updatedAt:"$updatedAt",
 
-                  }
-                },
-                  {
-                      $match: query
-                  },
-                  {
-                      $sort: sortquery
-                  },
+//                   }
+//                 },
+//                   {
+//                       $match: query
+//                   },
+//                   {
+//                       $sort: sortquery
+//                   },
 
-                  {
-                      $skip: Number(skipNo)
-                  },
-                  {
-                      $limit: Number(count)
-                  }
-              ]).toArray(async (err, result) => {
+//                   {
+//                       $skip: Number(skipNo)
+//                   },
+//                   {
+//                       $limit: Number(count)
+//                   }
+//               ]).toArray(async (err, result) => {
                   
-                  let resData = {
-                      "success": true,
-                      "data": result,
-                      "total": totalResult.length,
-                  }
-                  if (!req.param('count') && !req.param('page')) {
-                      resData.data = result ? result : []
-                  }
-                  return res.status(200).json(resData);
-              })
+//                   let resData = {
+//                       "success": true,
+//                       "data": result,
+//                       "total": totalResult.length,
+//                   }
+//                   if (!req.param('count') && !req.param('page')) {
+//                       resData.data = result ? result : []
+//                   }
+//                   return res.status(200).json(resData);
+//               })
 
-          })
-      } catch (err) {
-          console.log(err)
-          return res.status(400).json({
-              success: false,
-              error: { code: 400, message: "" + err }
-          })
+//           })
+//       } catch (err) {
+//           console.log(err)
+//           return res.status(400).json({
+//               success: false,
+//               error: { code: 400, message: "" + err }
+//           })
 
-      }
-  },
+//       }
+//   },
 
   /*For edit category*/
 

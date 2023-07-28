@@ -4,7 +4,7 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+const credentials = require('../../config/local.js');
 const bcrypt = require('bcrypt-nodejs');
 var constantObj = sails.config.constants;
 var constant = require('../../config/local.js');
@@ -309,15 +309,14 @@ module.exports = {
       }
 
       // , select: ['email', 'role', 'status', 'isVerified', 'password', 'firstName', 'lastName', 'fullName', 'image']
-      var userDetails = await Users.find({
+      let user = await Users.findOne({
         where: {
           email: req.body.email.toLowerCase(),
           isDeleted: false,
           role: req.body.role,
         },
       });
-      var user = userDetails[0];
-
+      console.log(user, "==============user")
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -445,7 +444,6 @@ module.exports = {
    */
 
   getAllUsers: async (req, res) => {
-    //.log("In Get all user");
     try {
       var search = req.param('search');
       var role = req.param('role');
@@ -453,7 +451,6 @@ module.exports = {
       var page = req.param('page');
       var recordType = req.param('recordType');
       var type = req.param('type');
-      var faculty = req.param('faculty');
       var sortBy = req.param('sortBy');
 
       if (!page) {
@@ -472,278 +469,48 @@ module.exports = {
           { name: { $regex: search, $options: 'i' } },
         ];
       }
-      query.role = { $ne: 'admin' };
+      query.role = { "!=": 'admin' };
       if (role) {
         query.role = role;
       }
 
-      query.isDeleted = false;
+      query.isDeleted = isDeleted
       if (recordType) {
         query.recordType = recordType;
       }
       if (type) {
         query.type = type;
       }
-      sortquery = {};
+      let sortquery = {};
       if (sortBy) {
-        var order = sortBy.split(' ');
-
-        var field = order[0];
-        var sortType = order[1];
+        let typeArr = [];
+        typeArr = sortBy.split(' ');
+        let sortType = typeArr[1];
+        let field = typeArr[0];
+        sortquery[field ? field : 'updatedAt'] = sortType
+          ? sortType == 'desc'
+            ? -1
+            : 1
+          : -1;
+      } else {
+        sortquery = { updatedAt: -1 };
       }
-      sortquery[field ? field : 'createdAt'] = sortType
-        ? sortType == 'desc'
-          ? -1
-          : 1
-        : -1;
-
-      if (faculty) {
-        query.faculty_id = ObjectId(faculty);
-      }
-      console.log(query, '-------------------------query');
-      db.collection('users')
-        .aggregate([
-          {
-            $lookup: {
-              from: 'scmanagement',
-              localField: 'scType',
-              foreignField: '_id',
-              as: 'scType',
-            },
-          },
-          {
-            $unwind: {
-              path: '$scType',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'addedBy',
-              foreignField: '_id',
-              as: 'addedBy',
-            },
-          },
-          {
-            $unwind: {
-              path: '$addedBy',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'deletedBy',
-              foreignField: '_id',
-              as: 'deletedBy',
-            },
-          },
-          {
-            $unwind: {
-              path: '$deletedBy',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'facultyId',
-              foreignField: '_id',
-              as: 'facultyId',
-            },
-          },
-          {
-            $unwind: {
-              path: '$facultyId',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'collegeId',
-              foreignField: '_id',
-              as: 'collegeId',
-            },
-          },
-          {
-            $unwind: {
-              path: '$collegeId',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $project: {
-              role: '$role',
-              isDeleted: '$isDeleted',
-              firstName: '$firstName',
-              lastName: '$lastName',
-              fullName: '$fullName',
-              name: '$name',
-              email: '$email',
-              type: '$type',
-              position: '$position',
-              facultyId: '$facultyId',
-              collegeId: '$collegeId',
-              role: '$role',
-              scType: '$scType',
-              addedBy: '$addedBy',
-              recordType: '$recordType',
-              status: '$status',
-              createdAt: '$createdAt',
-              deletedBy: '$deletedBy.fullName',
-              deletedAt: '$deletedAt',
-              faculty_id: '$facultyId._id',
-            },
-          },
-          {
-            $match: query,
-          },
-        ])
-        .toArray((err, totalResult) => {
-          db.collection('users')
-            .aggregate([
-              {
-                $lookup: {
-                  from: 'scmanagement',
-                  localField: 'scType',
-                  foreignField: '_id',
-                  as: 'scType',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$scType',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'addedBy',
-                  foreignField: '_id',
-                  as: 'addedBy',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$addedBy',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'deletedBy',
-                  foreignField: '_id',
-                  as: 'deletedBy',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$deletedBy',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'facultyId',
-                  foreignField: '_id',
-                  as: 'facultyId',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$facultyId',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $lookup: {
-                  from: 'users',
-                  localField: 'collegeId',
-                  foreignField: '_id',
-                  as: 'collegeId',
-                },
-              },
-              {
-                $unwind: {
-                  path: '$collegeId',
-                  preserveNullAndEmptyArrays: true,
-                },
-              },
-              {
-                $project: {
-                  role: '$role',
-                  isDeleted: '$isDeleted',
-                  firstName: '$firstName',
-                  lastName: '$lastName',
-                  fullName: '$fullName',
-                  name: '$name',
-                  email: '$email',
-                  type: '$type',
-                  position: '$position',
-                  facultyId: '$facultyId',
-                  collegeId: '$collegeId',
-                  role: '$role',
-                  scType: '$scType',
-                  addedBy: '$addedBy',
-                  recordType: '$recordType',
-                  status: '$status',
-                  createdAt: '$createdAt',
-                  deletedBy: '$deletedBy.fullName',
-                  deletedAt: '$deletedAt',
-                  faculty_id: '$facultyId._id',
-                },
-              },
-              {
-                $match: query,
-              },
-              {
-                $sort: sortquery,
-              },
-
-              {
-                $skip: Number(skipNo),
-              },
-              {
-                $limit: Number(count),
-              },
-            ])
-            .toArray((err, result) => {
-              // //.log(err)
-              if (err) {
-                return res.status(400).json({
-                  success: false,
-                  code: { code: 400, error: err },
-                });
-              }
-              return res.status(200).json({
-                success: true,
-                code: 200,
-                data: result,
-                total: totalResult.length,
-              });
-            });
-
-          if (err) {
-            return res.status(400).json({
-              success: false,
-              code: { code: 400, error: err },
-            });
-          }
-        });
-    } catch (error) {
-      //.log(error)
+      let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count)
+      return res.status(200).json({
+        "success": true,
+        "total": findusers.length,
+        "data": findusers
+      })
+    }
+    catch (err) {
+      console.log(err, "----------err")
       return res.status(400).json({
         success: false,
-        code: 400,
-        error: error,
+        error: { code: 400, message: err.toString() },
       });
     }
   },
+
 
   /*
    *For Check Email Address Exit or not
@@ -873,8 +640,9 @@ module.exports = {
     Users.findOne({
       email: data.email.toLowerCase(),
       isDeleted: false,
-      role: { in: ['student', 'faculty'] },
+      role: { in: ['user'] },
     }).then((data) => {
+      // console.log(data,"==============data")
       if (data === undefined) {
         return res.status(404).json({
           success: false,
@@ -957,8 +725,10 @@ module.exports = {
   verifyUser: (req, res) => {
     var id = req.param('id');
     Users.findOne({ id: id }).then((user) => {
+      console.log(user, "===========user")
       if (user) {
         Users.update({ id: id }, { isVerified: 'Y' }).then((verified) => {
+          console.log(verified, "==============verified")
           return res.redirect(constant.FRONT_WEB_URL);
         });
       } else {
@@ -1506,126 +1276,126 @@ module.exports = {
         .json({ success: false, code: 400, message: '' + err });
     }
   },
-  contactList: async (req, res) => {
-    try {
-      var search = req.param('search');
-      var page = req.param('page');
-      var sortBy = req.param('sortBy');
+  // contactList: async (req, res) => {
+  //   try {
+  //     var search = req.param('search');
+  //     var page = req.param('page');
+  //     var sortBy = req.param('sortBy');
 
-      if (!page) {
-        page = 1;
-      }
-      var count = parseInt(req.param('count'));
-      if (!count) {
-        count = 10;
-      }
-      var skipNo = (page - 1) * count;
-      var query = {};
-      if (search) {
-        query.$or = [
-          { firstName: { $regex: search, $options: 'i' } },
-          { lastName: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-        ];
-      }
-      sortquery = {};
-      if (sortBy) {
-        var order = sortBy.split(' ');
+  //     if (!page) {
+  //       page = 1;
+  //     }
+  //     var count = parseInt(req.param('count'));
+  //     if (!count) {
+  //       count = 10;
+  //     }
+  //     var skipNo = (page - 1) * count;
+  //     var query = {};
+  //     if (search) {
+  //       query.$or = [
+  //         { firstName: { $regex: search, $options: 'i' } },
+  //         { lastName: { $regex: search, $options: 'i' } },
+  //         { email: { $regex: search, $options: 'i' } },
+  //       ];
+  //     }
+  //     sortquery = {};
+  //     if (sortBy) {
+  //       var order = sortBy.split(' ');
 
-        var field = order[0];
-        var sortType = order[1];
-      }
-      sortquery[field ? field : 'createdAt'] = sortType
-        ? sortType == 'descending'
-          ? -1
-          : 1
-        : -1;
+  //       var field = order[0];
+  //       var sortType = order[1];
+  //     }
+  //     sortquery[field ? field : 'createdAt'] = sortType
+  //       ? sortType == 'descending'
+  //         ? -1
+  //         : 1
+  //       : -1;
 
-      // query.isDeleted = false
+  //     // query.isDeleted = false
 
-      console.log(sortquery);
-      db.collection('contactus')
-        .aggregate([
-          {
-            $project: {
-              isDeleted: '$isDeleted',
-              firstName: '$firstName',
-              lastName: '$lastName',
-              fullName: '$fullName',
-              email: '$email',
-              mobileNo: '$mobileNo',
-              message: '$message',
-              createdAt: '$createdAt',
-              updatedAt: '$updatedAt',
-            },
-          },
-          {
-            $match: query,
-          },
-        ])
-        .toArray((err, totalResult) => {
-          console.log(err);
-          if (err) {
-            return res.status(400).json({
-              success: false,
-              error: { code: 400, message: '' + err },
-            });
-          }
+  //     console.log(sortquery);
+  //     db.collection('contactus')
+  //       .aggregate([
+  //         {
+  //           $project: {
+  //             isDeleted: '$isDeleted',
+  //             firstName: '$firstName',
+  //             lastName: '$lastName',
+  //             fullName: '$fullName',
+  //             email: '$email',
+  //             mobileNo: '$mobileNo',
+  //             message: '$message',
+  //             createdAt: '$createdAt',
+  //             updatedAt: '$updatedAt',
+  //           },
+  //         },
+  //         {
+  //           $match: query,
+  //         },
+  //       ])
+  //       .toArray((err, totalResult) => {
+  //         console.log(err);
+  //         if (err) {
+  //           return res.status(400).json({
+  //             success: false,
+  //             error: { code: 400, message: '' + err },
+  //           });
+  //         }
 
-          db.collection('contactus')
-            .aggregate([
-              {
-                $project: {
-                  isDeleted: '$isDeleted',
-                  firstName: '$firstName',
-                  lastName: '$lastName',
-                  fullName: '$fullName',
-                  email: '$email',
-                  mobileNo: '$mobileNo',
-                  message: '$message',
-                  createdAt: '$createdAt',
-                  updatedAt: '$updatedAt',
-                },
-              },
+  //         db.collection('contactus')
+  //           .aggregate([
+  //             {
+  //               $project: {
+  //                 isDeleted: '$isDeleted',
+  //                 firstName: '$firstName',
+  //                 lastName: '$lastName',
+  //                 fullName: '$fullName',
+  //                 email: '$email',
+  //                 mobileNo: '$mobileNo',
+  //                 message: '$message',
+  //                 createdAt: '$createdAt',
+  //                 updatedAt: '$updatedAt',
+  //               },
+  //             },
 
-              {
-                $match: query,
-              },
-              {
-                $sort: sortquery,
-              },
+  //             {
+  //               $match: query,
+  //             },
+  //             {
+  //               $sort: sortquery,
+  //             },
 
-              {
-                $skip: Number(skipNo),
-              },
-              {
-                $limit: Number(count),
-              },
-            ])
-            .toArray((err, result) => {
-              console.log(err);
-              if (err) {
-                return res.status(400).json({
-                  success: false,
-                  code: 400,
-                  message: '' + err,
-                });
-              }
-              console.log(result);
-              return res.status(200).json({
-                success: true,
-                data: result,
-                total: totalResult.length,
-              });
-            });
-        });
-    } catch (error) {
-      console.log(error);
-      return res
-        .status(400)
-        .json({ success: false, code: 400, error: '' + error });
-    }
-  },
+  //             {
+  //               $skip: Number(skipNo),
+  //             },
+  //             {
+  //               $limit: Number(count),
+  //             },
+  //           ])
+  //           .toArray((err, result) => {
+  //             console.log(err);
+  //             if (err) {
+  //               return res.status(400).json({
+  //                 success: false,
+  //                 code: 400,
+  //                 message: '' + err,
+  //               });
+  //             }
+  //             console.log(result);
+  //             return res.status(200).json({
+  //               success: true,
+  //               data: result,
+  //               total: totalResult.length,
+  //             });
+  //           });
+  //       });
+  //   } catch (error) {
+  //     console.log(error);
+  //     return res
+  //       .status(400)
+  //       .json({ success: false, code: 400, error: '' + error });
+  //   }
+  // },
 };
 
 welcomeEmail = function (options) {
@@ -1867,110 +1637,40 @@ userVerifyLink = function (options) {
 
   SmtpController.sendEmail(email, 'Email Verification', message);
 };
+forgotPasswordEmail = async (options) => {
+  let email = options.email;
+  let verificationCode = options.verificationCode;
+  let firstName = options.firstName;
 
-forgotPasswordEmail = function (options) {
-  console.log(options);
-
-  var email = options.email;
-  var verificationCode = options.verificationCode;
-  var fullName = options.fullName;
-
-  if (!fullName) {
-    fullName = email;
+  if (!firstName) {
+    firstName = email;
   }
   message = '';
 
-  message +=
-    ` 
-   
-     <!DOCTYPE html>
-     <html lang="en">
-     <head>
-         <meta charset="UTF-8">
-         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-         <title>Signup Email Template</title>
-     </head>
-     <body style="margin: 0px; padding:0; background-color: #f2f3f8;">
-         <table width="100%" style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans',sans-serif; font-family: 'Open Sans', sans-serif;">
-             <tr>
-                 <td>
-                     <table style="max-width:670px; margin:0 auto;" width="100%">
-                         <tr>
-                             <td style="height:20px;">&nbsp;</td>
-                         </tr>
-                         <tr>
-                             <td style="text-align:center;">
-                                 <a href="` +
-    constant.FRONT_WEB_URL +
-    `" title="Goodclean" target="_blank">
-                                 <img  style="margin-bottom:20px; height: 67%; width: 66%;" src="` +
-    constant.FRONT_WEB_URL +
-    `assets/img/logo.jpeg" title="Goodclean" alt="logo">
-                               </a>
-                             </td>
-                         </tr>
-                         <tr>
-                             <td style="height:10px;">&nbsp;</td>
-                         </tr>
-                         <tr>
-                             <td>
-                                 <table width="100%"
-                                 style="max-width:670px; background:#fff; border-radius:3px; -webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);    border: 1px solid #e1e1e1;">
-                                 <tr>
-                                     <td style="height:40px;">&nbsp;</td>
-                                 </tr>
-                                 <tr>
-                                     <td style="padding:0 35px;">
-                                         <h1 style="color:#1e1e2d; font-weight:600; margin:0;font-size:22px;font-family:'Rubik',sans-serif;">Reset Password
-                                         </h1>
-                                         <span
-                                         style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                         <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                             Hi ${fullName}  </p>
-                                        
-                                                 <span
-                                                 style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                 <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                 We have received your request to reset your password. Your verification code is ${verificationCode}</p>
-                                                 <span
-                                                 style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                 <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                   <strong>Regards</strong><br>Support Team</p> 
-   
-                                     </td>
-                                 </tr>
-                                 <tr>
-                                     <td style="height:40px;">&nbsp;</td>
-                                 </tr>
-                             
-                             </table>
-                             </td>
-                         </tr>
-                         <tr>
-                             <td style="height:20px;">&nbsp;</td>
-                         </tr>
-                         <tr>
-                             <td>
-                               
-                                <span
-                                style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-     
-                                <h3 style="margin-bottom: 10px;">Need Support?</h3>
-                                <p style="font-size:15px; color:#455056; margin:8px 0 0; line-height:24px;">Feel free to email us if you have any questions, comments or suggestions. We'll be happy to resolve your issues.</p>
-                             </td>
-                         </tr>
-                         <tr>
-                             <td style="height:20px;">&nbsp;</td>
-                         </tr>
-                     </table>
-                 </td>
-             </tr>
-         </table>
-     </body>
-     </html>
-     `;
+  message += ` <body>
+        <div style="border: 1px solid #000; margin:2rem auto; max-width: 800px; width: 800px; height: auto; background-color: #000; border-radius: 19px; align-items: center;">
+        <div class="maindiv" style="align-items: center; box-shadow: 0px 0px 8px 0px #8080808a; height: auto; background-color: #fff; margin:2rem; max-width: 710px; width: 710px;  border-radius: 20px; padding:12px 12px">
+            <div style="text-align: center;">
+                <img src="${credentials.BACK_WEB_URL}/images/check_mark.png" class="tikimg" style="width: 60px;"/>
+                <h3 style="font-size: 20px; margin-top:0px">Reset Password</h3>
+                <p style="font-size: 15px;"> We have received your request to reset your password.</p>
+ 
+                <div style="margin-bottom: 14px; ">
+                    <img src="${credentials.BACK_WEB_URL}/images/logo.png" style="width: 80px;"/>
+                </div>
+                <div style="padding: 15px; border:3px solid rgba(11, 10, 10, 0.54); border-radius: 8px; max-width: 356px; color: #000; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #8080808a;">
+                Your verification code is <b>${verificationCode}</b>
+                </div>
+                <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
+                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
+                    Got Questions? <a href="mailto:imaging@davemeffert.com" mailto:style="text-decoration:none"><b>imaging@davemeffert.com</b>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    </body>
+      `;
 
   SmtpController.sendEmail(email, 'Reset Password', message);
 };

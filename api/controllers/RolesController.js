@@ -59,106 +59,174 @@ module.exports = {
             })
         }
     },
+    // getRolesListing: async (req, res) => {
+
     getRolesListing: async (req, res) => {
-        try {
-            let search = req.param('search');
-            let sortBy = req.param('sortBy');
-            let page = req.param('page');
-            let count = req.param('count');
-            let role = req.param('role');
+    try {
+      var search = req.param('search');
+      var role = req.param('role');
+      var isDeleted = req.param('isDeleted');
+      var page = req.param('page');
+      var recordType = req.param('recordType');
+      var type = req.param('type');
+      var sortBy = req.param('sortBy');
 
-            if (!page) { page = 1 }
-            if (!count) { count = 10 }
-            let skipNo = (page - 1) * count;
-            let query = {};
+      if (!page) {
+        page = 1;
+      }
+      var count = parseInt(req.param('count'));
+      if (!count) {
+        count = 10;
+      }
+      var skipNo = (page - 1) * count;
+      var query = {};
+      if (search) {
+        query.$or = [
+          { fullName: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { name: { $regex: search, $options: 'i' } },
+        ];
+      }
+      query.role = { "!=": 'admin' };
+      if (role) {
+        query.role = role;
+      }
+
+      query.isDeleted = isDeleted
+      if (recordType) {
+        query.recordType = recordType;
+      }
+      if (type) {
+        query.type = type;
+      }
+      let sortquery = {};
+      if (sortBy) {
+        let typeArr = [];
+        typeArr = sortBy.split(' ');
+        let sortType = typeArr[1];
+        let field = typeArr[0];
+        sortquery[field ? field : 'updatedAt'] = sortType
+          ? sortType == 'desc'
+            ? -1
+            : 1
+          : -1;
+      } else {
+        sortquery = { updatedAt: -1 };
+      }
+      let findusers = await Roles.find(query).sort(sortBy).skip(page).limit(count)
+      return res.status(200).json({
+        "success": true,
+        "total": findusers.length,
+        "data": findusers
+      })
+    }
+    catch (err) {
+      console.log(err, "----------err")
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: err.toString() },
+      });
+    }
+  },
+    //     try {
+    //         let search = req.param('search');
+    //         let sortBy = req.param('sortBy');
+    //         let page = req.param('page');
+    //         let count = req.param('count');
+    //         let role = req.param('role');
+
+    //         if (!page) { page = 1 }
+    //         if (!count) { count = 10 }
+    //         let skipNo = (page - 1) * count;
+    //         let query = {};
 
 
-            if (sortBy) {
-                sortBy = sortBy.toString();
-            } else {
-                sortBy = 'createdAt desc';
-            }
+    //         if (sortBy) {
+    //             sortBy = sortBy.toString();
+    //         } else {
+    //             sortBy = 'createdAt desc';
+    //         }
 
-            if (search) {
-                query.$or = [
-                    { role: { $regex: search, '$options': 'i' } },
-                ]
-            }
-            if (role) {
-                query.role = role
-            }
+    //         if (search) {
+    //             query.$or = [
+    //                 { role: { $regex: search, '$options': 'i' } },
+    //             ]
+    //         }
+    //         if (role) {
+    //             query.role = role
+    //         }
 
-            query.isDeleted = false
+    //         query.isDeleted = false
 
-            db.collection("roles").aggregate([{
-                $project: {
-                    id: "$_id",
-                    role: "$role",
-                    permission:"$permission",
-                    updatedBy: "$updatedBy",
-                    isDeleted: "$isDeleted",
-                    updatedAt: "$updatedAt",
-                    createdAt: "$createdAt"
-                },
-            },
-            {
-                $match: query,
-            },
-            ])
-                .toArray((err, totalResult) => {
-                    if (err) {
-                        return res.status(400).json({
-                            success: false,
-                            error: { code: 400, message: "" + err }
-                        })
-                    }
-                    db.collection("roles")
-                        .aggregate([
-                            {
-                                $project: {
-                                    id: "$_id",
-                                    role: "$role",
-                                    permission:"$permission",
-                                    updatedBy: "$updatedBy",
-                                    isDeleted: "$isDeleted",
-                                    updatedAt: "$updatedAt",
-                                    createdAt: "$createdAt"
-                                }
-                            },
-                            {
-                                $match: query,
-                            },
+    //         db.collection("roles").aggregate([{
+    //             $project: {
+    //                 id: "$_id",
+    //                 role: "$role",
+    //                 permission:"$permission",
+    //                 updatedBy: "$updatedBy",
+    //                 isDeleted: "$isDeleted",
+    //                 updatedAt: "$updatedAt",
+    //                 createdAt: "$createdAt"
+    //             },
+    //         },
+    //         {
+    //             $match: query,
+    //         },
+    //         ])
+    //             .toArray((err, totalResult) => {
+    //                 if (err) {
+    //                     return res.status(400).json({
+    //                         success: false,
+    //                         error: { code: 400, message: "" + err }
+    //                     })
+    //                 }
+    //                 db.collection("roles")
+    //                     .aggregate([
+    //                         {
+    //                             $project: {
+    //                                 id: "$_id",
+    //                                 role: "$role",
+    //                                 permission:"$permission",
+    //                                 updatedBy: "$updatedBy",
+    //                                 isDeleted: "$isDeleted",
+    //                                 updatedAt: "$updatedAt",
+    //                                 createdAt: "$createdAt"
+    //                             }
+    //                         },
+    //                         {
+    //                             $match: query,
+    //                         },
 
-                            {
-                                $skip: skipNo,
-                            },
-                            {
-                                $limit: Number(count),
-                            },
-                        ])
-                        .toArray((err, result) => {
-                            if (err) {
-                                return res.status(400).json({
-                                    success: false,
-                                    error: { code: 400, message: "" + err }
-                                })
-                            } else {
+    //                         {
+    //                             $skip: skipNo,
+    //                         },
+    //                         {
+    //                             $limit: Number(count),
+    //                         },
+    //                     ])
+    //                     .toArray((err, result) => {
+    //                         if (err) {
+    //                             return res.status(400).json({
+    //                                 success: false,
+    //                                 error: { code: 400, message: "" + err }
+    //                             })
+    //                         } else {
 
-                                return res.status(200).json({
-                                    success: true,
-                                    data: result,
-                                    total: totalResult.length
-                                })
-                            }
-                        });
-                });
-        } catch (err) {
-            return res.status(400).json({   
-                success: false,
-                error: { code: 400, message: "" + err }
-            })
-        }
-    },
+    //                             return res.status(200).json({
+    //                                 success: true,
+    //                                 data: result,
+    //                                 total: totalResult.length
+    //                             })
+    //                         }
+    //                     });
+    //             });
+    //     } catch (err) {
+    //         return res.status(400).json({   
+    //             success: false,
+    //             error: { code: 400, message: "" + err }
+    //         })
+    //     }
+    // },
     getRole: async (req, res) => {
         try {
             let id = req.query.id;
