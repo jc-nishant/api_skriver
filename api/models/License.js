@@ -24,6 +24,9 @@ module.exports = {
       isIn: ['active', 'deactive'],
       defaultsTo: 'deactive',
     },
+    addedBy: {
+      model: 'users',
+    },
     isDeleted: {
       type: 'Boolean',
       defaultsTo: false,
@@ -31,7 +34,7 @@ module.exports = {
     updatedBy: {
       model: 'users',
     },
-    createdAt: { type: 'ref', columnType: 'date' },
-    updatedAt: { type: 'ref', columnType: 'date' },
+    createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
+    updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
   },
 };
