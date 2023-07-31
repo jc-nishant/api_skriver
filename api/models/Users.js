@@ -55,11 +55,7 @@ module.exports = {
     verificationCode: {
       type: 'string',
     },
-    status: {
-      type: 'string',
-      isIn: ['active', 'deactive'],
-      defaultsTo: 'deactive',
-    },
+   
 
     domain: {
       type: 'string',

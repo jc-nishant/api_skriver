@@ -113,10 +113,10 @@ module.exports.routes = {
 
     // company routes
     "post /comapany": "CompanyController.addcomapny",
-    "put /comapany": "CompanyController.editfeature",
-    "get /comapanies": "CompanyController.getAllFeatures",
-    "get /comapany": "CompanyController.findSingleFeature",
-    'delete /comapany': "CompanyController.deleteFeature",
+    "put /comapany": "CompanyController.editcompany",
+    "get /comapanies": "CompanyController.getcompanylisting",
+    "get /comapany": "CompanyController.getcompany",
+    'delete /comapany': "CompanyController.deletecompany",
 
 
 

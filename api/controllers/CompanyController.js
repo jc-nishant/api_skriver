@@ -22,17 +22,17 @@ module.exports = {
             if (alreadyExist) {
                 throw constantObj.comapany.ALREADY_EXIST
             } else {
-                const add_licence = await Company.create(req.body).fetch();
-                if (add_licence) {
+                const add_Company = await Company.create(req.body).fetch();
+                if (add_Company) {
                     return res.status(200).json({
                         success: true,
-                        data: add_licence,
-                        message: constantObj.comapany.UPDATE_SUCCESS
+                        data: add_Company,
+                        message: "Company added succesfully"
                     })
                 }
             }
         } catch (err) {
-            console.log(err,"=======================err")
+            // console.log(err,"=======================err")
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
@@ -43,19 +43,25 @@ module.exports = {
     getcompany: async (req, res) => {
         try {
             let id = req.query.id;
+            if(!id){
+                return res.status(200).json({
+                    success: false,
+                    message: "id is required",
+                })
+            }
 
 
-            let get_license = await Company.findOne({ id: id, isDeleted: false });
-            if (get_license) {
+            let get_comapany = await Company.findOne({ id: id, isDeleted: false });
+            if (get_comapany) {
                 return res.status(200).json({
                     success: true,
-                    message: constantObj.license.DETAILS_FOUND,
-                    data: get_license
+                    message: constantObj.comapany.DETAILS_FOUND,
+                    data: get_comapany
                 })
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: constantObj.license.FAILED
+                    message: constantObj.comapany.FAILED
                 })
             }
         } catch (err) {
@@ -100,13 +106,13 @@ module.exports = {
             query.isDeleted = false
 
             // console.log(JSON.stringify(query));
-            const all_users_licenses = await Company.find(query).skip(skipNo).limit(count).sort(sortBy);
+            const all_comapanies = await Company.find(query).skip(skipNo).limit(count).sort(sortBy);
 
-            if (all_users_licenses) {
+            if (all_comapanies) {
                 return res.status(200).json({
                     success: true,
                     message: constantObj.license.DETAILS_FOUND,
-                    data: all_users_licenses
+                    data: all_comapanies
                 })
             } else {
                 return res.status(400).json({
@@ -128,7 +134,7 @@ module.exports = {
             if (!id) {
                 return res.status(400).json({
                     success: false,
-                    error: { code: 400, message: constantObj.license.ID_MISSING }
+                    error: { code: 400, message: constantObj.comapany.ID_MISSING }
                 })
             }
             req.body.updatedBy = req.identity.id;
@@ -137,12 +143,12 @@ module.exports = {
             if (update_details) {
                 return res.status(200).json({
                     success: true,
-                    message: constantObj.license.UPDATE_SUCCESS
+                    message: constantObj.comapany.UPDATE_SUCCESS
                 })
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: constantObj.license.FAILED
+                    message: constantObj.comapany.FAILED
                 })
             }
         } catch (err) {
@@ -160,14 +166,14 @@ module.exports = {
             if (!id) {
                 return res.status(404).json({
                     success: false,
-                    error: { code: 400, message: constantObj.license.ID_MISSING }
+                    error: { code: 400, message: constantObj.comapany.ID_MISSING }
                 })
             } else {
                 let license = await Company.findOne({ id: id });
                 if (!license) {
                     return res.status(400).json({
                         success: false,
-                        error: { code: 400, message: constantObj.license.FAILED }
+                        error: { code: 400, message: constantObj.comapany.FAILED }
                     })
                 } else {
                     req.body.updatedBy = req.identity.id;
@@ -175,7 +181,7 @@ module.exports = {
                     let removelicense = await Company.updateOne({ id: id }, { isDeleted: true });
                     return res.status(200).json({
                         success: true,
-                        message: constantObj.license.DELETED
+                        message: constantObj.comapany.DELETED
                     })
                 }
             }

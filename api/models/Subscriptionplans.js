@@ -16,7 +16,6 @@ module.exports = {
       isIn: ['active', 'deactive'],
       defaultsTo: 'active',
     },
-
     stripe_plan_id: { type: 'string' },
     stripe_product_id: { type: 'string' },
 
@@ -24,6 +23,10 @@ module.exports = {
     interval_count: { type: 'number', defaultsTo: 1 },
     trial_period_days: { type: 'number', defaultsTo: 0 },
     description: { type: 'string' },
+    plan_type: { type: 'string' },
+    numberOfDays: { type: 'string' },
+    allowedProducts: { type: 'string' },
+    extraProductPrice: { type: 'string' },
 
     // common feilds
     addedBy: { model: 'users' },
