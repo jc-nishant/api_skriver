@@ -22,6 +22,7 @@ module.exports = {
                 message: constantObj.roles.UPDATE_SUCCESS
             })
         } catch (err) {
+            console.log(err,"====================================err")
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
