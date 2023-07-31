@@ -435,7 +435,7 @@ module.exports = {
       });
     }
 
-    var userDetails = await Users.find({ where: { id: id } });
+    var userDetails = await Users.find({ where: { id: id } }).populate('license_id').populate('company_id')
 
     return res.status(200).json({
       success: true,
@@ -500,10 +500,12 @@ module.exports = {
       } else {
         sortquery = { updatedAt: -1 };
       }
-      let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count)
+
+      let total = await Users.count(query)
+      let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count).populate('license_id').populate('company_id')
       return res.status(200).json({
         "success": true,
-        "total": findusers.length,
+        "total":total,
         "data": findusers
       })
     }
