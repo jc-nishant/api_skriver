@@ -298,6 +298,71 @@ exports.editsubscriptionPlan = async (req, res) => {
 //         });
 //     }
 // };
+
+
+
+
+exports.getAllPlans= async (req, res) => {
+    try {
+      var search = req.param('search');
+      var role = req.param('role');
+      var isDeleted = req.param('isDeleted');
+      var page = req.param('page');
+      var recordType = req.param('recordType');
+      var type = req.param('type');
+      var sortBy = req.param('sortBy');
+
+      if (!page) {
+        page = 1;
+      }
+      var count = parseInt(req.param('count'));
+      if (!count) {
+        count = 10;
+      }
+      var skipNo = (page - 1) * count;
+      var query = {};
+      if (search) {
+        query.$or = [
+          { fullName: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { name: { $regex: search, $options: 'i' } },
+        ];
+      }
+      query.isDeleted = isDeleted
+      if (recordType) {
+        query.recordType = recordType;
+      }
+      if (type) {
+        query.type = type;
+      }
+      let sortquery = {};
+      if (sortBy) {
+        let typeArr = [];
+        typeArr = sortBy.split(' ');
+        let sortType = typeArr[1];
+        let field = typeArr[0];
+        sortquery[field ? field : 'updatedAt'] = sortType
+          ? sortType == 'desc'
+            ? -1
+            : 1
+          : -1;
+      } else {
+        sortquery = { updatedAt: -1 };
+      }
+      let findusers = await Subscriptionplans.find(query).sort(sortBy).skip(page).limit(count)
+      return res.status(200).json({
+        "success": true,
+        "total": findusers.length,
+        "data": findusers
+      })
+    }
+    catch (err) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: err.toString() },
+      });
+    }
+  },
 // exports.getAllPlansFrontend = async (req, res) => {
 //     try {
 //         let search = req.param('search');
