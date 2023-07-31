@@ -144,11 +144,11 @@ exports.editsubscriptionPlan = async (req, res) => {
         }
         Data.updatedBy = req.identity.id;
         req.body["updatedAt"] = new Date()
-        let updatePlanData = await SubscriptionPlan.updateOne({ id: id }, Data);
+        let updatePlanData = await Subscriptionplans.updateOne({ id: id }, Data);
         if (updatePlanData) {
             return res.status(200).json({
                 success: true,
-                message: constants.subscriptionplan.PLAN_UPDATED,
+                message: "Subscription plan is updated",
                 data: updatePlanData
             });
         }
@@ -192,7 +192,7 @@ exports.getAllPlans= async (req, res) => {
           { name: { $regex: search, $options: 'i' } },
         ];
       }
-      query.isDeleted = isDeleted
+      query.isDeleted = false
       if (recordType) {
         query.recordType = recordType;
       }
