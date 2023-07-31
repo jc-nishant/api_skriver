@@ -7,22 +7,30 @@
 
 module.exports = {
   attributes: {
-    api_key: {
+    licence_id: {
       type: 'string',
     },
     has_after_call_transcript: {
-      type: 'string',
+      type: 'Boolean',
+      defaultsTo: false,
     },
     has_real_time_streaming_transcript: {
-      type: 'string',
+      type: 'Boolean',
+      defaultsTo: false,
     },
     has_sentiment: {
-      type: 'string',
+      type: 'Boolean',
+      defaultsTo: false,
     },
     
     isDeleted: {
       type: 'Boolean',
       defaultsTo: false,
+    },
+    status: {
+      type: 'string',
+      isIn: ['active', 'deactive'],
+      defaultsTo: 'active',
     },
   
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
