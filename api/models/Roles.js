@@ -10,7 +10,7 @@ module.exports = {
     role: {
       type: 'string',
     },
-    permission: {
+    permissions: {
       type: 'json',
     },
     isDeleted: {
