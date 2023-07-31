@@ -7,6 +7,9 @@
 var bcrypt = require('bcrypt-nodejs');
 module.exports = {
   attributes: {
+    api_key: {
+      type: 'string',
+    },
     firstName: {
       type: 'string',
     },
