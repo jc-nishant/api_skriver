@@ -150,12 +150,13 @@ exports.editsubscriptionPlan = async (req, res) => {
     try {
         let Data = req.body
         // console.log(Data);
-        let id = req.body.id;
+        const id = req.body.id;
         if (!id) {
             throw constants.subscriptionplan.ID_REQUIRED;
         }
         Data.updatedBy = req.identity.id;
         req.body["updatedAt"] = new Date()
+        delete req.body.id
         let updatePlanData = await Subscriptionplans.updateOne({ id: id }, Data);
         if (updatePlanData) {
             return res.status(200).json({

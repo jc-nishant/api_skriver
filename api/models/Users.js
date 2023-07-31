@@ -107,7 +107,7 @@ module.exports = {
     role_id: { model: 'roles', },
 
     license_id: { model: 'license', },
-    // company_id: {model: 'company',},
+    company_id: {model: 'company',},
 
 
   },

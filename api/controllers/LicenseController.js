@@ -21,19 +21,19 @@ module.exports = {
             data.updatedBy = req.identity.id;
             data.addedBy = req.identity.id
             
-            let query = {}
-            query.license_number = req.body.license_number;
-            query.isDeleted = false;
+            // let query = {}
+            // query.license_number = req.body.license_number;
+            // query.isDeleted = false;
 
-            let alreadyExist = await License.findOne(query);
+            // let alreadyExist = await License.findOne(query);
 
-            if (alreadyExist) {
-                throw constantObj.license.ALREADY_EXIST
-            } else {
+            // if (alreadyExist) {
+            //     throw constantObj.license.ALREADY_EXIST
+            // } else {
 
                 var randomStr = uuid.v4();
                 //console.log(randomStr);
-                data.api_key = randomStr
+                data.licence_id = randomStr
                 // api_key = randomStr;
                 const add_licence = await License.create(data).fetch();
                 if (add_licence) {
@@ -43,7 +43,7 @@ module.exports = {
                         message: constantObj.license.UPDATE_SUCCESS
                     })
                 }
-            }
+            
         } catch (err) {
             return res.status(400).json({
                 success: false,
