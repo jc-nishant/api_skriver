@@ -15,6 +15,8 @@ var fs = require('fs');
 const readXlsxFile = require('read-excel-file/node');
 var ObjectId = require('mongodb').ObjectID;
 const Emails = require('../../Emails/onBoarding.js');
+var uuid = require("uuid");
+
 generateVeificationCode = function () {
   // action are perform to generate VeificationCode for user
   var length = 9,
@@ -107,6 +109,10 @@ module.exports = {
           error: { code: 400, message: constantObj.user.EMAIL_EXIST },
         });
       } else {
+        var randomStr = uuid.v4();
+        //console.log(randomStr);
+
+        req.body['api_key'] = randomStr;
         req.body['date_registered'] = date;
         req.body['date_verified'] = date;
         req.body['status'] = 'active';

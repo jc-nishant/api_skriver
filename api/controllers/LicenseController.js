@@ -10,13 +10,17 @@
 //const License = require("../models/License");
 
 var constantObj = sails.config.constants;
+var uuid = require("uuid");
 
 module.exports = {
 
     addLicense: async (req, res) => {
         try {
-            req.body.updatedBy = req.identity.id;
-            req.body.addedBy = req.identity.id
+
+            let data = req.body;
+            data.updatedBy = req.identity.id;
+            data.addedBy = req.identity.id
+            
             let query = {}
             query.license_number = req.body.license_number;
             query.isDeleted = false;
@@ -26,7 +30,12 @@ module.exports = {
             if (alreadyExist) {
                 throw constantObj.license.ALREADY_EXIST
             } else {
-                const add_licence = await License.create(req.body).fetch();
+
+                var randomStr = uuid.v4();
+                //console.log(randomStr);
+                data.api_key = randomStr
+                // api_key = randomStr;
+                const add_licence = await License.create(data).fetch();
                 if (add_licence) {
                     return res.status(200).json({
                         success: true,
@@ -46,7 +55,6 @@ module.exports = {
     getLicense: async (req, res) => {
         try {
             let id = req.query.id;
-
 
             let get_license = await License.findOne({ id: id, isDeleted: false });
             if (get_license) {
