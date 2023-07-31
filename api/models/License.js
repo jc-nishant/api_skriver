@@ -7,6 +7,9 @@
 
 module.exports = {
   attributes: {
+    api_key: {
+      type: 'string',
+    },
     license_number: {
       type: 'string',
     },

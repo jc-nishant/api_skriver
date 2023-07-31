@@ -36,7 +36,15 @@ exports.addSubscriptionPlan = async (req, res) => {
                 nickname: name,
                 amount: amount,
                 interval: req.body.interval ? req.body.interval : 'month',
-                // interval: "day",
+                // "name": "Test",
+                // "amount": "",
+                // "status": "active",
+                // "interval": "",
+                // "category": "",
+                // "plan_type": "paid",
+                // "numberOfDays": "",
+                // "allowedProducts": "25",
+                // "extraProductPrice": "100",
 
                 interval_count: req.body.interval_count ? req.body.interval_count : 1,
                 trial_period_days: req.body.trial_period_days
@@ -54,7 +62,6 @@ exports.addSubscriptionPlan = async (req, res) => {
                 req.body.addedBy = req.identity.id;
                 req.body.stripe_plan_id = create_plan.id;
                 req.body.stripe_product_id = created_product.id;
-
                 let create_subscription_plan = await Subscriptionplans.create(
                     req.body
                 ).fetch();

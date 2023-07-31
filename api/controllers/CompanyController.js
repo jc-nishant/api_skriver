@@ -1,50 +1,38 @@
 /**
- * LicenseController
+ * ComapanyController
  *
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-
-
-//const License = require("../models/License");
-
 var constantObj = sails.config.constants;
-var uuid = require("uuid");
 
 module.exports = {
 
-    addLicense: async (req, res) => {
+    addcomapny: async (req, res) => {
         try {
-
-            let data = req.body;
-            data.updatedBy = req.identity.id;
-            data.addedBy = req.identity.id
-            
+            req.body.updatedBy = req.identity.id;
+            req.body.addedBy = req.identity.id
             let query = {}
-            query.license_number = req.body.license_number;
+            query.company_name = req.body.company_name;
             query.isDeleted = false;
 
-            let alreadyExist = await License.findOne(query);
+            let alreadyExist = await Company.findOne(query);
 
             if (alreadyExist) {
-                throw constantObj.license.ALREADY_EXIST
+                throw constantObj.comapany.ALREADY_EXIST
             } else {
-
-                var randomStr = uuid.v4();
-                //console.log(randomStr);
-                data.api_key = randomStr
-                // api_key = randomStr;
-                const add_licence = await License.create(data).fetch();
-                if (add_licence) {
+                const add_Company = await Company.create(req.body).fetch();
+                if (add_Company) {
                     return res.status(200).json({
                         success: true,
-                        data: add_licence,
-                        message: constantObj.license.UPDATE_SUCCESS
+                        data: add_Company,
+                        message: "Company added succesfully"
                     })
                 }
             }
         } catch (err) {
+            // console.log(err,"=======================err")
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
@@ -52,21 +40,28 @@ module.exports = {
         }
     },
 
-    getLicense: async (req, res) => {
+    getcompany: async (req, res) => {
         try {
             let id = req.query.id;
+            if(!id){
+                return res.status(200).json({
+                    success: false,
+                    message: "id is required",
+                })
+            }
 
-            let get_license = await License.findOne({ id: id, isDeleted: false });
-            if (get_license) {
+
+            let get_comapany = await Company.findOne({ id: id, isDeleted: false });
+            if (get_comapany) {
                 return res.status(200).json({
                     success: true,
-                    message: constantObj.license.DETAILS_FOUND,
-                    data: get_license
+                    message: constantObj.comapany.DETAILS_FOUND,
+                    data: get_comapany
                 })
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: constantObj.license.FAILED
+                    message: constantObj.comapany.FAILED
                 })
             }
         } catch (err) {
@@ -77,7 +72,7 @@ module.exports = {
         }
     },
 
-    getLicenselisting: async (req, res) => {
+    getcompanylisting: async (req, res) => {
         try {
             let search = req.param('search');
             let sortBy = req.param('sortBy');
@@ -111,13 +106,13 @@ module.exports = {
             query.isDeleted = false
 
             // console.log(JSON.stringify(query));
-            const all_users_licenses = await License.find(query).skip(skipNo).limit(count).sort(sortBy);
+            const all_comapanies = await Company.find(query).skip(skipNo).limit(count).sort(sortBy);
 
-            if (all_users_licenses) {
+            if (all_comapanies) {
                 return res.status(200).json({
                     success: true,
                     message: constantObj.license.DETAILS_FOUND,
-                    data: all_users_licenses
+                    data: all_comapanies
                 })
             } else {
                 return res.status(400).json({
@@ -133,27 +128,27 @@ module.exports = {
         }
     },
 
-    editLicense: async (req, res) => {
+    editcompany: async (req, res) => {
         try {
             let { id } = req.body;
             if (!id) {
                 return res.status(400).json({
                     success: false,
-                    error: { code: 400, message: constantObj.license.ID_MISSING }
+                    error: { code: 400, message: constantObj.comapany.ID_MISSING }
                 })
             }
             req.body.updatedBy = req.identity.id;
 
-            let update_details = await License.updateOne({ id: id }, req.body);
+            let update_details = await Company.updateOne({ id: id }, req.body);
             if (update_details) {
                 return res.status(200).json({
                     success: true,
-                    message: constantObj.license.UPDATE_SUCCESS
+                    message: constantObj.comapany.UPDATE_SUCCESS
                 })
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: constantObj.license.FAILED
+                    message: constantObj.comapany.FAILED
                 })
             }
         } catch (err) {
@@ -164,29 +159,29 @@ module.exports = {
         }
     },
 
-    deleteLicense: async (req, res) => {
+    deletecompany: async (req, res) => {
         try {
             const id = req.param("id");
 
             if (!id) {
                 return res.status(404).json({
                     success: false,
-                    error: { code: 400, message: constantObj.license.ID_MISSING }
+                    error: { code: 400, message: constantObj.comapany.ID_MISSING }
                 })
             } else {
-                let license = await License.findOne({ id: id });
+                let license = await Company.findOne({ id: id });
                 if (!license) {
                     return res.status(400).json({
                         success: false,
-                        error: { code: 400, message: constantObj.license.FAILED }
+                        error: { code: 400, message: constantObj.comapany.FAILED }
                     })
                 } else {
                     req.body.updatedBy = req.identity.id;
 
-                    let removelicense = await License.updateOne({ id: id }, { isDeleted: true });
+                    let removelicense = await Company.updateOne({ id: id }, { isDeleted: true });
                     return res.status(200).json({
                         success: true,
-                        message: constantObj.license.DELETED
+                        message: constantObj.comapany.DELETED
                     })
                 }
             }

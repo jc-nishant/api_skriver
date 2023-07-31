@@ -7,6 +7,9 @@
 var bcrypt = require('bcrypt-nodejs');
 module.exports = {
   attributes: {
+    api_key: {
+      type: 'string',
+    },
     firstName: {
       type: 'string',
     },
@@ -52,11 +55,7 @@ module.exports = {
     verificationCode: {
       type: 'string',
     },
-    status: {
-      type: 'string',
-      isIn: ['active', 'deactive'],
-      defaultsTo: 'deactive',
-    },
+   
 
     domain: {
       type: 'string',
@@ -100,7 +99,16 @@ module.exports = {
     },
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
     updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
-    stripe_customer_id: {type: 'string',},
+    stripe_customer_id: { type: 'string', },
+    api_key: {
+      type: 'string',
+      allowNull: true,
+    },
+    role_id: { model: 'roles', },
+
+    license_id: { model: 'license', },
+    // company_id: {model: 'company',},
+
 
   },
 
