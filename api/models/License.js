@@ -10,33 +10,21 @@ module.exports = {
     api_key: {
       type: 'string',
     },
-    license_number: {
+    has_after_call_transcript: {
       type: 'string',
     },
-    license_name: {
+    has_real_time_streaming_transcript: {
       type: 'string',
     },
-    front_img: {
+    has_sentiment: {
       type: 'string',
     },
-    back_img: {
-      type: 'string',
-    },
-    status: {
-      type: 'string',
-      isIn: ['active', 'deactive'],
-      defaultsTo: 'deactive',
-    },
-    addedBy: {
-      model: 'users',
-    },
+    
     isDeleted: {
       type: 'Boolean',
       defaultsTo: false,
     },
-    updatedBy: {
-      model: 'users',
-    },
+  
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
     updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
   },

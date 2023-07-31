@@ -31,57 +31,66 @@ exports.addSubscriptionPlan = async (req, res) => {
         let created_product = await Services.StripeServices.create_product({
             name: name,
         });
-        // console.log(created_product, "===========================created_product")
+        console.log(created_product, "===========================created_product")
         if (created_product) {
             let pricing = req.body.pricing
-            for(let itm of pricing){
-                // console.log(itm,"==========itm")
-                // console.log(itm.price,"=====================itm2")
-                let plan_payload = {
-                    nickname: name,
-                    amount: itm.price,
-                    interval: itm.interval ? itm.interval : "month",
-                    interval_count: itm.interval_count ? itm.interval_count : 1,
-                    trial_period_days: itm.trial_period_days ? itm.trial_period_days : 7,     
-                    product_id: created_product.id,
-                    currency: "USD",
+            // console.log(pricing,"======================pricing")
+            if (pricing && pricing.length > 0) {
+                for (let itm of pricing) {
+                    // console.log(itm,"==========itm")
+                    // console.log(itm.price,"=====================itm2")
+                    let plan_payload = {
+                        nickname: name,
+                        amount: itm.price,
+                        interval: itm.interval ? itm.interval : "month",
+                        interval_count: itm.interval_count ? itm.interval_count : 1,
+                        trial_period_days: itm.trial_period_days ? itm.trial_period_days : 7,
+                        product_id: created_product.id,
+                        currency: "USD",
+                    }
+
+
+                    let create_plan = await Services.StripeServices.create_plan(plan_payload);
+                    // console.log(create_plan, "==========================create_plan")
+                    if (create_plan) {
+                        req.body.addedBy = req.identity.id;
+                        req.body.stripe_plan_id = create_plan.id;
+                        req.body.stripe_product_id = created_product.id;
+                        // console.log(req.body, "===================create_subscription_plan")
+                        let create_subscription_plan = await Subscriptionplans.create(
+                            req.body
+                        ).fetch();
+                        // console.log(create_subscription_plan, "==================create_subscription_plan111")
+                        if (create_subscription_plan) {
+                            return res.status(200).json({
+                                success: true,
+                                message: "Plan added Sucessfully",
+                            });
+                        }
+                    }
                 }
-            
-           
-                let create_plan = await Services.StripeServices.create_plan(plan_payload);
-                // console.log(create_plan, "==========================create_plan")
-            
-
-            
-
-            if (create_plan) {
+            } else {
                 req.body.addedBy = req.identity.id;
-                req.body.stripe_plan_id = create_plan.id;
-                req.body.stripe_product_id = created_product.id;
-                // console.log(req.body, "===================create_subscription_plan")
+                // req.body.stripe_plan_id = create_plan.id;
+                // req.body.stripe_product_id = created_product.id;
                 let create_subscription_plan = await Subscriptionplans.create(
                     req.body
                 ).fetch();
-                // console.log(create_subscription_plan, "==================create_subscription_plan111")
                 if (create_subscription_plan) {
                     return res.status(200).json({
                         success: true,
                         message: "Plan added Sucessfully",
                     });
-                }}
-                throw constants.COMMON.SERVER_ERROR;
+                }
             }
-            return res.status(200).json({
-                success: true,
-                message: "plan not created",
-            });
+
         }
         return res.status(200).json({
-            success: true,
+            success: false,
             message: "unable to create product",
         });
     } catch (err) {
-        // console.log(err, "============================err")
+        console.log(err, "============================err")
         return res.status(400).json({
             success: false,
             error: { message: "" + err },
