@@ -665,8 +665,10 @@ exports.removePlans = async (req, res) => {
         query.isDeleted = true
         query.deletedBy = req.identity.id
         query.deletedAt = new Date()
+        // console.log(query,"==============================query")
 
-        let delete_plan = await SubscriptionPlan.updateOne({ id: id }, query);
+        let delete_plan = await Subscriptionplans.updateOne({ id: id }, query);
+        // console.log(delete_plan,"====================delete_plan")
         if (delete_plan) {
             return res.status(200).json({
                 success: true,
@@ -679,7 +681,7 @@ exports.removePlans = async (req, res) => {
     }
 
     catch (err) {
-        console.log(err);
+        console.log(err,"==========================err");
         return res.status(400).json({
             success: false,
             error: { message: err },
