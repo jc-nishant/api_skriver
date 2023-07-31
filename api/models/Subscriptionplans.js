@@ -28,6 +28,7 @@ module.exports = {
     allowedProducts: { type: 'string' },
     extraProductPrice: { type: 'string' },
     pricing: { type: 'json' },
+    price: { type: 'string' },
 
     // common feilds
     addedBy: { model: 'users' },
