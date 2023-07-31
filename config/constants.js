@@ -126,5 +126,14 @@ module.exports.constants = {
     DETAILS_FOUND: 'Details Found',
     DELETED: 'Deleted successfully',
   },
+  comapany: {
+    ID_MISSING: 'Id is missing',
+    UPDATE_SUCCESS: 'Data updated Successfully',
+    DETAILS_FOUND: 'Details Found',
+    FAILED: 'Failed.Maybe id is wrong',
+    FAILED_: 'Failed',
+    DELETED: 'Deleted successfully',
+    ALREADY_EXIST: "This comapany name is Already Existed."
+  },
 
 }

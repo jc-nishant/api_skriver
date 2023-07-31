@@ -65,7 +65,7 @@ module.exports = {
             var search = req.param('search');
             var isDeleted = req.param('isDeleted');
             var page = req.param('page');
-            var type = req.param('type');
+            var status = req.param('status');
             var sortBy = req.param('sortBy');
 
             if (!page) {
@@ -77,6 +77,9 @@ module.exports = {
             }
             var skipNo = (page - 1) * count;
             var query = {};
+            if(status){
+                query.status = "active"
+            }
             if (search) {
                 query.$or = [
                     { fullName: { $regex: search, $options: 'i' } },
@@ -85,7 +88,16 @@ module.exports = {
                 ];
             }
 
-            query.isDeleted = isDeleted
+            if (isDeleted) {
+                if (isDeleted === 'true') {
+                  isDeleted = true;
+                } else {
+                  isDeleted = false;
+                }
+                query.isDeleted = isDeleted;
+              }else{
+                query.isDeleted = false;
+              }
             let sortquery = {};
             if (sortBy) {
                 let typeArr = [];
@@ -100,8 +112,12 @@ module.exports = {
             } else {
                 sortquery = { updatedAt: -1 };
             }
+            console.log(query,"==============query")
+            // console.log(sortBy,"====================sortBy")
+            // console.log(page,"====================page")
+            // console.log(count,"====================count")
+            
             let findroles = await Roles.find(query).sort(sortBy).skip(page).limit(count)
-            // console.log(Roles,"==============Roles")
             return res.status(200).json({
                 "success": true,
                 "total": findroles.length,

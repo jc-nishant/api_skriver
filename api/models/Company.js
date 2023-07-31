@@ -1,5 +1,5 @@
 /**
- * Roles.js
+ * License.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -7,16 +7,16 @@
 
 module.exports = {
   attributes: {
-    role: {
+    company_name: {
       type: 'string',
-    },
-    permissions: {
-      type: 'json',
     },
     status: {
       type: 'string',
       isIn: ['active', 'deactive'],
       defaultsTo: 'active',
+    },
+    addedBy: {
+      model: 'users',
     },
     isDeleted: {
       type: 'Boolean',
