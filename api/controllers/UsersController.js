@@ -305,20 +305,11 @@ module.exports = {
           error: { code: 404, message: constantObj.user.PASSWORD_REQUIRED },
         });
       }
-
-      if (!req.body.role || typeof req.body.role == undefined) {
-        return res.status(404).json({
-          success: false,
-          error: { code: 404, message: constantObj.user.ROLE_REQUIRED },
-        });
-      }
-
-      // , select: ['email', 'role', 'status', 'isVerified', 'password', 'firstName', 'lastName', 'fullName', 'image']
       let user = await Users.findOne({
         where: {
           email: req.body.email.toLowerCase(),
           isDeleted: false,
-          role: req.body.role,
+          role: "user",
         },
       });
       // console.log(user, "==============user")
@@ -329,12 +320,12 @@ module.exports = {
         });
       }
 
-      // if (user && user.status != 'active') {
-      //   return res.status(404).json({
-      //     success: false,
-      //     error: { code: 404, message: constantObj.user.USERNAME_INACTIVE },
-      //   });
-      // }
+      if (user && user.status != 'active') {
+        return res.status(404).json({
+          success: false,
+          error: { code: 404, message: constantObj.user.USERNAME_INACTIVE },
+        });
+      }
       if (user.isVerified == 'N') {
         return res.status(404).json({
           success: false,
@@ -730,19 +721,18 @@ module.exports = {
   },
 
   verifyUser: (req, res) => {
-    var id = req.param('id');
-    Users.findOne({ id: id }).then((user) => {
-      // console.log(user, "===========user")
-      if (user) {
-        Users.update({ id: id }, { isVerified: 'Y' }).then((verified) => {
-          // console.log(verified, "==============verified")
-          return res.redirect(constant.FRONT_WEB_URL);
-        });
-      } else {
-        return res.redirect(constant.FRONT_WEB_URL);
-      }
-    });
-  },
+    var id = req.param('id')
+    Users.findOne({ id: id }).then(user => {
+
+        if (user) {
+            Users.update({ id: id }, { isVerified: 'Y', }).then(verified => {
+                return res.redirect(`${credentials.FRONT_WEB_URL}/login?id=${id}`)
+            })
+        } else {
+            return res.redirect(`${credentials.FRONT_WEB_URL}/login?id=${id}`)
+        }
+    })
+},
 
   verifyEmail: (req, res) => {
     var id = req.param('id');
@@ -820,6 +810,8 @@ module.exports = {
           error: { code: 400, message: constantObj.user.EMAIL_EXIST },
         });
       } else {
+        var randomStr = uuid.v4();
+        req.body['api_key'] = randomStr;
         req.body['date_registered'] = date;
         req.body['status'] = 'active';
         req.body['role'] = req.body.role ? req.body.role : 'user';
@@ -886,243 +878,53 @@ module.exports = {
 
 }
 
-welcomeEmail = function (options) {
-  console.log('we are here');
-  var email = options.email;
-  var password = options.password;
-  message = '';
-  style = {
-    header: `
-       padding:30px 15px;
-       text-align:center;
-       background-color:#f2f2f2;
-       `,
-    body: `
-       padding:15px;
-       height: 230px;
-       `,
-    hTitle: `font-family: 'Raleway', sans-serif;
-       font-size: 37px;
-       height:auto;
-       line-height: normal;
-       font-weight: bold;
-       background:none;
-       padding:0;
-       color:#333;
-       `,
-    maindiv: `
-       width:600px;
-       margin:auto;
-       font-family: Lato, sans-serif;
-       font-size: 14px;
-       color: #333;
-       line-height: 24px;
-       font-weight: 300;
-       border: 1px solid #eaeaea;
-       `,
-    textPrimary: `color:#3e3a6e;
-       `,
-    h5: `font-family: Raleway, sans-serif;
-       font-size: 22px;
-       background:none;
-       padding:0;
-       color:#333;
-       height:auto;
-       font-weight: bold;
-       line-height:normal;
-       `,
-    m0: `margin:0;`,
-    mb3: 'margin-bottom:15px;',
-    textCenter: `text-align:center;`,
-    btn: `padding:10px 30px;
-       font-weight:500;
-       font-size:14px;
-       line-height:normal;
-       border:0;
-       display:inline-block;
-       text-decoration:none;
-       `,
-    btnPrimary: `
-       background-color:#3e3a6e;
-       color:#fff;
-       `,
-    footer: `
-       padding:10px 15px;
-       font-weight:500;
-       color:#fff;
-       text-align:center;
-       background-color:#000;
-       `,
-  };
-
-  // src="` +
-  // constant.FRONT_WEB_URL +
-  // `/assets/img/logo.jpeg"
-
-  message +=
-    `<div class="container" style="` +
-    style.maindiv +
-    `">
-   <div class="header" style="` +
-    style.header +
-    `text-align:center">
-       <img style="margin-bottom:20px; height: 67%; width: 66%;"  src="` +
-    constant.FRONT_WEB_URL +
-    `/assets/img/logo.jpeg"  />
-      
-   </div>
-   <div class="body" style="` +
-    style.body +
-    `">
-       <h5 style="` +
-    style.h5 +
-    style.m0 +
-    style.mb3 +
-    `">Hello ` +
-    options.fullName +
-    `</h5>
-       <p style="` +
-    style.m0 +
-    style.mb3 +
-    `margin-bottom:20px;font-weight: 600">Your Goodclean account has been created! <br>
-       Your login credentials are:</p>
-       <div style="">
-       <strong>Email : </strong>` +
-    email +
-    `<br>
-       <strong>Password : </strong>` +
-    password +
-    `<br>
-        </div>
-   </div>
-   <div class="footer" style="` +
-    style.footer +
-    `">
-   2023 All Rights Reserved.
-   </div>
- </div>`;
-
-  SmtpController.sendEmail(email, 'Email Verification', message);
-};
-
-userVerifyLink = function (options) {
-  var email = options.email;
-  message = '';
-  style = {
-    header: `
-       padding:30px 15px;
-       text-align:center;
-       background-color:#f2f2f2;
-       `,
-    body: `
-       padding:15px;
-       height: 230px;
-       `,
-    hTitle: `font-family: 'Raleway', sans-serif;
-       font-size: 37px;
-       height:auto;
-       line-height: normal;
-       font-weight: bold;
-       background:none;
-       padding:0;
-       color:#333;
-       `,
-    maindiv: `
-       width:600px;
-       margin:auto;
-       font-family: Lato, sans-serif;
-       font-size: 14px;
-       color: #333;
-       line-height: 24px;
-       font-weight: 300;
-       border: 1px solid #eaeaea;
-       `,
-    textPrimary: `color:#3e3a6e;
-       `,
-    h5: `font-family: Raleway, sans-serif;
-       font-size: 22px;
-       background:none;
-       padding:0;
-       color:#333;
-       height:auto;
-       font-weight: bold;
-       line-height:normal;
-       `,
-    m0: `margin:0;`,
-    mb3: 'margin-bottom:15px;',
-    textCenter: `text-align:center;`,
-    btn: `padding:10px 30px;
-       font-weight:500;
-       font-size:14px;
-       line-height:normal;
-       border:0;
-       display:inline-block;
-       text-decoration:none;
-       `,
-    btnPrimary: `
-       background-color:#3e3a6e;
-       color:#fff;
-       `,
-    footer: `
-       padding:10px 15px;
-       font-weight:500;
-       color:#fff;
-       text-align:center;
-       background-color:#000;
-       `,
-  };
-
-  message +=
-    `<div class="container" style="` +
-    style.maindiv +
-    `">
-   <div class="header" style="` +
-    style.header +
-    `text-align:center">
-       <img style="margin-bottom:20px; height: 67%; width: 66%;" src="` +
-    constant.FRONT_WEB_URL +
-    `/assets/img/logo.jpeg" />
-       <h2 style="` +
-    style.hTitle +
-    style.m0 +
-    `">Welcome to Application </h2>
-   </div>
-   <div class="body" style="` +
-    style.body +
-    `">
-       <h5 style="` +
-    style.h5 +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `">Hello ` +
-    options.fullName +
-    `</h5>
-       <p style="` +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `margin-bottom:20px;font-weight: 600">To complete your registration, please verify your email by clicking button below..</p>
-       <div style="` +
-    style.textCenter +
-    `">
-           <a style="text-decoration:none" href="` +
-    constant.BACK_WEB_URL +
-    'verifyUser?id=' +
-    options.id +
-    `"><span style="` +
-    style.btn +
-    style.btnPrimary +
-    `">Verify Email</span></a>
-       </div>
-   </div>
-   <div class="footer" style="` +
-    style.footer +
-    `">
-   2023 All Rights Reserved.
-   </div>
- </div>`;
-
+userVerifyLink = async (options) => {
+  let email = options.email;
+  console.log(options, "==================options")
+  message = ''
+  message += `
+  <!DOCTYPE html>
+  <html lang="en">
+  
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+  </head>
+  
+  <body style="font-family: sans-serif;">
+  
+      <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
+          <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
+              <img src="${credentials.BACK_WEB_URL}img/check_mark2.png" style="width: 80px; height: 80px;">
+              <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">You’Re In!</h1>
+              <p>Thank you for joining Globovue, You are Going to love it here. </p>
+  
+              <img src="${credentials.BACK_WEB_URL}img/logo_img.png" style="width:170px; height: 85px;margin-top: 20px; object-fit: contain;">
+  
+              <p style="width: 134px; height: 1px;background: #164E63;margin: 22px auto;    margin-top: 14px;"></p>
+  
+                  <a href="${credentials.BACK_WEB_URL}verifyUser?id=${options.id}"  style="padding: 8px 25px; font-size: 12px;cursor: pointer; color: #fff; background: #2fc0f9; border-radius: 50px; border: 1px solid #2fc0f9;"
+                  type="text">Verify Email</a>
+              <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our support team!</p>
+  
+          </div>
+          <p style="width: 20px; height: 185px; background: #164E63; position: absolute;bottom: 0px;left: 0px;margin:0px;">
+          </p>
+          <!-- <p
+              style="width: 50px; height: 18px; background: #164E63; position: absolute;bottom: 0px; right: 0px;margin:0px;">
+          </p> -->
+          <p style="width: 20px; height: 185px; background: #164E63; position: absolute;top: 0px;right: 0px;margin:0px;">
+          </p>
+          <!-- <p style="width: 50px; height: 18px; background: #164E63; position: absolute;top: 0px;left: 0px;margin:0px;">
+          </p> -->
+      </div>
+  
+  </body>
+  
+  </html>
+`;
   SmtpController.sendEmail(email, 'Email Verification', message);
 };
 forgotPasswordEmail = async (options) => {
@@ -1304,121 +1106,6 @@ addUserEmail = function (options) {
   SmtpController.sendEmail(email, 'Registration', message);
 };
 
-contactUsEmail = function (options) {
-  console.log(options, '----------------options');
-  var email = options.email;
-  var fullName = options.fullName;
-  //   var Admin_Email=options.Admin_Email
-  var mobileNo = options.mobileNo;
-  var message = options.message;
-  if (!fullName) {
-    fullName = email;
-  }
-  message = '';
-  message +=
-    ` 
-
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <title>Contact us email template</title>
-  </head>
-  <body style="margin: 0px; padding:0; background-color: #f2f3f8;">
-      <table width="100%" style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans',sans-serif; font-family: 'Open Sans', sans-serif;">
-          <tr>
-              <td>
-                  <table style="max-width:670px; margin:0 auto;" width="100%">
-                      <tr>
-                          <td style="height:20px;">&nbsp;</td>
-                      </tr>
-                      <tr>
-                          <td style="text-align:center;">
-                              <a href="#" title="logo" target="_blank">
-                              <img style="margin-bottom:20px; height: 67%; width: 66%;"  src="` +
-    constant.FRONT_WEB_URL +
-    `/assets/img/logo.jpeg" title="logo" alt="logo">
-                            </a>
-                          </td>
-                      </tr>
-                      <tr>
-                          <td style="height:10px;">&nbsp;</td>
-                      </tr>
-                      <tr>
-                          <td>
-                              <table width="100%"
-                              style="max-width:670px; background:#fff; border-radius:3px; -webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);    border: 1px solid #e1e1e1;">
-                              <tr>
-                                  <td style="height:40px;">&nbsp;</td>
-                              </tr>
-                              <tr>
-                                  <td style="padding:0 35px;">
-                                   
-                                      <span
-                                      style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                      <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                          Hi admin ${fullName} wants to contact with you. </p>
-                                    
-                                                 
-                                                  <span
-                                                  style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                  <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                  Email: ${email} </p> 
-                                                  <span
-                                                  style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                  <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                  FullName: ${fullName} </p> 
-
-                                                  <span
-                                                  style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                  <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                  MobileNo: ${mobileNo} </p> 
-                                                  <span
-                                                  style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                  <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                  Message: ${options.message} </p> 
-                                                      <span
-                                                      style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-                                                      <p style="font-size:15px; color:#455056; margin:0px 0 0; line-height:24px;">
-                                                       <strong>Regards</strong><br> The Goodclean Support Team</p> 
-
-                                  </td>
-                              </tr>
-                              <tr>
-                                  <td style="height:40px;">&nbsp;</td>
-                              </tr>
-                          
-                          </table>
-                          </td>
-                      </tr>
-                      <tr>
-                          <td style="height:20px;">&nbsp;</td>
-                      </tr>
-                      <tr>
-                          <td>                             
-                             <span
-                             style="display:inline-block; vertical-align:middle; margin:5px 0px; width:100px;"></span>
-  
-                             <h3 style="margin-bottom: 10px;">Need Support?</h3>
-                             <p style="font-size:15px; color:#455056; margin:8px 0 0; line-height:24px;">Feel free to email us if you have any questions, comments or suggestions. we'll be happy to resolve your issues.</p>
-                          </td>
-                      </tr>
-                      <tr>
-                          <td style="height:20px;">&nbsp;</td>
-                      </tr>
-                  </table>
-              </td>
-          </tr>
-      </table>
-  </body>
-  </html>
-  `;
-  SmtpController.sendEmail(constant.Admin_Email, 'Contact Us', message);
-};
-
 userSendOtp = function (options) {
   var email = options.email;
   message = '';
@@ -1531,111 +1218,3 @@ userSendOtp = function (options) {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ==========================
-// var search = req.param("search");
-//       var status = req.param("status");
-//       var sortBy = req.param("sortBy");
-//       var page = Number(req.param("page"));
-//       var count = Number(req.param("count"));
-//       var clientId = Number(req.param("clientId"));
-//       var projectType = req.param("projectType");
-//       var clientType = req.param("queryType");
-//       var leadId = req.param("leadId");
-//       var categoryId = req.param("categoryId");      
-//       var type = req.param("type");
-//       var signature = req.param("signature");
-      
-
-//       if (!page) {
-//         page = 1;
-//       }
-//       if (!count) {
-//         count = 10;
-//       }else{
-//         count = count*page;
-//       }
-//       if (page == undefined) {
-//         page = 1;
-//       }
-//       //var skipNo = (page - 1) * count;
-//       var skipNo = (page - 1) * 10;
-//       //count = skipNo+count;
-//      // console.log(skipNo,count,"skipnumber");
-
-
-     
-
-//      if(type == "old"){
-//       sortBy = "fullName ASC";
-//      }else{
-//         sortBy = "id DESC";
-//      }
-      
-//      var query = ` where projects.isDeleted=false`; 
-//       if (status) { query += ` AND projects.status="` + status + `"`; }
-//       if (clientType) { query += ` AND projects.clientType="` + clientType + `"`; }
-//       if (type) { query += ` AND projects.type="` + type + `"`; }
-//      // if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
-//       if (clientId) { query += ` AND projects.client="` + clientId + `"`; }     
-//       if (leadId) { query += ` AND projects.leadId="` + leadId + `"`; } 
-//       if (categoryId) { query += ` AND projects.category="` + categoryId + `"`; } 
-
-//       if (signature) { query += ` AND projects.signature !=""`; } 
-      
-
-//       if (type == "new") {
-//         if (search) {
-//           query += ` AND ( projects.projectName LIKE '%` + search + `%'`;
-//           query += ` OR users.fullName LIKE '%` + search + `%'`;
-//           query += ` OR users.email LIKE '%` + search + `%' )`;
-//         }
-//         if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
-//           query += ` ORDER BY `+sortBy;
-
-//         var rawQuery =
-//           `SELECT projects.id,projects.pID,projects.leadId,projects.assignSummary,projects.toDoList,projects.notes,projects.totalTask,projects.totalAssigned,projects.totalCompleted,projects.category,projects.isSample,projects.fabStartDate,projects.archieveDate,projects.isAnalysis,projects.metalFinish,projects.agreementPrice,projects.client,projects.repairType,projects.dimensionType,projects.dimensions,projects.createdAt,projects.companyName,projects.clientType,projects.isPortfolio, projects.isPdfGuidesSent,projects.isInvoiceSent, projects.isDimension,projects.dimensionId, projects.isAgreementSent, projects.isEstimateSent, projects.signature, projects.pdf,projects.agreementType,projects.isEstimate,projects.dimensionType,projects.labelColor,projects.colors,projects.startDate,projects.endDate,projects.type,projects.cardType,projects.kingProject,projects.subCards,projects.projectName,projects.description,projects.comments,projects.projectType,projects.status,users.fullName,users.email,users.countryCode, users.dialCode,users.phoneNumber,users.phoneNumber2,projects.production,projects.pricing,projects.intakeForm,projects.leadId,projects.previousProjectType,leads.projectName as job FROM projects INNER JOIN users ON projects.client = users.id  LEFT JOIN category ON projects.category = category.id LEFT JOIN leads ON projects.leadId = leads.id` +
-//           query;
-//       }else if (type == "old") {
-//         if (search) {
-//           query += ` AND ( projects.projectName LIKE '%` + search + `%'`;
-//           query += ` OR projects.clientFileName LIKE '%` + search + `%'`;
-//           query += ` OR projects.fullName LIKE '%` + search + `%'`;
-//           query += ` OR projects.itemName LIKE '%` + search + `%'`;
-//           query += ` OR category.name LIKE '%` + search + `%'`;
-//           query += ` OR projects.companyName LIKE '%` + search + `%'`;
-//           query += ` OR users.email LIKE '%` + search + `%' )`;
-//         }
-//         if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
-//         // query += ` ORDER BY createdAt DESC`;
-//          query += ` ORDER BY `+sortBy;
-
-//          var rawQuery =
-//          `SELECT projects.id,projects.pID,projects.leadId,projects.assignSummary,projects.toDoList,projects.isSample,projects.totalTask,projects.totalAssigned,projects.totalCompleted,projects.category,projects.client,projects.fabStartDate,projects.archieveDate,projects.isAnalysis,projects.metalFinish,projects.agreementPrice,projects.repairType,projects.dimensionType,projects.dimensions,projects.clientType,projects.createdAt,projects.isPortfolio,projects.companyName,projects.agreementType,projects.isEstimate,projects.dimensionType,projects.labelColor,projects.colors,projects.clientFileName,projects.itemName,projects.startDate,projects.endDate,projects.cardType,projects.kingProject,projects.subCards,projects.projectName,projects.description,projects.comments,projects.sqft,projects.totalHours,projects.hoursPersqft,projects.pieces_Unit,projects.HoursPerPieces_Unit, projects.projectType,projects.status,projects.fullName,users.email,users.countryCode,users.dialCode,users.phoneNumber,users.phoneNumber2,category.name as categoryName,projects.production,projects.pricing,projects.intakeForm,projects.leadId,leads.isQualified,leads.total_amount,leads.amount_paid,projects.previousProjectType,leads.projectName as job FROM projects LEFT JOIN users ON projects.client = users.id LEFT JOIN category ON projects.category = category.id LEFT JOIN leads ON projects.leadId = leads.id` +
-//          query;
-//      } else {
-//       if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
-//       query += ` ORDER BY `+sortBy; 
-//       var rawQuery =
-//          `SELECT projects.id,projects.pID,projects.leadId,projects.assignSummary,projects.toDoList,projects.isSample,projects.totalTask,projects.totalAssigned,projects.totalCompleted,projects.category,projects.client,projects.fabStartDate,projects.archieveDate,projects.isAnalysis,projects.metalFinish,projects.agreementPrice,projects.repairType,projects.dimensionType,projects.dimensions,projects.labelColor,projects.clientType,projects.createdAt,projects.companyName,projects.isPortfolio, projects.isPdfGuidesSent,projects.isInvoiceSent, projects.isDimension,projects.dimensionId, projects.isAgreementSent, projects.isEstimateSent, projects.signature, projects.pdf,projects.agreementType,projects.isEstimate,projects.dimensionType,projects.colors,projects.clientFileName,projects.itemName,projects.projectName,projects.cardType,projects.kingProject,projects.subCards,projects.startDate,projects.endDate,projects.description,projects.comments,projects.sqft,projects.totalHours,projects.hoursPersqft,projects.pieces_Unit,projects.HoursPerPieces_Unit, projects.projectType,projects.status,users.fullName,users.email,users.countryCode,users.dialCode,users.phoneNumber,users.phoneNumber2,category.name as categoryName,projects.production,projects.pricing,projects.intakeForm,projects.leadId,leads.isQualified,leads.total_amount,leads.amount_paid,projects.previousProjectType,leads.projectName as job FROM projects LEFT JOIN users ON projects.client = users.id LEFT JOIN category ON projects.category = category.id LEFT JOIN leads ON projects.leadId = leads.id` +
-//          query;
-//      }
-  
-//       var total = await sails.sendNativeQuery(rawQuery, []);
-//       queryNew= ` limit ${Number(skipNo)},${Number(count)}`;
-
-//       var newquery = rawQuery+queryNew;      
-//       var projectData = await sails.sendNativeQuery(newquery, []);
