@@ -459,11 +459,11 @@ module.exports = {
       var query = {};
       if (search) {
         query.or = [
-            { fullName: { 'like': `%${search}%` } },
-            { email: { 'like': `%${search}%` } },
+          { fullName: { 'like': `%${search}%` } },
+          { email: { 'like': `%${search}%` } },
         ]
-    }
-    // console.log(search,"=============search")
+      }
+      // console.log(search,"=============search")
       query.role = { "!=": 'admin' };
       if (role) {
         query.role = role;
@@ -491,17 +491,17 @@ module.exports = {
         sortquery = { updatedAt: -1 };
         sortBy = "fullName desc"
       }
-    
+
       let total = await Users.count(query)
       let findusers = await Users.find(query).sort(sortBy).skip(skipNo).limit(count).populate('license_id').populate('company_id')
       return res.status(200).json({
         "success": true,
-        "total":total,
+        "total": total,
         "data": findusers
       })
     }
     catch (err) {
-      console.log(err,"====================err")
+      console.log(err, "====================err")
       return res.status(400).json({
         success: false,
         error: { code: 400, message: err.toString() },
@@ -578,53 +578,52 @@ module.exports = {
   },
 
   forgotPassword: async (req, res) => {
-    try {
-      if (!req.body.email || req.body.email == undefined) {
-        return res.status(400).json({
-          success: false,
-          error: { code: 400, message: constantObj.user.USERNAME_REQUIRED },
-        });
-      }
-      var query = {};
-      query.email = req.body.email.toLowerCase();
-      query.isDeleted = false;
-      query.role = { in: ['admin'] };
-      const user = await Users.findOne(query);
-      if (user) {
-        const verificationCode = await generatePassword();
-
-        await Users.updateOne(
-          { id: user.id },
-          { verificationCode: verificationCode }
-        );
-        let currentTime = new Date();
-        let email_payload = {
-          email: user.email,
-          verificationCode: verificationCode,
-          firstName: user.fullName,
-          id: user.id,
-          userId: user.id,
-          time: currentTime,
-          role: user.role,
-        };
-        await Emails.forgotPasswordEmail(email_payload);
-        return res.status(200).json({
-          success: true,
-          message: constantObj.user.VERIFICATION_SENT,
-          id: user.id,
-        });
-      } else {
-        return res.status(400).json({
-          success: false,
-          error: { code: 400, message: constantObj.user.INVALID_USER },
-        });
-      }
-    } catch (err) {
-      return res.status(400).json({
+    let data = req.body;
+    if (!data.email || data.email == undefined) {
+      return res.status(404).json({
         success: false,
-        error: { code: 400, message: err.toString() },
+        error: { code: 404, message: constantObj.user.USERNAME_REQUIRED },
       });
     }
+    Users.findOne({
+      email: data.email.toLowerCase(),
+      isDeleted: false,
+      role: { in: ['admin'] },
+    }).then((data) => {
+      // console.log(data,"==============data")
+      if (data === undefined) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 404,
+            message: constantObj.user.INVALID_USER,
+          },
+        });
+      } else {
+        var verificationCode = generateVeificationCode();
+
+        Users.update(
+          { email: data.email, isDeleted: false },
+          {
+            verificationCode: verificationCode,
+          }
+        ).then(async (result) => {
+          currentTime = new Date();
+          await forgotPasswordEmail({
+            email: data.email,
+            verificationCode: verificationCode,
+            fullName: data.fullName,
+            id: data.id,
+            time: currentTime.toISOString(),
+          });
+          return res.status(200).json({
+            success: true,
+            id: data.id,
+            message: constantObj.user.VERIFICATION_SENT,
+          });
+        });
+      }
+    });
   },
 
   forgotPasswordFrontend: async (req, res) => {
@@ -724,15 +723,15 @@ module.exports = {
     var id = req.param('id')
     Users.findOne({ id: id }).then(user => {
 
-        if (user) {
-            Users.update({ id: id }, { isVerified: 'Y', }).then(verified => {
-                return res.redirect(`${credentials.FRONT_WEB_URL}/login?id=${id}`)
-            })
-        } else {
-            return res.redirect(`${credentials.FRONT_WEB_URL}/login?id=${id}`)
-        }
+      if (user) {
+        Users.update({ id: id }, { isVerified: 'Y', }).then(verified => {
+          return res.redirect(`${credentials.FRONT_WEB_URL}login`)
+        })
+      } else {
+        return res.redirect(`${credentials.FRONT_WEB_URL}login`)
+      }
     })
-},
+  },
 
   verifyEmail: (req, res) => {
     var id = req.param('id');
@@ -781,14 +780,41 @@ module.exports = {
         .json({ success: false, error: { code: 400, message: '' + err } });
     }
   },
+  resetPassword: async (req, res) => {
+    let data = req.body;
+    try {
+      var code = data.verificationCode;
+      var newPassword = data.newPassword;
 
-  /**
-   *
-   * @param {*} req
-   * @param {*} res
-   * @returns
-   * @description Used to register User
-   */
+      let user = await Users.findOne({ id: data.id, isDeleted: false });
+      if (!user || user.verificationCode !== code) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 404,
+            message: 'Verification code wrong.',
+          },
+        });
+      } else {
+        const encryptedPassword = bcrypt.hashSync(
+          newPassword,
+          bcrypt.genSaltSync(10)
+        );
+        Users.updateOne({ id: user.id }, { password: encryptedPassword }).then(
+          (updatedUser) => {
+            return res.status(200).json({
+              success: true,
+              message: 'Password reset successfully.',
+            });
+          }
+        );
+      }
+    } catch (err) {
+      return res
+        .status(400)
+        .json({ success: true, error: { code: 400, message: '' + err } });
+    }
+  },
   addUser: async (req, res) => {
     if (!req.body.email || typeof req.body.email == undefined) {
       return res.status(404).json({
@@ -1067,7 +1093,7 @@ addUserEmail = function (options) {
     style.m0 +
     style.mb3 +
     style.textCenter +
-    `margin-bottom:20px;font-weight: 600">Your Goodclean account has been created! <br>
+    `margin-bottom:20px;font-weight: 600">Your Skriver account has been created! <br>
             
             </p>
             <p style="` +
