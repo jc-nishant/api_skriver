@@ -321,7 +321,7 @@ module.exports = {
           role: req.body.role,
         },
       });
-      console.log(user, "==============user")
+      // console.log(user, "==============user")
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -329,12 +329,12 @@ module.exports = {
         });
       }
 
-      if (user && user.status != 'active') {
-        return res.status(404).json({
-          success: false,
-          error: { code: 404, message: constantObj.user.USERNAME_INACTIVE },
-        });
-      }
+      // if (user && user.status != 'active') {
+      //   return res.status(404).json({
+      //     success: false,
+      //     error: { code: 404, message: constantObj.user.USERNAME_INACTIVE },
+      //   });
+      // }
       if (user.isVerified == 'N') {
         return res.status(404).json({
           success: false,
@@ -452,9 +452,9 @@ module.exports = {
     try {
       var search = req.param('search');
       var role = req.param('role');
+      var status = req.param('status');
       var isDeleted = req.param('isDeleted');
       var page = req.param('page');
-      var recordType = req.param('recordType');
       var type = req.param('type');
       var sortBy = req.param('sortBy');
 
@@ -463,7 +463,7 @@ module.exports = {
       }
       var count = parseInt(req.param('count'));
       if (!count) {
-        count = 10;
+        count = 1000;
       }
       var skipNo = (page - 1) * count;
       var query = {};
@@ -479,9 +479,9 @@ module.exports = {
         query.role = role;
       }
 
-      query.isDeleted = isDeleted
-      if (recordType) {
-        query.recordType = recordType;
+      query.isDeleted = false
+      if (status) {
+        query.status = status;
       }
       if (type) {
         query.type = type;
@@ -500,7 +500,7 @@ module.exports = {
       } else {
         sortquery = { updatedAt: -1 };
       }
-
+      console.log(query,"======================query")
       let total = await Users.count(query)
       let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count).populate('license_id').populate('company_id')
       return res.status(200).json({
@@ -812,6 +812,7 @@ module.exports = {
         email: req.body.email.toLowerCase(),
         isDeleted: false,
       });
+      console.log(user,"================user")
       if (user) {
         return res.status(400).json({
           success: false,
@@ -870,7 +871,7 @@ module.exports = {
         return res.status(200).json({
           success: true,
           data: user,
-          message: constantObj.user.UPDATED_USER,
+          message: "user deleted successfully",
         });
       });
     } catch (err) {
