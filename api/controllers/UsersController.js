@@ -458,6 +458,16 @@ module.exports = {
       var type = req.param('type');
       var sortBy = req.param('sortBy');
 
+
+      // constant.connect(function(err) {
+      //   if (err) throw err;
+      //   //Select only "name" and "address" from "customers":
+      //   con.query("SELECT name FROM ", function (err, result, fields) {
+      //     if (err) throw err;
+      //     console.log(result);
+      //   });
+      // });
+
       if (!page) {
         page = 1;
       }
@@ -500,7 +510,7 @@ module.exports = {
       } else {
         sortquery = { updatedAt: -1 };
       }
-      console.log(query,"======================query")
+      // console.log(query,"======================query")
       let total = await Users.count(query)
       let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count).populate('license_id').populate('company_id')
       return res.status(200).json({

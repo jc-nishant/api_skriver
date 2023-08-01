@@ -31,20 +31,21 @@ module.exports = {
     },
     editRole: async (req, res) => {
         try {
-            let { id } = req.body;
+            let id  = req.body.id;
             if (!id) {
                 return res.status(400).json({
                     success: false,
-                    error: { code: 400, message: constantObj.roles.PAYLOAD_MISSING }
+                    error: { code: 400, message: "Id is required" }
                 })
             }
             req.body.updatedBy = req.identity.id;
-            delete req.body.role;
-
+            delete req.body.id;
+            
             let update_details = await Roles.updateOne({ id: id }, req.body);
             if (update_details) {
                 return res.status(200).json({
                     success: true,
+                    data:update_details,
                     message: constantObj.roles.UPDATE_SUCCESS
                 })
             } else {
