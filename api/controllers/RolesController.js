@@ -79,15 +79,13 @@ module.exports = {
             var skipNo = (page - 1) * count;
             var query = {};
             if(status){
-                query.status = "active"
+                query.status = status
             }
             if (search) {
-                query.$or = [
-                    { fullName: { $regex: search, $options: 'i' } },
-                    { email: { $regex: search, $options: 'i' } },
-                    { name: { $regex: search, $options: 'i' } },
-                ];
-            }
+                query.or = [
+                  { role: { 'like': `%${search}%` } },
+                ]
+              }
 
             if (isDeleted) {
                 if (isDeleted === 'true') {
@@ -113,20 +111,15 @@ module.exports = {
             } else {
                 sortquery = { updatedAt: -1 };
             }
-            console.log(query,"==============query")
-            // console.log(sortBy,"====================sortBy")
-            // console.log(page,"====================page")
-            // console.log(count,"====================count")
-            
+            let total = await Users.count(query)
             let findroles = await Roles.find(query).sort(sortBy).skip(page).limit(count)
             return res.status(200).json({
                 "success": true,
-                "total": findroles.length,
+                "total": total,
                 "data": findroles
             })
         }
         catch (err) {
-            console.log(err, "----------err")
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: err.toString() },
