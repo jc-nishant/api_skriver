@@ -78,6 +78,7 @@ module.exports = {
             let sortBy = req.param('sortBy');
             let page = req.param('page');
             let count = req.param('count');
+            let status = req.param('status')
 
             if (!page) { page = 1 }
             if (!count) { count = 10 }
@@ -89,35 +90,30 @@ module.exports = {
             } else {
                 sortBy = 'createdAt desc';
             }
-
-            
-            
-            if (search) {
-                // query.or = [{
-                //     // license_number: { 'like': `%${search}%` },
-                //     license_name: { 'like': `%${search}%` },
-                // }]
-                query.or = [
-                    { license_name: { 'like': `%${search}%` } },
-                    { license_number: { 'like': `%${search}%` } },
-                ]
+            if(status){
+                query.status = status
             }
 
+            if (search) {
+                query.or = [
+                  { company_name: { 'like': `%${search}%` } },
+                ]
+              }
             query.isDeleted = false
 
-            // console.log(JSON.stringify(query));
+            let total = await Company.count(query)
             const all_comapanies = await Company.find(query).skip(skipNo).limit(count).sort(sortBy);
 
             if (all_comapanies) {
                 return res.status(200).json({
-                    success: true,
-                    message: constantObj.license.DETAILS_FOUND,
-                    data: all_comapanies
+                    "success": true,
+                    "total": total,
+                    "data": all_comapanies
                 })
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: constantObj.license.FAILED
+                    message: "data not found"
                 })
             }
         } catch (err) {

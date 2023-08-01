@@ -92,6 +92,9 @@ module.exports = {
     pincode: {
       type: 'string',
     },
+    dialCode: {
+      type: 'string',
+    },
     lastLogin: { type: 'ref', columnType: 'date' },
     createdAt: { type: 'ref', columnType: 'date' },
     zipCode: {
