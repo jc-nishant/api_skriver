@@ -109,6 +109,12 @@ module.exports = {
     license_id: { model: 'license', },
     company_id: {model: 'company',},
 
+    status: {
+      type: 'string',
+      isIn: ['active', 'deactive'],
+      defaultsTo: 'active',
+    },
+
 
   },
 
