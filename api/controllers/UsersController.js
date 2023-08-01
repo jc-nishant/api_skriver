@@ -457,17 +457,6 @@ module.exports = {
       var page = req.param('page');
       var type = req.param('type');
       var sortBy = req.param('sortBy');
-
-
-      // constant.connect(function(err) {
-      //   if (err) throw err;
-      //   //Select only "name" and "address" from "customers":
-      //   con.query("SELECT name FROM ", function (err, result, fields) {
-      //     if (err) throw err;
-      //     console.log(result);
-      //   });
-      // });
-
       if (!page) {
         page = 1;
       }
@@ -478,12 +467,12 @@ module.exports = {
       var skipNo = (page - 1) * count;
       var query = {};
       if (search) {
-        query.$or = [
-          { fullName: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { name: { $regex: search, $options: 'i' } },
-        ];
-      }
+        query.or = [
+            { fullName: { 'like': `%${search}%` } },
+            { email: { 'like': `%${search}%` } },
+        ]
+    }
+    // console.log(search,"=============search")
       query.role = { "!=": 'admin' };
       if (role) {
         query.role = role;
@@ -509,10 +498,11 @@ module.exports = {
           : -1;
       } else {
         sortquery = { updatedAt: -1 };
+        sortBy = "fullName desc"
       }
-      // console.log(query,"======================query")
+    
       let total = await Users.count(query)
-      let findusers = await Users.find(query).sort(sortBy).skip(page).limit(count).populate('license_id').populate('company_id')
+      let findusers = await Users.find(query).sort(sortBy).skip(skipNo).limit(count).populate('license_id').populate('company_id')
       return res.status(200).json({
         "success": true,
         "total":total,
@@ -520,6 +510,7 @@ module.exports = {
       })
     }
     catch (err) {
+      console.log(err,"====================err")
       return res.status(400).json({
         success: false,
         error: { code: 400, message: err.toString() },
@@ -822,7 +813,7 @@ module.exports = {
         email: req.body.email.toLowerCase(),
         isDeleted: false,
       });
-      console.log(user,"================user")
+      // console.log(user,"================user")
       if (user) {
         return res.status(400).json({
           success: false,
@@ -847,7 +838,7 @@ module.exports = {
 
         var newUser = await Users.create(req.body).fetch();
         if (newUser) {
-          console.log(newUser, "--------------------newUser")
+          // console.log(newUser, "--------------------newUser")
           addUserEmail({
             email: newUser.email,
             fullName: newUser.fullName,
@@ -1538,3 +1529,113 @@ userSendOtp = function (options) {
 
   SmtpController.sendEmail(email, 'Otp Verification', message);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==========================
+// var search = req.param("search");
+//       var status = req.param("status");
+//       var sortBy = req.param("sortBy");
+//       var page = Number(req.param("page"));
+//       var count = Number(req.param("count"));
+//       var clientId = Number(req.param("clientId"));
+//       var projectType = req.param("projectType");
+//       var clientType = req.param("queryType");
+//       var leadId = req.param("leadId");
+//       var categoryId = req.param("categoryId");      
+//       var type = req.param("type");
+//       var signature = req.param("signature");
+      
+
+//       if (!page) {
+//         page = 1;
+//       }
+//       if (!count) {
+//         count = 10;
+//       }else{
+//         count = count*page;
+//       }
+//       if (page == undefined) {
+//         page = 1;
+//       }
+//       //var skipNo = (page - 1) * count;
+//       var skipNo = (page - 1) * 10;
+//       //count = skipNo+count;
+//      // console.log(skipNo,count,"skipnumber");
+
+
+     
+
+//      if(type == "old"){
+//       sortBy = "fullName ASC";
+//      }else{
+//         sortBy = "id DESC";
+//      }
+      
+//      var query = ` where projects.isDeleted=false`; 
+//       if (status) { query += ` AND projects.status="` + status + `"`; }
+//       if (clientType) { query += ` AND projects.clientType="` + clientType + `"`; }
+//       if (type) { query += ` AND projects.type="` + type + `"`; }
+//      // if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
+//       if (clientId) { query += ` AND projects.client="` + clientId + `"`; }     
+//       if (leadId) { query += ` AND projects.leadId="` + leadId + `"`; } 
+//       if (categoryId) { query += ` AND projects.category="` + categoryId + `"`; } 
+
+//       if (signature) { query += ` AND projects.signature !=""`; } 
+      
+
+//       if (type == "new") {
+//         if (search) {
+//           query += ` AND ( projects.projectName LIKE '%` + search + `%'`;
+//           query += ` OR users.fullName LIKE '%` + search + `%'`;
+//           query += ` OR users.email LIKE '%` + search + `%' )`;
+//         }
+//         if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
+//           query += ` ORDER BY `+sortBy;
+
+//         var rawQuery =
+//           `SELECT projects.id,projects.pID,projects.leadId,projects.assignSummary,projects.toDoList,projects.notes,projects.totalTask,projects.totalAssigned,projects.totalCompleted,projects.category,projects.isSample,projects.fabStartDate,projects.archieveDate,projects.isAnalysis,projects.metalFinish,projects.agreementPrice,projects.client,projects.repairType,projects.dimensionType,projects.dimensions,projects.createdAt,projects.companyName,projects.clientType,projects.isPortfolio, projects.isPdfGuidesSent,projects.isInvoiceSent, projects.isDimension,projects.dimensionId, projects.isAgreementSent, projects.isEstimateSent, projects.signature, projects.pdf,projects.agreementType,projects.isEstimate,projects.dimensionType,projects.labelColor,projects.colors,projects.startDate,projects.endDate,projects.type,projects.cardType,projects.kingProject,projects.subCards,projects.projectName,projects.description,projects.comments,projects.projectType,projects.status,users.fullName,users.email,users.countryCode, users.dialCode,users.phoneNumber,users.phoneNumber2,projects.production,projects.pricing,projects.intakeForm,projects.leadId,projects.previousProjectType,leads.projectName as job FROM projects INNER JOIN users ON projects.client = users.id  LEFT JOIN category ON projects.category = category.id LEFT JOIN leads ON projects.leadId = leads.id` +
+//           query;
+//       }else if (type == "old") {
+//         if (search) {
+//           query += ` AND ( projects.projectName LIKE '%` + search + `%'`;
+//           query += ` OR projects.clientFileName LIKE '%` + search + `%'`;
+//           query += ` OR projects.fullName LIKE '%` + search + `%'`;
+//           query += ` OR projects.itemName LIKE '%` + search + `%'`;
+//           query += ` OR category.name LIKE '%` + search + `%'`;
+//           query += ` OR projects.companyName LIKE '%` + search + `%'`;
+//           query += ` OR users.email LIKE '%` + search + `%' )`;
+//         }
+//         if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
+//         // query += ` ORDER BY createdAt DESC`;
+//          query += ` ORDER BY `+sortBy;
+
+//          var rawQuery =
+//          `SELECT projects.id,projects.pID,projects.leadId,projects.assignSummary,projects.toDoList,projects.isSample,projects.totalTask,projects.totalAssigned,projects.totalCompleted,projects.category,projects.client,projects.fabStartDate,projects.archieveDate,projects.isAnalysis,projects.metalFinish,projects.agreementPrice,projects.repairType,projects.dimensionType,projects.dimensions,projects.clientType,projects.createdAt,projects.isPortfolio,projects.companyName,projects.agreementType,projects.isEstimate,projects.dimensionType,projects.labelColor,projects.colors,projects.clientFileName,projects.itemName,projects.startDate,projects.endDate,projects.cardType,projects.kingProject,projects.subCards,projects.projectName,projects.description,projects.comments,projects.sqft,projects.totalHours,projects.hoursPersqft,projects.pieces_Unit,projects.HoursPerPieces_Unit, projects.projectType,projects.status,projects.fullName,users.email,users.countryCode,users.dialCode,users.phoneNumber,users.phoneNumber2,category.name as categoryName,projects.production,projects.pricing,projects.intakeForm,projects.leadId,leads.isQualified,leads.total_amount,leads.amount_paid,projects.previousProjectType,leads.projectName as job FROM projects LEFT JOIN users ON projects.client = users.id LEFT JOIN category ON projects.category = category.id LEFT JOIN leads ON projects.leadId = leads.id` +
+//          query;
+//      } else {
+//       if (projectType) { query += ` AND projects.projectType="` + projectType + `"`; }
+//       query += ` ORDER BY `+sortBy; 
+//       var rawQuery =
+//          `SELECT projects.id,projects.pID,projects.leadId,projects.assignSummary,projects.toDoList,projects.isSample,projects.totalTask,projects.totalAssigned,projects.totalCompleted,projects.category,projects.client,projects.fabStartDate,projects.archieveDate,projects.isAnalysis,projects.metalFinish,projects.agreementPrice,projects.repairType,projects.dimensionType,projects.dimensions,projects.labelColor,projects.clientType,projects.createdAt,projects.companyName,projects.isPortfolio, projects.isPdfGuidesSent,projects.isInvoiceSent, projects.isDimension,projects.dimensionId, projects.isAgreementSent, projects.isEstimateSent, projects.signature, projects.pdf,projects.agreementType,projects.isEstimate,projects.dimensionType,projects.colors,projects.clientFileName,projects.itemName,projects.projectName,projects.cardType,projects.kingProject,projects.subCards,projects.startDate,projects.endDate,projects.description,projects.comments,projects.sqft,projects.totalHours,projects.hoursPersqft,projects.pieces_Unit,projects.HoursPerPieces_Unit, projects.projectType,projects.status,users.fullName,users.email,users.countryCode,users.dialCode,users.phoneNumber,users.phoneNumber2,category.name as categoryName,projects.production,projects.pricing,projects.intakeForm,projects.leadId,leads.isQualified,leads.total_amount,leads.amount_paid,projects.previousProjectType,leads.projectName as job FROM projects LEFT JOIN users ON projects.client = users.id LEFT JOIN category ON projects.category = category.id LEFT JOIN leads ON projects.leadId = leads.id` +
+//          query;
+//      }
+  
+//       var total = await sails.sendNativeQuery(rawQuery, []);
+//       queryNew= ` limit ${Number(skipNo)},${Number(count)}`;
+
+//       var newquery = rawQuery+queryNew;      
+//       var projectData = await sails.sendNativeQuery(newquery, []);
