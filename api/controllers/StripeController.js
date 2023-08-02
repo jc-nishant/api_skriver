@@ -172,7 +172,7 @@ module.exports = {
                                     updatedAt: new Date(),
                                     isDefault: true,
                                 }
-                                console.log(req.identity.id,"=============req.identity.id")
+                                console.log(req.identity.id, "=============req.identity.id")
                                 Users.update(
                                     { id: req.identity.id },
                                     {
@@ -229,6 +229,61 @@ module.exports = {
             })
         }
     },
+    getAllCards: async (req, res) => {
+        try {
+          var search = req.param('search');
+          var status = req.param('status');
+          var page = req.param('page');
+          var type = req.param('type');
+          var sortBy = req.param('sortBy');
+          if (!page) {
+            page = 1;
+          }
+          var count = parseInt(req.param('count'));
+          if (!count) {
+            count = 1000;
+          }
+          var skipNo = (page - 1) * count;
+          var query = {};
+          if (search) {
+            query.or = [
+              { fullName: { 'like': `%${search}%` } },
+              { email: { 'like': `%${search}%` } },
+            ]
+          }
+          query.isDeleted = false
+          if (status) {
+            query.status = status;
+          }
+          let sortquery = {};
+          if (sortBy) {
+            let typeArr = [];
+            typeArr = sortBy.split(' ');
+            let sortType = typeArr[1];
+            let field = typeArr[0];
+            sortquery[field ? field : 'updatedAt'] = sortType
+              ? sortType == 'desc'
+                ? -1
+                : 1
+              : -1;
+          } 
+          let total = await Cards.count(query)
+          let findusers = await Cards.find(query).sort(sortBy).skip(skipNo).limit(count)
+          return res.status(200).json({
+            "success": true,
+            "total": total,
+            "data": findusers
+          })
+        }
+        catch (err) {
+          console.log(err, "====================err")
+          return res.status(400).json({
+            success: false,
+            error: { code: 400, message: err.toString() },
+          });
+        }
+      },
+    
 
     /** Delete Card */
 
@@ -293,208 +348,224 @@ module.exports = {
             });
         }
     },
+    setPrimaryCard: async (req, res) => {
+        try {
+            const id = req.body.id;
+            if (!id) {
+                throw constants.CARD.ID_REQUIRED;
+            }
 
-    // chargePayment: async (req, res) => {
+            let get_card = await Cards.findOne({ id: id, isDeleted: false });
+            if (get_card) {
+                let get_user = await Users.findOne({ id: get_card.user_id });
+                if (!get_user) {
+                    throw constants.CARD.USER_NOT_FOUND;
+                }
 
-    //     console.log("in charge payment")
-    //     try {
+                if (get_user.id != req.identity.id) {
+                    throw constants.CARD.UNAUTHORIZED;
+                }
 
-    //         var data = {};
-    //         var d = new Date();
-    //         var payPrice = req.body.payPrice
-    //         var billingDetail = req.body.billingDetail
-    //         var gst = req.body.gst
-    //         var userEmail = req.body.userEmail
-    //         var orderNumber = generateNumber();
+                let update_default_source = await Services.StripeServices.update_stripe_customer({
+                    stripe_customer_id: get_user.stripe_customer_id,
+                    source_id: get_card.card_id
+                })
+                if (update_default_source) {
+                    let update_other_cards = await Cards.update({ user_id: req.identity.id }, { isPrimary: false, updatedBy: req.identity.id }).fetch()
+                    if (update_other_cards && update_other_cards.length > 0) {
+                        const set_primary_card = await Cards.updateOne({ user_id: req.identity.id, card_id: get_card.card_id }, { isPrimary: true });
+                        if (set_primary_card) {
+                            return response.success(null, constants.CARD.PRIMARY_SET, req, res);
+                        }
+                    } else {
+                        throw constantObj.CARD.SERVER_ERROR;
+                    }
+                } else {
+                    throw constantObj.CARD.SERVER_ERROR;
+                }
+            }
 
-    //         var userDetail = await Users.findOne({ id: req.identity.id })
+            throw constants.CARD.INVALID_ID
 
-    //         email = userDetail.email
-    //         userName = userDetail.fullName
+        } catch (error) {
+            return response.failed(null, `${error}`, req, res);
+        }
+    },
 
-    //         stripe.charges.create({
-    //             amount: Math.round(payPrice * 100),
-    //             currency: "USD",
-    //             customer: req.body.customer_id,
-    //             source: req.body.card_id,
-    //             description: 'Purchase Product'
-    //         }, (err, charge) => {
+    webhook: async (request, response) => {
+        try {
+            const event = request.body;
+            // Handle the event
+            switch (event.type) {
+                case 'customer.subscription.updated':
+                    var event_object = event.data.object;
+                    if (event_object.status == "active") {
+                        let update_subscription = await Subscriptions.updateOne({ stripe_subscription_id: event_object.id }, {
+                            valid_upto: new Date(event_object.current_period_end * 1000),
+                            status: "active"
+                        });
+                    }
+                    break;
 
-    //             if (err) {
-    //                 return res.status(400).json({
-    //                     success: false,
-    //                     code: 400,
-    //                     message: err.message,
-    //                 });
-    //             } else {
-    //                 var data1 = {};
+                case 'invoice.payment_succeeded':
+                    var event_object = event.data.object;
 
-    //                 data1.transaction_id = charge.balance_transaction;
+                    if (event_object.subscription) {
 
-    //                 // data1.planDetail = cartDetail
-    //                 data1.addedBy = req.identity.id;
-    //                 data1.payment_status = charge.status;
-    //                 data1.price = parseFloat(payPrice);
-    //                 data1.detail = charge;
-    //                 data1.billingDetail = billingDetail
-    //                 data1.order_number = randomString(6, '#aA');
-
-    //                 Transaction.create(data1).then(async (txnInfo) => {
-
-    //                     return res.status(200).json({
-    //                         success: true,
-    //                         code: 200,
-    //                         data: data1,
-    //                         message: "Payment done successfully."
-    //                     })
-
-
-
-
-    //                 });
-
-    //             }
-
-    //         })
-
-    //     } catch (err) {
-    //         console.log(err)
-    //         return res.status(400).json({
-    //             success: false,
-    //             error: { code: 400, message: "" + err }
-    //         })
-    //     }
+                        let get_subscription_data = await Subscriptions.findOne({
+                            stripe_subscription_id: event_object.subscription
+                        });
 
 
+                        if (get_subscription_data) {
+                            let get_subscription_plan = await SubscriptionPlans.findOne({
+                                id: get_subscription_data.subscription_plan_id
+                            });
 
-    // },
-    // TransactionListing: async (req, res) => {
-    //     try {
+                            let transaction_payload = {
+                                user_id: get_subscription_data.user_id,
+                                paid_to: get_subscription_plan ? get_subscription_plan.addedBy : null,
+                                transaction_type: "buy_subscription",
+                                subscription_plan_id: get_subscription_plan.id,
+                                transaction_id: event_object.id,
+                                subscription_id: get_subscription_data.id,
+                                stripe_charge_id: event_object.id,
+                                currency: event_object.currency,
+                                amount: event_object.amount_paid ? event_object.amount_paid : 0,
+                                stripe_subscription_id: event_object.subscription,
+                                transaction_status: event_object.status,
+                            }
 
-    //         var search = req.param('search');
-    //         var page = req.param('page');
-    //         var sortBy = req.param('sortBy');
-    //         var count = parseInt(req.param('count'));
+                            if (event_object.status == "paid") {
+                                transaction_payload.transaction_status = "successful";
+                            }
 
-    //         if (!page) {
-    //             page = 1
-    //         }
-    //         if (!count) {
-    //             count = 100000000
-    //         }
-    //         var skipNo = (page - 1) * count;
-    //         var query = {};
-    //         if (search) {
-    //             query.$or = [
-    //                 { name: { $regex: search, '$options': 'i' } }
-    //             ]
-    //         }
-    //         sortquery = {};
-    //         if (sortBy) {
-    //             var order = sortBy.split(" ");
+                            let create_transacton = await Transactions.create(transaction_payload).fetch();
+                            if (create_transacton) {
+                                if (create_transacton.transaction_type == "buy_subscription") {
 
-    //             var field = order[0];
-    //             var sortType = order[1];
-    //         }
-    //         sortquery[field ? field : 'createdAt'] = sortType ? (sortType == 'descending' ? -1 : 1) : -1;
+                                    //----------- update dashboard ----------//
+                                    let total_subscription_payment = await Services.Dashboard.get_key(create_transacton.user_id, "total_subscription_payment");
+                                    total_subscription_payment = total_subscription_payment > 0 ? Number(total_subscription_payment) + Number(create_transacton.amount) : Number(create_transacton.amount);
+                                    let update_dashboard = await Services.Dashboard.update_dashboard(create_transacton.user_id, { total_subscription_payment: total_subscription_payment });
+                                    //----------- update dashboard ----------//
 
-    //         // query.isDeleted = false
-    //         console.log(query);
-    //         db.collection('transaction').aggregate([
+                                    let get_plan_added_by = await Users.findOne({ id: get_subscription_plan.addedBy });
+                                    let get_subscriber = await Users.findOne({ id: get_subscription_data.user_id });
+                                    let email_payload_to_admin = {
+                                        email: get_plan_added_by.email,
+                                        subscription_id: get_subscription_data.id,
+                                        user_id: get_plan_added_by.id,
+                                        subscribed_by: get_subscription_data.user_id,
+                                        transaction_id: create_transacton.id
+                                    }
 
-    //             {
-    //                 $project: {
-    //                     // role: "$role",
-    //                     addedBy: "$addedBy",
-    //                     planDetail: "$planDetail",
-    //                     address: "$address",
-    //                     price: "$price",
-    //                     payment_status: "$payment_status",
-    //                     // category: "$category",
-    //                     createdAt: "$createdAt",
-    //                     deletedAt: '$deletedAt',
+                                    let email_payload_to_user = {
+                                        email: get_subscriber.email,
+                                        subscription_id: get_subscription_data.id,
+                                        user_id: get_subscriber.id,
+                                        subscribed_by: get_subscriber.id,
+                                        transaction_id: create_transacton.id
+                                    }
 
-    //                 }
-    //             },
-    //             {
-    //                 $match: query
-    //             },
-    //         ]).toArray((err, totalResult) => {
+                                    await Emails.OnboardingEmails.subscription_transaction_email(email_payload_to_admin);
+                                    await Emails.OnboardingEmails.subscription_transaction_email(email_payload_to_user);
+                                }
+                            }
+                        }
 
-    //             db.collection('transaction').aggregate([
-    //                 {
-    //                     $project: {
-    //                         // role: "$role",
-    //                         addedBy: "$addedBy",
-    //                         planDetail: "$planDetail",
-    //                         address: "$address",
-    //                         price: "$price",
-    //                         payment_status: "$payment_status",
-    //                         // category: "$category",
-    //                         createdAt: "$createdAt",
-    //                         deletedAt: '$deletedAt',
+                    }
 
-    //                     }
-    //                 },
-    //                 {
-    //                     $match: query
-    //                 },
-    //                 {
-    //                     $sort: sortquery
-    //                 },
+                    break;
 
-    //                 {
-    //                     $skip: Number(skipNo)
-    //                 },
-    //                 {
-    //                     $limit: Number(count)
-    //                 }
-    //             ]).toArray(async (err, result) => {
-    //                 console.log(err, result)
-    //                 if (result && result.length > 0) {
-    //                     for await (const itm of result) {
-    //                         transactionQuery = {}
-    //                         transactionQuery.isDeleted = false
-    //                         // transactionQuery.store = String(itm._id)
-    //                         const totalTransaction = await Transaction.count(transactionQuery)
-    //                         itm.totalTransaction = totalTransaction
-    //                     }
-    //                 }
-    //                 return res.status(200).json({
-    //                     "success": true,
-    //                     "data": result,
-    //                     "total": totalResult.length,
-    //                 });
-    //             })
+                case 'customer.subscription.trial_will_end':
+                    var event_object = event.data.object;
+                    if (event_object.id) {
 
-    //         })
-    //     } catch (err) {
-    //         return res.status(400).json({
-    //             success: false,
-    //             error: { code: 400, message: "" + err }
-    //         })
+                        let get_subscription_data = await Subscriptions.updateOne({
+                            stripe_subscription_id: event_object.id
+                        },
+                            {
+                                trial_period_end_date: new Date(event_object.trial_end * 1000)
+                            }
+                        );
+
+                        if (get_subscription_data) {
+                            let get_user_notification_email = await Services.UserServices.get_user_notification_email(get_subscription_data.user_id)
+                            let email_payload_to_user = {
+                                email: get_user_notification_email,
+                                subscription_id: get_subscription_data.id,
+                                user_id: get_subscription_data.user_id,
+                                subscribed_by: get_subscription_data.user_id,
+                            }
+
+                            await Emails.OnboardingEmails.trial_will_end_email(email_payload_to_user)
+                        }
+
+                    }
+                    break;
+
+                case 'customer.subscription.deleted':
+                    var event_object = event.data.object;
+                    if (event_object.status == "canceled") {
+                        let update_subscription = await Subscriptions.updateOne({ stripe_subscription_id: event_object.id }, {
+                            status: "cancelled"
+                        });
+                    }
+                    break;
+
+                case 'invoice.upcoming':
+                    var event_object = event.data.object;
+
+                    if (event_object.subscription) {
+
+                        let get_subscription_data = await Subscriptions.findOne({
+                            stripe_subscription_id: event_object.subscription
+                        });
 
 
-    //     }
-    // },
+                        if (get_subscription_data) {
+                            let get_subscription_plan = await SubscriptionPlans.findOne({
+                                id: get_subscription_data.subscription_plan_id
+                            });
 
+                            let get_plan_added_by = await Users.findOne({ id: get_subscription_plan.addedBy });
+                            let get_subscriber = await Users.findOne({ id: get_subscription_data.user_id });
+                            // let email_payload_to_admin = {
+                            //     email: get_plan_added_by.email,
+                            //     subscription_id: get_subscription_data.id,
+                            //     user_id: get_plan_added_by.id,
+                            //     subscribed_by: get_subscription_data.user_id,
+                            //     amount_due: event_object.amount_due
+                            // }
 
-    // editPercentageFee:async(req,res)=>{
-    //     let fee= req.body.fee
-    //     if(!fee&& typeof fee ==undefined){
-    //         return res.status(400).json({
-    //             success:false,
-    //             code:400,
-    //             error:{message:constantObj.users.PAYLOAD_MISSING}
-    //         });
-    //     }
-    //     let 
+                            let email_payload_to_user = {
+                                email: get_subscriber.email,
+                                subscription_id: get_subscription_data.id,
+                                user_id: get_subscriber.id,
+                                subscribed_by: get_subscriber.id,
+                                amount_due: event_object.amount_due,
+                                period_end: event_object.period_end,
+                            }
+                            // await Emails.OnboardingEmails.subscriptiohn_transaction_email(email_payload_to_admin);
+                            await Emails.OnboardingEmails.upcomming_invoice_email(email_payload_to_user);
+                        }
 
+                    }
 
+                    break;
 
-    // }
+                default:
+                    console.log(`Unhandled event type ${event.type}`);
+            }
 
+            // Return a response to acknowledge receipt of the event
+            response.json({ received: true });
 
+        } catch (error) {
+            console.log(error, '=============error');
+        }
+    }
 
 };
 function randomString(length) {
