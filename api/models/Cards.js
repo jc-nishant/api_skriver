@@ -44,6 +44,7 @@ module.exports = {
 
     isDefault: {
       type: 'Boolean',
+      defaultsTo: false,
     },
     isDeleted: {
       type: 'Boolean',

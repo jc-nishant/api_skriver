@@ -111,7 +111,7 @@ module.exports = {
             } else {
                 sortquery = { updatedAt: -1 };
             }
-            let total = await Users.count(query)
+            let total = await Roles.count(query)
             let findroles = await Roles.find(query).sort(sortBy).skip(page).limit(count)
             return res.status(200).json({
                 "success": true,

@@ -94,6 +94,7 @@ module.exports = {
     },
     dialCode: {
       type: 'string',
+      allowNull: true,
     },
     lastLogin: { type: 'ref', columnType: 'date' },
     createdAt: { type: 'ref', columnType: 'date' },
