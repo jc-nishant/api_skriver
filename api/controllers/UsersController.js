@@ -489,7 +489,7 @@ module.exports = {
           : -1;
       } else {
         sortquery = { updatedAt: -1 };
-        sortBy = "fullName desc"
+        sortBy = "updatedAt desc"
       }
 
       let total = await Users.count(query)
