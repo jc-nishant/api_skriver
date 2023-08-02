@@ -86,7 +86,9 @@ module.exports.routes = {
   // Stripe Controller routes
   'post /add/card': 'StripeController.addCard',
   'get /getCards': 'StripeController.getCards',
+  'get /getallCards': 'StripeController.getAllCards',
   'delete /Cards': 'StripeController.deleteCard',
+  'put /card/set-primary': 'StripeController.setPrimaryCard',
   // 'post /subscribe/newsletter':
   //   'NewsletterSubscriptionController.subscribeToNewsLetter',
 
