@@ -20,16 +20,12 @@ module.exports = {
       type: 'Boolean',
       defaultsTo: false
     },
-    // deletedBy: {
-    //   model: 'users'
-    // },
-    // deletedAt: {
-    //   type: 'ref',
-    //   columnType: 'datetime'
-    // },
-    // updatedBy: {
-    //   model: 'users'
-    // },
+    description: {
+      type: 'string',
+    },
+    updatedBy: {
+      model: 'users'
+    },
     addedBy: {
       model: 'Users'
     },
