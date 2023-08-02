@@ -9,7 +9,7 @@ exports.create_product = async (options) => {
 }
 
 exports.create_plan = async (options) => {
-
+// console.log(options,"====================================options")
     const plan = await stripe.plans.create({
         nickname: options.name,
         amount: Number(options.amount) * 100,

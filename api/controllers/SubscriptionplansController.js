@@ -31,7 +31,7 @@ exports.addSubscriptionPlan = async (req, res) => {
         let created_product = await Services.StripeServices.create_product({
             name: name,
         });
-        console.log(created_product, "===========================created_product")
+        // console.log(created_product, "===========================created_product")
         if (created_product) {
             let pricing = req.body.pricing
             // console.log(pricing,"======================pricing")
@@ -49,7 +49,7 @@ exports.addSubscriptionPlan = async (req, res) => {
                         currency: "USD",
                     }
 
-
+                    // console.log(plan_payload,"====================plan_payload")
                     let create_plan = await Services.StripeServices.create_plan(plan_payload);
                     // console.log(create_plan, "==========================create_plan")
                     if (create_plan) {
@@ -70,12 +70,23 @@ exports.addSubscriptionPlan = async (req, res) => {
                     }
                 }
             } else {
+                let plan_payload = {
+                    nickname: name,
+                    amount: 0,
+                    product_id: created_product.id,
+                    currency: "USD",
+                }
+
+                // console.log(plan_payload,"====================plan_payload")
+                let create_plan = await Services.StripeServices.create_plan(plan_payload);
+                // console.log(create_plan,"============create_plan")
                 req.body.addedBy = req.identity.id;
-                // req.body.stripe_plan_id = create_plan.id;
+                req.body.stripe_plan_id = create_plan.id;
                 // req.body.stripe_product_id = created_product.id;
                 let create_subscription_plan = await Subscriptionplans.create(
                     req.body
                 ).fetch();
+                // console.log(create_subscription_plan, "==================create_subscription_plan111")
                 if (create_subscription_plan) {
                     return res.status(200).json({
                         success: true,
@@ -90,7 +101,7 @@ exports.addSubscriptionPlan = async (req, res) => {
             message: "unable to create product",
         });
     } catch (err) {
-        console.log(err, "============================err")
+        // console.log(err, "============================err")
         return res.status(400).json({
             success: false,
             error: { message: "" + err },
@@ -408,6 +419,7 @@ exports.purchaseplan = async (req, res) => {
             isDeleted: false,
             status: 'active',
         });
+        // console.log(get_subscription_plan,"================================get_subscription_plan")
         if (!get_subscription_plan) {
             return res.status(400).json({
                 success: true,
@@ -428,6 +440,7 @@ exports.purchaseplan = async (req, res) => {
             card_id: card_id,
             isDeleted: false,
         });
+        // console.log(card_details,"=============card_details")
         if (!card_details) {
             return res.status(400).json({
                 success: true,
@@ -439,7 +452,7 @@ exports.purchaseplan = async (req, res) => {
             status: 'active',
             user_id: user_id,
         };
-
+        console.log(getSubsQuery)
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
         // console.log(get_existing_subscription,"======get_existing_subscription")
 
@@ -480,13 +493,13 @@ exports.purchaseplan = async (req, res) => {
             stripe_plan_id: get_subscription_plan.stripe_plan_id,
             card_id: card_id,
         });
-
+    // console.log(create_subscription,"=================================create_subscription")
         if (create_subscription && ['trialing', 'active'].includes(create_subscription.status)) {
             let get_inactive_subscription = await Subscription.findOne({
                 status: 'inactive',
                 user_id: user_id,
             });
-
+// console.log(get_inactive_subscription,"======================================get_inactive_subscription")
             if (get_inactive_subscription) {
                 let updateSubscription = await Subscription.updateOne(
                     { id: get_inactive_subscription.id },
