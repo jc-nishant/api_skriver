@@ -353,6 +353,7 @@ module.exports = {
             let get_card = await Cards.findOne({ id: id, isDeleted: false });
             if (get_card) {
                 let get_user = await Users.findOne({ id: get_card.userId });
+                // console.log(get_user,"===================get_user")
                 if (!get_user) {
                     return res.status(400).json({
                         success: false,
@@ -372,7 +373,7 @@ module.exports = {
                     source_id: get_card.card_id
                 })
                 if (update_default_source) {
-                    let update_other_cards = await Cards.update({ userId: req.identity.id }, { isPrimary: false, updatedBy: req.identity.id }).fetch()
+                    let update_other_cards = await Cards.update({ userId: req.identity.id }, { isDefault: false, updatedBy: req.identity.id }).fetch()
                     if (update_other_cards && update_other_cards.length > 0) {
                         const set_primary_card = await Cards.updateOne({ userId: req.identity.id, card_id: get_card.card_id }, { isDefault: true });
                         if (set_primary_card) {
