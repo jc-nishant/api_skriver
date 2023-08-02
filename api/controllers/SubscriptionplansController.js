@@ -186,10 +186,6 @@ exports.editsubscriptionPlan = async (req, res) => {
     }
 };
 
-
-
-
-
 exports.getAllPlans = async (req, res) => {
     try {
         var search = req.param('search');
