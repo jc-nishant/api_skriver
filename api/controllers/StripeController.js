@@ -374,7 +374,7 @@ module.exports = {
                 if (update_default_source) {
                     let update_other_cards = await Cards.update({ userId: req.identity.id }, { isPrimary: false, updatedBy: req.identity.id }).fetch()
                     if (update_other_cards && update_other_cards.length > 0) {
-                        const set_primary_card = await Cards.updateOne({ userId: req.identity.id, card_id: get_card.card_id }, { isPrimary: true });
+                        const set_primary_card = await Cards.updateOne({ userId: req.identity.id, card_id: get_card.card_id }, { isDefault: true });
                         if (set_primary_card) {
                             return res.status(200).json({
                                 success: true,

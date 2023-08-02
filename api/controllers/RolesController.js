@@ -112,7 +112,7 @@ module.exports = {
                 sortquery = { updatedAt: -1 };
             }
             let total = await Roles.count(query)
-            let findroles = await Roles.find(query).sort(sortBy).skip(page).limit(count)
+            let findroles = await Roles.find(query).sort(sortBy).skip(skipNo).limit(count)
             return res.status(200).json({
                 "success": true,
                 "total": total,
