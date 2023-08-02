@@ -29,6 +29,7 @@ module.exports = {
     extraProductPrice: { type: 'string' },
     pricing: { type: 'json' },
     price: { type: 'string' },
+    features: { type: 'json' },
 
     // common feilds
     addedBy: { model: 'users' },

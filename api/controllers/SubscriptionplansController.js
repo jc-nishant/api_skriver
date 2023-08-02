@@ -122,8 +122,16 @@ exports.getPlanById = async (req, res) => {
         }
 
         let get_subscriptionPlan = await Subscriptionplans.findOne({ id: id });
-        // console.log(get_subscriptionPlan,"=============================get_subscriptionPlan")
-
+        let featuresdata = []
+        if (get_subscriptionPlan.features.length > 0) {
+            let features = get_subscriptionPlan.features
+            let find = await Features.find({ id: {in:features} })
+            // for (let itm of features) {
+            //     let find = await Features.findOne({ id: itm })
+            //     featuresdata.push(find)
+            // }
+            get_subscriptionPlan.featuresdata = find
+        }
         if (get_subscriptionPlan) {
             if (get_subscriptionPlan.addedBy) {
                 let get_added_by_details = await Users.findOne({ id: get_subscriptionPlan.addedBy });
@@ -137,6 +145,7 @@ exports.getPlanById = async (req, res) => {
                     get_subscriptionPlan.updatedBy_name = get_updated_by_details.fullName;
                 }
             }
+            // get_subscriptionPlan.featuresdata = featuresdata
             return res.status(200).json({
                 success: true,
                 message: constants.subscriptionplan.GET_PLAN_DATA,
@@ -144,7 +153,7 @@ exports.getPlanById = async (req, res) => {
             });
         }
         return res.status(400).json({
-            success: true,
+            success: false,
             message: "Invalid id"
         });
     }
@@ -230,11 +239,11 @@ exports.getAllPlans = async (req, res) => {
             sortquery = { updatedAt: -1 };
         }
         let total = await Subscriptionplans.count(query)
-        let findusers = await Subscriptionplans.find(query).sort(sortBy).skip(skipNo).limit(count)
+        let findpalns = await Subscriptionplans.find(query).sort(sortBy).skip(skipNo).limit(count)
         return res.status(200).json({
             "success": true,
             "total": total,
-            "data": findusers
+            "data": findpalns
         })
     }
     catch (err) {
@@ -489,13 +498,13 @@ exports.purchaseplan = async (req, res) => {
             stripe_plan_id: get_subscription_plan.stripe_plan_id,
             card_id: card_id,
         });
-    // console.log(create_subscription,"=================================create_subscription")
+        // console.log(create_subscription,"=================================create_subscription")
         if (create_subscription && ['trialing', 'active'].includes(create_subscription.status)) {
             let get_inactive_subscription = await Subscription.findOne({
                 status: 'inactive',
                 user_id: user_id,
             });
-// console.log(get_inactive_subscription,"======================================get_inactive_subscription")
+            // console.log(get_inactive_subscription,"======================================get_inactive_subscription")
             if (get_inactive_subscription) {
                 let updateSubscription = await Subscription.updateOne(
                     { id: get_inactive_subscription.id },
