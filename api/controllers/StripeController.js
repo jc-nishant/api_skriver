@@ -7,6 +7,7 @@
 const db = sails.getDatastore().manager;
 var constantObj = sails.config.constants;
 var ObjectId = require('mongodb').ObjectID;
+const Services = require('../services/index');
 var payment_const = require('../../config/local.js');
 const stripe = require('stripe')(payment_const.PAYMENT_INFO.SECREATKEY);
 //  const html_to_pdf = require('html-pdf-node');
@@ -350,10 +351,8 @@ module.exports = {
             }
 
             let get_card = await Cards.findOne({ id: id, isDeleted: false });
-            console.log(get_card,"=============get_card")
             if (get_card) {
-                let get_user = await Users.find({ id: get_card.userId });
-                console.log(get_user,"==========================get_user")
+                let get_user = await Users.findOne({ id: get_card.userId });
                 if (!get_user) {
                     return res.status(400).json({
                         success: false,
@@ -361,7 +360,6 @@ module.exports = {
 
                     })
                 }
-
                 if (get_user.id != req.identity.id) {
                     return res.status(400).json({
                         success: false,
@@ -374,9 +372,9 @@ module.exports = {
                     source_id: get_card.card_id
                 })
                 if (update_default_source) {
-                    let update_other_cards = await Cards.update({ user_id: req.identity.id }, { isPrimary: false, updatedBy: req.identity.id }).fetch()
+                    let update_other_cards = await Cards.update({ userId: req.identity.id }, { isPrimary: false, updatedBy: req.identity.id }).fetch()
                     if (update_other_cards && update_other_cards.length > 0) {
-                        const set_primary_card = await Cards.updateOne({ user_id: req.identity.id, card_id: get_card.card_id }, { isPrimary: true });
+                        const set_primary_card = await Cards.updateOne({ userId: req.identity.id, card_id: get_card.card_id }, { isPrimary: true });
                         if (set_primary_card) {
                             return res.status(200).json({
                                 success: true,
