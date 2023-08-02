@@ -96,7 +96,8 @@ module.exports.constants = {
   CARD: {
     "CARD_ADDED": "Card added successfully",
     "CARD_EXIST": "Card is already exist",
-    "CARD_DELETED": "Card is deleted successfully"
+    "CARD_DELETED": "Card is deleted successfully",
+    SERVER_ERROR: "Something Went Wrong. Please try again.",
   },
   subscriptionplan: {
     PLAN_ADD: 'Subscription plan added successfully.',
