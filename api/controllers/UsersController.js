@@ -873,7 +873,9 @@ module.exports = {
         }
       }
     } catch (err) {
-      return res.status(400).json({ success: true, code: 400, error: err });
+      return res
+        .status(400)
+        .json({ success: false, error: { code: 400, message: '' + err } });
     }
   },
   deleteuser: async (req, res) => {
@@ -953,43 +955,6 @@ userVerifyLink = async (options) => {
 `;
   SmtpController.sendEmail(email, 'Email Verification', message);
 };
-forgotPasswordEmail = async (options) => {
-  let email = options.email;
-  let verificationCode = options.verificationCode;
-  let firstName = options.firstName;
-
-  if (!firstName) {
-    firstName = email;
-  }
-  message = '';
-
-  message += ` <body>
-        <div style="border: 1px solid #000; margin:2rem auto; max-width: 800px; width: 800px; height: auto; background-color: #000; border-radius: 19px; align-items: center;">
-        <div class="maindiv" style="align-items: center; box-shadow: 0px 0px 8px 0px #8080808a; height: auto; background-color: #fff; margin:2rem; max-width: 710px; width: 710px;  border-radius: 20px; padding:12px 12px">
-            <div style="text-align: center;">
-                <img src="${credentials.BACK_WEB_URL}/images/check_mark.png" class="tikimg" style="width: 60px;"/>
-                <h3 style="font-size: 20px; margin-top:0px">Reset Password</h3>
-                <p style="font-size: 15px;"> We have received your request to reset your password.</p>
- 
-                <div style="margin-bottom: 14px; ">
-                    <img src="${credentials.BACK_WEB_URL}/images/logo.png" style="width: 80px;"/>
-                </div>
-                <div style="padding: 15px; border:3px solid rgba(11, 10, 10, 0.54); border-radius: 8px; max-width: 356px; color: #000; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #8080808a;">
-                Your verification code is <b>${verificationCode}</b>
-                </div>
-                <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
-                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
-                    Got Questions? <a href="mailto:imaging@davemeffert.com" mailto:style="text-decoration:none"><b>imaging@davemeffert.com</b>
-                    </a>
-                </p>
-            </div>
-        </div>
-    </div>
-    </body>
-      `;
-
-  SmtpController.sendEmail(email, 'Reset Password', message);
-};
 forgotPasswordEmail = function (options) {
 
   let email = options.email;
@@ -1017,21 +982,14 @@ forgotPasswordEmail = function (options) {
       
           <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
               <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
-              <img src="${credentials.BACK_WEB_URL}/images/check_mark2.png" style="width:170px; height: 85px; object-fit: contain;">
-                  <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">Forgot password</h1>
+                  <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">Reset Password</h1>
+                  <p style="font-size: 15px;"> We have received your request to reset your password.</p>
                   <div style="margin-bottom: 14px; ">
                   <img src="${credentials.BACK_WEB_URL}/images/logo.png" style="width: 80px;"/>
               </div>
               <div style="padding: 15px; border:3px solid rgba(11, 10, 10, 0.54); border-radius: 8px; max-width: 356px; color: #000; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #8080808a;">
               Your verification code is <b>${verificationCode}</b>
-              </div>
-                  <p style="width: 134px; height: 1px;background: #164E63;margin: 22px auto;margin-top: 14px;"></p>
-                  <a href="${credentials.FRONT_WEB_URL}"
-                  style="background:#2fc0f9;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Reset
-                  Password </a>
-                    
-                  <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our support team!</p>
-      
+              </div><p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our support team!</p>
               </div>
               <p style="width: 20px; height: 185px; background: #164E63; position: absolute;bottom: 0px;left: 0px;margin:0px;">
               </p>
@@ -1049,143 +1007,60 @@ forgotPasswordEmail = function (options) {
   SmtpController.sendEmail(email, 'Reset Password', message);
 };
 
-addUserEmail = function (options) {
-  //.log(options, "--------------------------options")
-  var email = options.email;
+addUserEmail = async (options) => {
+  let email = options.email;
 
-  var fullName = options.fullName;
-  var password = options.password;
+  let firstName = options.firstName;
+  let password = options.password;
 
-  if (!fullName) {
-    fullName = email;
+  if (!firstName) {
+    firstName = email;
   }
   message = '';
-  style = {
-    header: `
-            padding:30px 15px;
-            text-align:center;
-            background-color:#f2f2f2;
-            `,
-    body: `
-            padding:15px;
-            height: 230px;
-            `,
-    hTitle: `font-family: 'Raleway', sans-serif;
-            font-size: 37px;
-            height:auto;
-            line-height: normal;
-            font-weight: bold;
-            background:none;
-            padding:0;
-            color:#333;
-            `,
-    maindiv: `
-            width:600px;
-            margin:auto;
-            font-family: Lato, sans-serif;
-            font-size: 14px;
-            color: #333;
-            line-height: 24px;
-            font-weight: 300;
-            border: 1px solid #eaeaea;
-            `,
-    textPrimary: `color:#3e3a6e;
-            `,
-    h5: `font-family: Raleway, sans-serif;
-            font-size: 22px;
-            background:none;
-            padding:0;
-            color:#333;
-            height:auto;
-            font-weight: bold;
-            line-height:normal;
-            `,
-    m0: `margin:0;`,
-    mb3: 'margin-bottom:15px;',
-    textCenter: `text-align:center;`,
-    btn: `padding:10px 30px;
-            font-weight:500;
-            font-size:14px;
-            line-height:normal;
-            border:0;
-            display:inline-block;
-            text-decoration:none;
-            `,
-    btnPrimary: `
-            background-color:#3e3a6e;
-            color:#fff;
-            `,
-    footer: `
-            padding:10px 15px;
-            font-weight:500;
-            color:#fff;
-            text-align:center;
-            background-color:#000;
-            `,
-  };
+  message += `
+                    <body style="font-family: sans-serif;">
+                    <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
+                        <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
+                            <img src="${credentials.BACK_WEB_URL}/images/Check_Mark.png" style="width: 80px; height: 80px;">
+                            <h1 style="    margin-top: 10px; 
+                            font-style: normal;
+                            font-weight: 600;
+                            font-size: 20px;
+                            line-height: 23px;
+                            color: #2759A7;">You’Re In!</h1>
+                    <p style="
+                    font-size: 16px;
+                    font-weight: 200;
+                    text-align: center;">Thank you for joining SK River, You are Going to love it here.</p>
 
-  message +=
-    `<div class="container" style="` +
-    style.maindiv +
-    `">
-        <div class="header" style="` +
-    style.header +
-    `text-align:center">
-            <img style="margin-bottom:20px; height: 67%; width: 66%;" src="` +
-    constant.FRONT_WEB_URL +
-    `assets/img/logo.jpeg"  />
-          
+              <div style="padding: 15px; font-size: 15px; border:3px solid color: #2759A7; border-radius: 8px; max-width: 356px; background: #fff; color: #2759A7; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #f2f4f7;">
+                <p><b>Email:</b>${options.email}</p>
+                <p><b>Password:</b>${options.password}</p>
+              </div>
+              <p style="font-weight: 400; font-size: 15px; padding-bottom: 20px;text-align: center;" >
+                Let’s get you logged in to<br>setup your account.
+              </p>
+              <div style="margin-top: 16px; margin-bottom: 12px;">
+                <a href="${credentials.FRONT_WEB_URL}login" style="background-color: #2759A7; color: #fff; border-radius: 30px; padding: 10px 12px; text-decoration:none"> Log In Now</a>
+              </div>
+              <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
+                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
+                <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our <a style="
+                color: #0b4eb8;
+                text-decoration: auto;" href="">support team!</a> </p>
         </div>
-        <div class="body" style="` +
-    style.body +
-    `">
-            <h5 style="` +
-    style.h5 +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `">Hello ` +
-    fullName +
-    `</h5>
-            <p style="` +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `margin-bottom:20px;font-weight: 600">Your Skriver account has been created! <br>
-            
-            </p>
-            <p style="` +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `margin-bottom:20px;font-weight: 600">Your login credentials are: <br>
-            
-            </p>
-  
-            <p style="` +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `margin-bottom:20px;font-weight: 600">Email: ${options.email} <br>
-                
-                </p>
-  
-                <p style="` +
-    style.m0 +
-    style.mb3 +
-    style.textCenter +
-    `margin-bottom:20px;font-weight: 600">Password: ${options.password} <br>
-                    
-                    </p>
-          
-        </div>
-       
-        <div class="footer" style="` +
-    style.footer +
-    `">
-        2023 All Rights Reserved
-        </div>
-      </div>`;
+        <p style="
+    width: 19px;
+    height: 50%; background: #2859a7; position: absolute;bottom: 0px;left: 0px;margin:0px;">
+        </p>
+   
+        <p style="
+    width: 19px;
+    height: 50%; background: #2859a7; position: absolute;top: 0px;right: 0px;margin:0px;">
+        </p>
+    </div>
+</body>
+    `;
 
   SmtpController.sendEmail(email, 'Registration', message);
 };
