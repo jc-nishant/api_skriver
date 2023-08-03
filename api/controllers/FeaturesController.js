@@ -122,12 +122,21 @@ module.exports = {
             if (!count) { count = 10 }
             let skipNo = (page - 1) * count;
             let query = {};
-
+            let sortquery = {};
             if (sortBy) {
-                sortBy = sortBy.toString();
-            } else {
-                sortBy = 'createdAt desc';
-            }
+                let typeArr = [];
+                typeArr = sortBy.split(' ');
+                let sortType = typeArr[1];
+                let field = typeArr[0];
+                sortquery[field ? field : 'updatedAt'] = sortType
+                  ? sortType == 'desc'
+                    ? -1
+                    : 1
+                  : -1;
+              } else {
+                sortquery = { updatedAt: -1 };
+                sortBy = "updatedAt desc"
+              }
 
             
             
