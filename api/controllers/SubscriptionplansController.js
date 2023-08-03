@@ -245,14 +245,30 @@ exports.getAllPlans = async (req, res) => {
             sortquery = { updatedAt: -1 };
         }
         let total = await Subscriptionplans.count(query)
-        let findpalns = await Subscriptionplans.find(query).sort(sortBy).skip(skipNo).limit(count)
+        let get_subscriptionPlan = await Subscriptionplans.find(query).sort(sortBy).skip(skipNo).limit(count)
+        for(let itm of get_subscriptionPlan){
+            if(itm.features){
+                if (itm.features.length > 0) {
+                    let features = itm.features
+                    itm.features = await Features.find({ id: {in:features} })
+                    console.log()
+                    let newKey = "checked"
+                    let newValue = true
+                    itm.features.forEach(obj => {
+                        obj[newKey] = newValue;
+                      }); 
+                }
+            }
+        }
+       
         return res.status(200).json({
             "success": true,
             "total": total,
-            "data": findpalns
+            "data": get_subscriptionPlan
         })
     }
     catch (err) {
+        console.log(err,"==========================err")
         return res.status(400).json({
             success: false,
             error: { code: 400, message: err.toString() },
