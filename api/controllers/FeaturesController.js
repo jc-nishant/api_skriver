@@ -144,13 +144,14 @@ module.exports = {
 
             query.isDeleted = false
 
-            // console.log(JSON.stringify(query));
+            let total = await Features.count(query)
             const all_features = await Features.find(query).skip(skipNo).limit(count).sort(sortBy);
 
             if (all_features) {
                 return res.status(200).json({
                     success: true,
                     message: constantObj.features.ALL_FEATURES,
+                    total:total,
                     data: all_features
                 })
             } else {

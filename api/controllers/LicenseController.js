@@ -98,10 +98,6 @@ module.exports = {
             
             
             if (search) {
-                // query.or = [{
-                //     // license_number: { 'like': `%${search}%` },
-                //     license_name: { 'like': `%${search}%` },
-                // }]
                 query.or = [
                     { license_name: { 'like': `%${search}%` } },
                     { license_number: { 'like': `%${search}%` } },
@@ -110,13 +106,14 @@ module.exports = {
 
             query.isDeleted = false
 
-            // console.log(JSON.stringify(query));
+            let total = await License.count(query)
             const all_users_licenses = await License.find(query).skip(skipNo).limit(count).sort(sortBy);
 
             if (all_users_licenses) {
                 return res.status(200).json({
                     success: true,
                     message: constantObj.license.DETAILS_FOUND,
+                    total:total,
                     data: all_users_licenses
                 })
             } else {
