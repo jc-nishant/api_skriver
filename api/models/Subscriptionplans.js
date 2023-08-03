@@ -30,8 +30,7 @@ module.exports = {
     pricing: { type: 'json' },
     price: { type: 'string' },
     features: { type: 'json' },
-    valid_upto: { type: 'ref', columnType: 'date' },
-    isPurchased:{ type: 'Boolean', defaultsTo: false },
+
 
     // common feilds
     addedBy: { model: 'users' },

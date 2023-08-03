@@ -868,7 +868,7 @@ module.exports = {
             success: true,
             code: 200,
             data: newUser,
-            message: constantObj.user.SUCCESSFULLY_REGISTERED,
+            message: "User added successfully",
           });
         }
       }
@@ -906,7 +906,7 @@ module.exports = {
 
 userVerifyLink = async (options) => {
   let email = options.email;
-  console.log(options, "==================options")
+  // console.log(options, "==================options")
   message = ''
   message += `
   <!DOCTYPE html>
@@ -923,11 +923,11 @@ userVerifyLink = async (options) => {
   
       <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
           <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
-              <img src="${credentials.BACK_WEB_URL}img/check_mark2.png" style="width: 80px; height: 80px;">
+              <img src="${credentials.BACK_WEB_URL}/images/check_mark2.png" style="width: 80px; height: 80px;">
               <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">You’Re In!</h1>
-              <p>Thank you for joining Globovue, You are Going to love it here. </p>
+              <p>Thank you for joining SK River, You are Going to love it here. </p>
   
-              <img src="${credentials.BACK_WEB_URL}img/logo_img.png" style="width:170px; height: 85px;margin-top: 20px; object-fit: contain;">
+              <img src="${credentials.BACK_WEB_URL}/images/logo_img.png" style="width:170px; height: 85px;margin-top: 20px; object-fit: contain;">
   
               <p style="width: 134px; height: 1px;background: #164E63;margin: 22px auto;    margin-top: 14px;"></p>
   
@@ -987,6 +987,64 @@ forgotPasswordEmail = async (options) => {
     </div>
     </body>
       `;
+
+  SmtpController.sendEmail(email, 'Reset Password', message);
+};
+forgotPasswordEmail = function (options) {
+
+  let email = options.email;
+  let verificationCode = options.verificationCode;
+  var fullName = options.fullName;
+
+  if (!fullName) {
+      fullName = email;
+  }
+  message = '';
+
+  message +=
+      ` 
+      <!DOCTYPE html>
+      <html lang="en">
+      
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+      </head>
+      
+      <body style="font-family: sans-serif;">
+      
+          <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
+              <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
+              <img src="${credentials.BACK_WEB_URL}/images/check_mark2.png" style="width:170px; height: 85px; object-fit: contain;">
+                  <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">Forgot password</h1>
+                  <div style="margin-bottom: 14px; ">
+                  <img src="${credentials.BACK_WEB_URL}/images/logo.png" style="width: 80px;"/>
+              </div>
+              <div style="padding: 15px; border:3px solid rgba(11, 10, 10, 0.54); border-radius: 8px; max-width: 356px; color: #000; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #8080808a;">
+              Your verification code is <b>${verificationCode}</b>
+              </div>
+                  <p style="width: 134px; height: 1px;background: #164E63;margin: 22px auto;margin-top: 14px;"></p>
+                  <a href="${credentials.FRONT_WEB_URL}"
+                  style="background:#2fc0f9;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Reset
+                  Password </a>
+                    
+                  <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our support team!</p>
+      
+              </div>
+              <p style="width: 20px; height: 185px; background: #164E63; position: absolute;bottom: 0px;left: 0px;margin:0px;">
+              </p>
+          
+              <p style="width: 20px; height: 185px; background: #164E63; position: absolute;top: 0px;right: 0px;margin:0px;">
+              </p>
+        
+          </div>
+      
+      </body>
+      
+      </html>
+    `;
 
   SmtpController.sendEmail(email, 'Reset Password', message);
 };

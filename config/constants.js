@@ -16,7 +16,7 @@ module.exports.constants = {
     "PAYLOAD_REQUIRED": "Payload is required",
     "UNVERIFIED": "You have not verified your account. Please verify",
     "USERNAME_NOT_APPROVED": "You have not approved by the admin",
-    "SUCCESSFULLY_REGISTERED": "Successfully registered,Verfication email has sent Please crosscheck your email.",
+    "SUCCESSFULLY_REGISTERED": "Successfully registered, Please verify your email.",
     "SUCCESSFULLY_LOGGEDIN": "Successfully logged in",
     "WRONG_USERNAME": "Username does not exists",
     "WRONG_PASSWORD": "Password is wrong!",

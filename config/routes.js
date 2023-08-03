@@ -42,7 +42,7 @@ module.exports.routes = {
   'post /forgot/password/frontend': 'UsersController.forgotPasswordFrontend',
   'get /user/details': 'UsersController.userDetails',
   'get /check/Email': 'UsersController.checkEmail',
-   'delete /remove/user': 'UsersController.removeUser',
+  //  'delete /remove/user': 'UsersController.removeUser',
   'get /profile': 'UsersController.userProfileData',
   'get /user/detail': 'UsersController.userDetail',
   'put /edit/profile': 'UsersController.editProfile',

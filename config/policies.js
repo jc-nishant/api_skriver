@@ -30,7 +30,6 @@ module.exports.policies = {
     verifyEmail: true,
     checkEmail: true,
     getAllUsers: true,
-    contactEmail: true,
   },
 
 };
