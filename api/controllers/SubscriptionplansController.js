@@ -31,7 +31,7 @@ exports.addSubscriptionPlan = async (req, res) => {
         let created_product = await Services.StripeServices.create_product({
             name: name,
         });
-        // console.log(created_product, "===========================created_product")
+        console.log(created_product, "===========================created_product")
         if (created_product) {
             let pricing = req.body.pricing
             // console.log(pricing,"======================pricing")
@@ -51,7 +51,7 @@ exports.addSubscriptionPlan = async (req, res) => {
 
                     // console.log(plan_payload,"====================plan_payload")
                     let create_plan = await Services.StripeServices.create_plan(plan_payload);
-                    // console.log(create_plan, "==========================create_plan")
+                    console.log(create_plan, "==========================create_plan")
                     if (create_plan) {
                         req.body.addedBy = req.identity.id;
                         req.body.stripe_plan_id = create_plan.id;
@@ -552,7 +552,9 @@ exports.purchaseplan = async (req, res) => {
 
             let add_subscription = await Subscription.create(create_subscription_payload).fetch();
             if (add_subscription) {
-                let update_subscription_plan = await Subscriptionplans.updateOne({ id: subscription_plan_id }, { isPurchased: "true", })
+               let valid_upto= add_subscription.valid_upto
+               console.log(valid_upto,"================valid_upto")
+                let update_subscription_plan = await Subscriptionplans.updateOne({ id: subscription_plan_id }, { isPurchased: "true",valid_upto :valid_upto})
                 // console.log(update_subscription_plan,"==============update_subscription_plan")
 
             }
