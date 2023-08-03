@@ -535,6 +535,11 @@ exports.purchaseplan = async (req, res) => {
             };
 
             let add_subscription = await Subscription.create(create_subscription_payload).fetch();
+            if (add_subscription) {
+                let update_subscription_plan = await Subscriptionplans.updateOne({ id: subscription_plan_id }, { isPurchased: "true", })
+                // console.log(update_subscription_plan,"==============update_subscription_plan")
+
+            }
             // console.log(add_subscription, "========================add_subscription")
             return res.status(200).json({
                 success: true,
