@@ -30,6 +30,7 @@ module.exports = {
     pricing: { type: 'json' },
     price: { type: 'string' },
     features: { type: 'json' },
+    isPurchased:{ type: 'Boolean', defaultsTo: false },
 
     // common feilds
     addedBy: { model: 'users' },
