@@ -123,15 +123,21 @@ exports.getPlanById = async (req, res) => {
 
         let get_subscriptionPlan = await Subscriptionplans.findOne({ id: id });
         let featuresdata = []
-        if (get_subscriptionPlan.features.length > 0) {
-            let features = get_subscriptionPlan.features
-            let find = await Features.find({ id: {in:features} })
-            // for (let itm of features) {
-            //     let find = await Features.findOne({ id: itm })
-            //     featuresdata.push(find)
-            // }
-            get_subscriptionPlan.featuresdata = find
+        if(get_subscriptionPlan.features){
+            if (get_subscriptionPlan.features.length > 0) {
+                let features = get_subscriptionPlan.features
+                let find = await Features.find({ id: {in:features} })
+                let newKey = "checked"
+                let newValue = true
+                find.forEach(obj => {
+                    obj[newKey] = newValue;
+                  });
+                get_subscriptionPlan.featuresdata = find
+          
+    
+            }
         }
+      
         if (get_subscriptionPlan) {
             if (get_subscriptionPlan.addedBy) {
                 let get_added_by_details = await Users.findOne({ id: get_subscriptionPlan.addedBy });
