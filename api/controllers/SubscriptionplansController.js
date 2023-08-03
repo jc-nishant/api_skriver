@@ -123,21 +123,21 @@ exports.getPlanById = async (req, res) => {
 
         let get_subscriptionPlan = await Subscriptionplans.findOne({ id: id });
         let featuresdata = []
-        if(get_subscriptionPlan.features){
+        if (get_subscriptionPlan.features) {
             if (get_subscriptionPlan.features.length > 0) {
                 let features = get_subscriptionPlan.features
-                let find = await Features.find({ id: {in:features} })
+                let find = await Features.find({ id: { in: features } })
                 let newKey = "checked"
                 let newValue = true
                 find.forEach(obj => {
                     obj[newKey] = newValue;
-                  });
+                });
                 get_subscriptionPlan.featuresdata = find
-          
-    
+
+
             }
         }
-      
+
         if (get_subscriptionPlan) {
             if (get_subscriptionPlan.addedBy) {
                 let get_added_by_details = await Users.findOne({ id: get_subscriptionPlan.addedBy });
@@ -246,21 +246,35 @@ exports.getAllPlans = async (req, res) => {
         }
         let total = await Subscriptionplans.count(query)
         let get_subscriptionPlan = await Subscriptionplans.find(query).sort(sortBy).skip(skipNo).limit(count)
-        for(let itm of get_subscriptionPlan){
-            if(itm.features){
+        for (let itm of get_subscriptionPlan) {
+            if (itm.features) {
                 if (itm.features.length > 0) {
                     let features = itm.features
-                    itm.features = await Features.find({ id: {in:features} })
+                    itm.features = await Features.find({ id: { in: features } })
                     console.log()
                     let newKey = "checked"
                     let newValue = true
                     itm.features.forEach(obj => {
                         obj[newKey] = newValue;
-                      }); 
+                    });
                 }
             }
         }
-       
+        await (async function () {
+            for await (let data of get_subscriptionPlan) {
+              if (req.identity && req.identity.subscription_plan_id == data.id) {
+                let find_subscription = await Subscription.findOne({ subscription_plan_id: req.identity.subscription_plan_id, user_id: req.identity.id});
+                // console.log(find_subscription,"================find_subscription")
+                data.isActive = true
+                data.valid_upto =find_subscription.valid_upto
+              }
+              else {
+                data.isActive = false
+              }
+            }
+          })();
+
+
         return res.status(200).json({
             "success": true,
             "total": total,
@@ -268,7 +282,7 @@ exports.getAllPlans = async (req, res) => {
         })
     }
     catch (err) {
-        console.log(err,"==========================err")
+        // console.log(err, "==========================err")
         return res.status(400).json({
             success: false,
             error: { code: 400, message: err.toString() },
@@ -551,14 +565,7 @@ exports.purchaseplan = async (req, res) => {
             };
 
             let add_subscription = await Subscription.create(create_subscription_payload).fetch();
-            if (add_subscription) {
-               let valid_upto= add_subscription.valid_upto
-               console.log(valid_upto,"================valid_upto")
-                let update_subscription_plan = await Subscriptionplans.updateOne({ id: subscription_plan_id }, { isPurchased: "true",valid_upto :valid_upto})
-                // console.log(update_subscription_plan,"==============update_subscription_plan")
-
-            }
-            // console.log(add_subscription, "========================add_subscription")
+           let update = await Users.updateOne({id: user_id},{stripe_subscription_id: create_subscription.id,subscription_plan_id: get_subscription_plan.id,})
             return res.status(200).json({
                 success: true,
                 message: "plan purchase successfully",

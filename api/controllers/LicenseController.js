@@ -83,7 +83,7 @@ module.exports = {
             let sortBy = req.param('sortBy');
             let page = req.param('page');
             let count = req.param('count');
-
+            let status = req.param('status')
             if (!page) { page = 1 }
             if (!count) { count = 10 }
             let skipNo = (page - 1) * count;
@@ -94,7 +94,9 @@ module.exports = {
             } else {
                 sortBy = 'createdAt desc';
             }
-
+            if (status) {
+                query.status = status;
+            }
             
             
             if (search) {

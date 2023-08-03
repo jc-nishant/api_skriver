@@ -104,6 +104,7 @@ module.exports = {
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
     updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
     stripe_customer_id: { type: 'string', },
+    subscription_plan_id: { model: 'subscriptionplans' },
     api_key: {
       type: 'string',
       allowNull: true,
