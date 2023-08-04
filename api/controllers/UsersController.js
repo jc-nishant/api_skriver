@@ -450,6 +450,7 @@ module.exports = {
       var page = req.param('page');
       var type = req.param('type');
       var sortBy = req.param('sortBy');
+      let company = req.param('company');
       if (!page) {
         page = 1;
       }
@@ -469,6 +470,10 @@ module.exports = {
       query.role = { '!=': 'admin' };
       if (role) {
         query.role = role;
+      }
+
+      if (company) {
+        query.company_id = Number(company);
       }
 
       query.isDeleted = false;
@@ -770,6 +775,24 @@ module.exports = {
       } else if (data.firstName && !data.lastName) {
         data.fullName = data.firstName;
       }
+      if (
+        req.body.api_key &&
+        req.body.has_after_call_transcript &&
+        req.body.has_real_time_streaming_transcript &&
+        req.body.has_sentiment
+      ) {
+        let obj = {
+          api_key: req.body.api_key,
+          has_after_call_transcript: req.body.has_after_call_transcript,
+          has_real_time_streaming_transcript:
+            req.body.has_real_time_streaming_transcript,
+          has_sentiment: req.body.has_sentiment,
+        };
+
+        const created = await License.create(obj).fetch();
+
+        data.license_id = created.id;
+      }
       Users.updateOne({ id: id }, data).then(async (user) => {
         return res.status(200).json({
           success: true,
@@ -857,6 +880,25 @@ module.exports = {
         }
 
         //  if (req.body.firstName && req.body.lastName) {
+
+        if (
+          req.body.api_key &&
+          req.body.has_after_call_transcript &&
+          req.body.has_real_time_streaming_transcript &&
+          req.body.has_sentiment
+        ) {
+          let obj = {
+            api_key: req.body.api_key,
+            has_after_call_transcript: req.body.has_after_call_transcript,
+            has_real_time_streaming_transcript:
+              req.body.has_real_time_streaming_transcript,
+            has_sentiment: req.body.has_sentiment,
+          };
+
+          const created = await License.create(obj).fetch();
+
+          req.body.license_id = created.id;
+        }
 
         var newUser = await Users.create(req.body).fetch();
 
