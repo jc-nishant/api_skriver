@@ -22,8 +22,13 @@ module.exports = {
       type: 'Boolean',
       defaultsTo: false,
     },
-    
+
     isDeleted: {
+      type: 'Boolean',
+      defaultsTo: false,
+    },
+
+    isAssigned: {
       type: 'Boolean',
       defaultsTo: false,
     },
@@ -32,7 +37,7 @@ module.exports = {
       isIn: ['active', 'deactive'],
       defaultsTo: 'active',
     },
-  
+
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
     updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
   },
