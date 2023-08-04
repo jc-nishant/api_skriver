@@ -267,13 +267,16 @@ exports.getAllPlans = async (req, res) => {
     await (async function () {
       for await (let data of get_subscriptionPlan) {
         if (req.identity && req.identity.subscription_plan_id == data.id) {
-          let find_subscription = await Subscription.findOne({
+          let find_subscriptions = await Subscription.find({
             subscription_plan_id: req.identity.subscription_plan_id,
             user_id: req.identity.id,
-          });
-          data.isActive = true;
-          data.valid_upto = find_subscription.valid_upto;
-          data.interval_count = find_subscription.interval_count;
+          }).sortBy({ createdAt: -1 });
+          if (find_subscriptions && find_subscriptions.length > 0) {
+            let find_subscription = find_subscriptions[0];
+            data.isActive = true;
+            data.valid_upto = find_subscription.valid_upto;
+            data.interval_count = find_subscription.interval_count;
+          }
         } else {
           data.isActive = false;
         }
