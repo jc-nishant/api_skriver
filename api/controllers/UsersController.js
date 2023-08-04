@@ -15,7 +15,7 @@ var fs = require('fs');
 const readXlsxFile = require('read-excel-file/node');
 var ObjectId = require('mongodb').ObjectID;
 const Emails = require('../../Emails/onBoarding.js');
-var uuid = require("uuid");
+var uuid = require('uuid');
 
 generateVeificationCode = function () {
   // action are perform to generate VeificationCode for user
@@ -309,7 +309,7 @@ module.exports = {
         where: {
           email: req.body.email.toLowerCase(),
           isDeleted: false,
-          role: "user",
+          role: 'user',
         },
       });
       // console.log(user, "==============user")
@@ -426,7 +426,9 @@ module.exports = {
       });
     }
 
-    var userDetails = await Users.find({ where: { id: id } }).populate('license_id').populate('company_id')
+    var userDetails = await Users.find({ where: { id: id } })
+      .populate('license_id')
+      .populate('company_id');
 
     return res.status(200).json({
       success: true,
@@ -459,17 +461,17 @@ module.exports = {
       var query = {};
       if (search) {
         query.or = [
-          { fullName: { 'like': `%${search}%` } },
-          { email: { 'like': `%${search}%` } },
-        ]
+          { fullName: { like: `%${search}%` } },
+          { email: { like: `%${search}%` } },
+        ];
       }
       // console.log(search,"=============search")
-      query.role = { "!=": 'admin' };
+      query.role = { '!=': 'admin' };
       if (role) {
         query.role = role;
       }
 
-      query.isDeleted = false
+      query.isDeleted = false;
       if (status) {
         query.status = status;
       }
@@ -489,26 +491,29 @@ module.exports = {
           : -1;
       } else {
         sortquery = { updatedAt: -1 };
-        sortBy = "updatedAt desc"
+        sortBy = 'updatedAt desc';
       }
 
-      let total = await Users.count(query)
-      let findusers = await Users.find(query).sort(sortBy).skip(skipNo).limit(count).populate('license_id').populate('company_id')
+      let total = await Users.count(query);
+      let findusers = await Users.find(query)
+        .sort(sortBy)
+        .skip(skipNo)
+        .limit(count)
+        .populate('license_id')
+        .populate('company_id');
       return res.status(200).json({
-        "success": true,
-        "total": total,
-        "data": findusers
-      })
-    }
-    catch (err) {
-      console.log(err, "====================err")
+        success: true,
+        total: total,
+        data: findusers,
+      });
+    } catch (err) {
+      console.log(err, '====================err');
       return res.status(400).json({
         success: false,
         error: { code: 400, message: err.toString() },
       });
     }
   },
-
 
   /*
    *For Check Email Address Exit or not
@@ -720,17 +725,16 @@ module.exports = {
   },
 
   verifyUser: (req, res) => {
-    var id = req.param('id')
-    Users.findOne({ id: id }).then(user => {
-
+    var id = req.param('id');
+    Users.findOne({ id: id }).then((user) => {
       if (user) {
-        Users.update({ id: id }, { isVerified: 'Y', }).then(verified => {
-          return res.redirect(`${credentials.FRONT_WEB_URL}login`)
-        })
+        Users.update({ id: id }, { isVerified: 'Y' }).then((verified) => {
+          return res.redirect(`${credentials.FRONT_WEB_URL}login`);
+        });
       } else {
-        return res.redirect(`${credentials.FRONT_WEB_URL}login`)
+        return res.redirect(`${credentials.FRONT_WEB_URL}login`);
       }
-    })
+    });
   },
 
   verifyEmail: (req, res) => {
@@ -855,8 +859,15 @@ module.exports = {
         //  if (req.body.firstName && req.body.lastName) {
 
         var newUser = await Users.create(req.body).fetch();
+
         if (newUser) {
           // console.log(newUser, "--------------------newUser")
+          if (newUser.license_id) {
+            const updatedLicence = await License.update(
+              { id: newUser.license_id },
+              { isAssigned: true }
+            );
+          }
           addUserEmail({
             email: newUser.email,
             fullName: newUser.fullName,
@@ -868,7 +879,7 @@ module.exports = {
             success: true,
             code: 200,
             data: newUser,
-            message: "User added successfully",
+            message: 'User added successfully',
           });
         }
       }
@@ -892,7 +903,7 @@ module.exports = {
         return res.status(200).json({
           success: true,
           data: user,
-          message: "user deleted successfully",
+          message: 'user deleted successfully',
         });
       });
     } catch (err) {
@@ -902,14 +913,12 @@ module.exports = {
         .json({ success: false, error: { code: 400, message: '' + err } });
     }
   },
-
-
-}
+};
 
 userVerifyLink = async (options) => {
   let email = options.email;
   // console.log(options, "==================options")
-  message = ''
+  message = '';
   message += `
   <!DOCTYPE html>
   <html lang="en">
@@ -956,18 +965,16 @@ userVerifyLink = async (options) => {
   SmtpController.sendEmail(email, 'Email Verification', message);
 };
 forgotPasswordEmail = function (options) {
-
   let email = options.email;
   let verificationCode = options.verificationCode;
   var fullName = options.fullName;
 
   if (!fullName) {
-      fullName = email;
+    fullName = email;
   }
   message = '';
 
-  message +=
-      ` 
+  message += ` 
       <!DOCTYPE html>
       <html lang="en">
       
@@ -1175,5 +1182,3 @@ userSendOtp = function (options) {
 
   SmtpController.sendEmail(email, 'Otp Verification', message);
 };
-
-
