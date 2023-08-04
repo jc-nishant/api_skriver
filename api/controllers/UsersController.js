@@ -782,11 +782,13 @@ module.exports = {
         req.body.has_sentiment
       ) {
         let obj = {
-          api_key: req.body.api_key,
+          licence_id: req.body.api_key,
           has_after_call_transcript: req.body.has_after_call_transcript,
           has_real_time_streaming_transcript:
             req.body.has_real_time_streaming_transcript,
           has_sentiment: req.body.has_sentiment,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
         };
 
         const created = await License.create(obj).fetch();
@@ -888,11 +890,13 @@ module.exports = {
           req.body.has_sentiment
         ) {
           let obj = {
-            api_key: req.body.api_key,
+            licence_id: req.body.api_key,
             has_after_call_transcript: req.body.has_after_call_transcript,
             has_real_time_streaming_transcript:
               req.body.has_real_time_streaming_transcript,
             has_sentiment: req.body.has_sentiment,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate,
           };
 
           const created = await License.create(obj).fetch();
