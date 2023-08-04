@@ -270,7 +270,7 @@ exports.getAllPlans = async (req, res) => {
           let find_subscriptions = await Subscription.find({
             subscription_plan_id: req.identity.subscription_plan_id,
             user_id: req.identity.id,
-          }).sortBy({ createdAt: -1 });
+          }).sort('createdAt desc');
           if (find_subscriptions && find_subscriptions.length > 0) {
             let find_subscription = find_subscriptions[0];
             data.isActive = true;
