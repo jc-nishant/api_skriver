@@ -109,7 +109,10 @@ module.exports = {
       if (all_users_licenses) {
         if (all_users_licenses && all_users_licenses.length > 0) {
           for await (let itm of all_users_licenses) {
-            const user = await Users.findOne({ license_id: itm.id });
+            const user = await Users.findOne({
+              license_id: itm.id,
+              isDeleted: false,
+            });
             if (user) {
               itm.user = user;
             }
