@@ -38,6 +38,16 @@ module.exports = {
       defaultsTo: 'active',
     },
 
+    startDate: {
+      type: 'ref',
+      columnType: 'timestamp',
+    },
+
+    endDate: {
+      type: 'ref',
+      columnType: 'timestamp',
+    },
+
     createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
     updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
   },
