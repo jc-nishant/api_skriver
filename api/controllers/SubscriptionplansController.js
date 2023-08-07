@@ -30,7 +30,7 @@ exports.addSubscriptionPlan = async (req, res) => {
         let created_product = await Services.StripeServices.create_product({
             name: name,
         });
-        console.log(created_product, '===========================created_product');
+        // console.log(created_product, '===========================created_product');
         if (created_product) {
             let pricing = req.body.pricing;
             // console.log(pricing,"======================pricing")
@@ -54,7 +54,7 @@ exports.addSubscriptionPlan = async (req, res) => {
                     let create_plan = await Services.StripeServices.create_plan(
                         plan_payload
                     );
-                    console.log(create_plan, '==========================create_plan');
+                    // console.log(create_plan, '==========================create_plan');
                     if (create_plan) {
                         req.body.addedBy = req.identity.id;
                         req.body.stripe_plan_id = create_plan.id;
@@ -167,7 +167,7 @@ exports.getPlanById = async (req, res) => {
             message: 'Invalid id',
         });
     } catch (err) {
-        console.log(err, '=================err');
+        // console.log(err, '=================err');
         return res.status(400).json({
             success: false,
             error: { message: '' + err },
@@ -255,7 +255,6 @@ exports.getAllPlans = async (req, res) => {
                 if (itm.features.length > 0) {
                     let features = itm.features;
                     itm.features = await Features.find({ id: { in: features } });
-                    console.log();
                     let newKey = 'checked';
                     let newValue = true;
                     itm.features.forEach((obj) => {
@@ -269,6 +268,7 @@ exports.getAllPlans = async (req, res) => {
                 if (req.identity && req.identity.subscription_plan_id == data.id) {
                     let find_subscriptions = await Subscription.find({
                         subscription_plan_id: req.identity.subscription_plan_id,
+                        status: 'active',
                         user_id: req.identity.id,
                     }).sort('createdAt desc');
                     if (find_subscriptions && find_subscriptions.length > 0) {
@@ -276,6 +276,8 @@ exports.getAllPlans = async (req, res) => {
                         data.isActive = true;
                         data.valid_upto = find_subscription.valid_upto;
                         data.interval_count = find_subscription.interval_count;
+                    }else {
+                        data.isActive = false;
                     }
                 } else {
                     data.isActive = false;
@@ -497,7 +499,7 @@ exports.purchaseplan = async (req, res) => {
             status: 'active',
             user_id: user_id,
         };
-        console.log(getSubsQuery);
+        // console.log(getSubsQuery);
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
         // console.log(get_existing_subscription,"======get_existing_subscription")
 
@@ -529,7 +531,7 @@ exports.purchaseplan = async (req, res) => {
                     }
                 }
             } catch (error) {
-                console.log(error);
+                // console.log(error);
             }
         }
 
@@ -593,7 +595,7 @@ exports.purchaseplan = async (req, res) => {
             });
         }
     } catch (err) {
-        console.log(err, '============================err');
+        // console.log(err, '============================err');
         return res.status(400).json({
             success: false,
             error: { message: '' + err },
@@ -626,7 +628,7 @@ exports.removePlans = async (req, res) => {
 
         throw constants.subscriptionplan.INVALID_ID;
     } catch (err) {
-        console.log(err, '==========================err');
+        // console.log(err, '==========================err');
         return res.status(400).json({
             success: false,
             error: { message: "" + err },
@@ -651,7 +653,7 @@ exports.cancelPlans = async (req, res) => {
             subscription_plan_id: subscription_plan_id,
 
         };
-        console.log(getSubsQuery);
+        // console.log(getSubsQuery);
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
         if(!get_existing_subscription){
             return res.status(400).json({
@@ -677,7 +679,7 @@ exports.cancelPlans = async (req, res) => {
       }
      
     } catch (err) {
-        console.log(err, '============================err');
+        // console.log(err, '============================err');
         return res.status(400).json({
             success: false,
             error: { message: '' + err },
