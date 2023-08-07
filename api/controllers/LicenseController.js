@@ -38,21 +38,35 @@ module.exports = {
   getLicense: async (req, res) => {
     try {
       let id = req.query.id;
-
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 400, message: constantObj.license.ID_MISSING },
+        });
+      }
       let get_license = await License.findOne({ id: id, isDeleted: false });
       if (get_license) {
-        return res.status(200).json({
-          success: true,
-          message: constantObj.license.DETAILS_FOUND,
-          data: get_license,
+        const user = await Users.findOne({
+          license_id: get_license.id,
+          isDeleted: false,
         });
-      } else {
+        if (user) {
+          get_license.user = user;
+        }
+      }
+      else {
         return res.status(400).json({
           success: false,
           message: constantObj.license.FAILED,
         });
       }
+      return res.status(200).json({
+        success: true,
+        data: get_license,
+        message: "License detail found",
+      });
     } catch (err) {
+      console.log(err, "---------------------------err")
       return res.status(400).json({
         success: false,
         error: { code: 400, message: '' + err },
