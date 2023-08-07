@@ -638,14 +638,13 @@ exports.removePlans = async (req, res) => {
 exports.cancelPlans = async (req, res) => {
     try {
         var subscription_plan_id = req.body.subscription_plan_id;
+        let user_id = req.body.id
         if (!subscription_plan_id) {
             return res.status(400).json({
                 success: false,
                 message: "Plan id is required",
             })
         }
-        const user_id = req.identity.id;
-
         let getSubsQuery = {
             status: 'active',
             user_id: user_id,
@@ -654,7 +653,6 @@ exports.cancelPlans = async (req, res) => {
         };
         console.log(getSubsQuery);
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
-        console.log(get_existing_subscription,"====================get_existing_subscription")
         if(!get_existing_subscription){
             return res.status(400).json({
                 success: false,
@@ -669,7 +667,7 @@ exports.cancelPlans = async (req, res) => {
             let updateSubscription = await Subscription.updateOne(
                 { id: get_existing_subscription.id },
                 { status: 'cancelled', updatedBy: req.identity.id, });
-                console.log(updateSubscription,"=================================updateSubscription")
+                // console.log(updateSubscription,"=================================updateSubscription")
                 return res.status(200).json({
                     success: true,
                     message: "Plan cancel successfully",
