@@ -46,7 +46,7 @@ module.exports = {
       }
       let get_license = await License.findOne({ id: id, isDeleted: false });
       if (get_license) {
-        const user = await Users.findOne({
+        const user = await Users.find({
           license_id: get_license.id,
           isDeleted: false,
         });
@@ -133,7 +133,7 @@ module.exports = {
       if (all_users_licenses) {
         if (all_users_licenses && all_users_licenses.length > 0) {
           for await (let itm of all_users_licenses) {
-            const user = await Users.findOne({
+            const user = await Users.find({
               license_id: itm.id,
               isDeleted: false,
             });
@@ -155,6 +155,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log(err,"================err")
       return res.status(400).json({
         success: false,
         error: { code: 400, message: '' + err },
