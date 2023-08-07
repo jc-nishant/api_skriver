@@ -351,6 +351,8 @@ module.exports = {
         );
         user.access_token = token;
         user.refresh_token = refreshToken;
+        let findrole = await Roles.findOne({ role: user.role })
+        user.role = findrole
 
         return res.status(200).json({
           success: true,
@@ -782,7 +784,7 @@ module.exports = {
         req.body.has_sentiment
       ) {
         let obj = {
-          licence_id: req.body.api_key,
+          license_id: req.body.api_key,
           has_after_call_transcript: req.body.has_after_call_transcript,
           has_real_time_streaming_transcript:
             req.body.has_real_time_streaming_transcript,
@@ -790,7 +792,7 @@ module.exports = {
           startDate: req.body.startDate,
           endDate: req.body.endDate,
         };
-
+        console.log(obj,"===================obj")
         const created = await License.create(obj).fetch();
 
         data.license_id = created.id;
