@@ -13,7 +13,7 @@ module.exports = {
 
     status: {
       type: 'string',
-      isIn: ['active', 'deactive'],
+      isIn: ['active', 'deactive','cancel'],
       defaultsTo: 'active',
     },
     stripe_plan_id: { type: 'string' },
@@ -36,7 +36,7 @@ module.exports = {
     addedBy: { model: 'users' },
     updatedBy: { model: 'users' },
     isDeleted: { type: 'Boolean', defaultsTo: false },
-    createdAt: { type: 'ref', columnType: 'date' },
-    updatedAt: { type: 'ref', columnType: 'date' },
+    createdAt: { type: 'ref', columnType: 'timestamp', autoCreatedAt: true },
+    updatedAt: { type: 'ref', columnType: 'timestamp', autoUpdatedAt: true },
   },
 };
