@@ -207,6 +207,9 @@ module.exports = {
         { id: user.id },
         { lastLogin: new Date() }
       );
+      let findrole = await Roles.findOne({ role: user.role })
+      user.role = findrole
+
 
       return res.status(200).json({
         success: true,
