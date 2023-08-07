@@ -914,13 +914,24 @@ module.exports = {
               { isAssigned: true }
             );
           }
-          addUserEmail({
-            email: newUser.email,
-            fullName: newUser.fullName,
-            password: password,
-            role: newUser.role,
-          });
+          if (req.body.role == "sub_admin") {
+            add_sub_adminEmail({
+              email: newUser.email,
+              fullName: newUser.fullName,
+              password: password,
+              role: newUser.role,
+            });
 
+          }else{
+            addUserEmail({
+              email: newUser.email,
+              fullName: newUser.fullName,
+              password: password,
+              role: newUser.role,
+            });
+  
+          }
+         
           return res.status(200).json({
             success: true,
             code: 200,
@@ -930,6 +941,7 @@ module.exports = {
         }
       }
     } catch (err) {
+      console.log(err,"================err")
       return res
         .status(400)
         .json({ success: false, error: { code: 400, message: '' + err } });
@@ -1058,6 +1070,63 @@ forgotPasswordEmail = function (options) {
     `;
 
   SmtpController.sendEmail(email, 'Reset Password', message);
+};
+add_sub_adminEmail = async (options) => {
+  let email = options.email;
+
+  let firstName = options.firstName;
+  let password = options.password;
+
+  if (!firstName) {
+    firstName = email;
+  }
+  message = '';
+  message += `
+                    <body style="font-family: sans-serif;">
+                    <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
+                        <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
+                            <img src="${credentials.BACK_WEB_URL}/images/Check_Mark.png" style="width: 80px; height: 80px;">
+                            <h1 style="    margin-top: 10px; 
+                            font-style: normal;
+                            font-weight: 600;
+                            font-size: 20px;
+                            line-height: 23px;
+                            color: #2759A7;">You’Re In!</h1>
+                    <p style="
+                    font-size: 16px;
+                    font-weight: 200;
+                    text-align: center;">Thank you for joining SK River, You are Going to love it here.</p>
+
+              <div style="padding: 15px; font-size: 15px; border:3px solid color: #2759A7; border-radius: 8px; max-width: 356px; background: #fff; color: #2759A7; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #f2f4f7;">
+                <p><b>Email:</b>${options.email}</p>
+                <p><b>Password:</b>${options.password}</p>
+              </div>
+              <p style="font-weight: 400; font-size: 15px; padding-bottom: 20px;text-align: center;" >
+                Let’s get you logged in to<br>setup your account.
+              </p>
+              <div style="margin-top: 16px; margin-bottom: 12px;">
+                <a href="${credentials.ADMIN_WEB_URL}login" style="background-color: #2759A7; color: #fff; border-radius: 30px; padding: 10px 12px; text-decoration:none"> Log In Now</a>
+              </div>
+              <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
+                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
+                <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our <a style="
+                color: #0b4eb8;
+                text-decoration: auto;" href="">support team!</a> </p>
+        </div>
+        <p style="
+    width: 19px;
+    height: 50%; background: #2859a7; position: absolute;bottom: 0px;left: 0px;margin:0px;">
+        </p>
+   
+        <p style="
+    width: 19px;
+    height: 50%; background: #2859a7; position: absolute;top: 0px;right: 0px;margin:0px;">
+        </p>
+    </div>
+</body>
+    `;
+
+  SmtpController.sendEmail(email, 'Registration', message);
 };
 
 addUserEmail = async (options) => {
