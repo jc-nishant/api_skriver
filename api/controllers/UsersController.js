@@ -549,9 +549,9 @@ module.exports = {
 
   userProfileData: async (req, res) => {
     let id = req.identity.id;
-
     var userDetail = await Users.findOne({ id: id });
-
+    let findrole = await Roles.findOne({ role: userDetail.role })
+    userDetail.role = findrole
     if (!userDetail) {
       return res.status(400).json({
         success: false,
@@ -905,7 +905,6 @@ module.exports = {
         }
 
         var newUser = await Users.create(req.body).fetch();
-
         if (newUser) {
           // console.log(newUser, "--------------------newUser")
           if (newUser.license_id) {
@@ -922,16 +921,16 @@ module.exports = {
               role: newUser.role,
             });
 
-          }else{
+          } else {
             addUserEmail({
               email: newUser.email,
               fullName: newUser.fullName,
               password: password,
               role: newUser.role,
             });
-  
+
           }
-         
+
           return res.status(200).json({
             success: true,
             code: 200,
@@ -941,7 +940,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      console.log(err,"================err")
+      console.log(err, "================err")
       return res
         .status(400)
         .json({ success: false, error: { code: 400, message: '' + err } });
