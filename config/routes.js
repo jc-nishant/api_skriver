@@ -122,7 +122,7 @@ module.exports.routes = {
     'delete /comapany': "CompanyController.deletecompany",
 
     "post /token": "ZoomController.generatetoken",
-    
+    'POST /generateSignature': 'ZoomController.generateSignature',
 
 
 
