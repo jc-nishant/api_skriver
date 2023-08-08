@@ -28,7 +28,7 @@ module.exports = {
                 const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
                 return sdkJWT
             }
-            let token = generateSignature(ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, 123456789, 0)
+            let token = generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, 123456789, 0)
             // console.log(ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID)
 
             return res.status(200).json({
