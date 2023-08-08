@@ -121,6 +121,9 @@ module.exports.routes = {
     "get /comapany": "CompanyController.getcompany",
     'delete /comapany': "CompanyController.deletecompany",
 
+    "post /token": "ZoomController.generatetoken",
+    
+
 
 
 };
