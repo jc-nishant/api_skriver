@@ -9,10 +9,10 @@ authenticate = function (req, res) {
     const authUrl = `https://zoom.us/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`;
     res.redirect(authUrl);
 }
-generateVeificationCode = function () {
+generateOTP = function () {
     // action are perform to generate VeificationCode for user
     var length = 12,
-      charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+      charset = '1234567890',
       retVal = '';
   
     for (var i = 0, n = charset.length; i < length; ++i) {
@@ -62,7 +62,7 @@ module.exports = {
 
     generateSignature: async function (req, res) {
         try {
-            const meetingNumber = generateVeificationCode()
+            const meetingNumber = generateOTP()
             const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
             const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
             const timestamp = new Date().getTime() - 30000; // 30 seconds before to account for latency
