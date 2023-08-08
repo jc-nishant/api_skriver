@@ -123,6 +123,10 @@ module.exports.routes = {
 
     "post /token": "ZoomController.generatetoken",
     'POST /generateSignature': 'ZoomController.generateSignature',
+    'POST /validateSignature': 'ZoomController.validateSignature',
+    'POST /createMeeting': 'ZoomController.createMeeting',
+    'get /authenticate': 'ZoomController.authenticate',
+    'GET /zoom/callback': 'ZoomController.callback'
 
 
 
