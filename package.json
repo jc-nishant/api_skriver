@@ -9,6 +9,7 @@
     "@sailshq/lodash": "^3.10.3",
     "@sailshq/socket.io-redis": "^5.2.0",
     "bcrypt-nodejs": "^0.0.3",
+    "crypto": "^1.0.1",
     "exceljs": "^4.3.0",
     "grunt": "1.0.4",
     "html-pdf-node": "^1.0.8",
