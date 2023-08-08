@@ -1,6 +1,7 @@
 const KJUR = require('jsrsasign')
 const ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID = "9BDQwShHQ4aStdwFhwT94g"
 const ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET = "ULfkSNIisdGVn3subZrx0i6e8q1dwoFv"
+const crypto = require('crypto');
 // https://www.npmjs.com/package/jsrsasign
 
 module.exports = {
@@ -40,5 +41,24 @@ module.exports = {
         } catch (err) {
             return res.status(400).json({ success: true, code: 400, error: err });
         }
-    }
-}
+    },
+    // api/controllers/ZoomController.js
+
+
+  generateSignature: async function (req, res) {
+        const meetingNumber = req.body.meetingNumber;
+        const apiKey = 'YOUR_API_KEY';
+        const apiSecret = 'YOUR_API_SECRET';
+        const timestamp = new Date().getTime() - 30000; // 30 seconds before to account for latency
+
+        const msg = Buffer.from(apiKey + meetingNumber + timestamp + '0').toString('base64');
+        const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
+        const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.0.${hash}`).toString('base64');
+        return res.status(200).json({
+            success: true,
+            code: 200,
+            signature: signature,
+
+        });
+    },
+};
