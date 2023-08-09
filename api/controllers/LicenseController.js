@@ -113,8 +113,7 @@ module.exports = {
 
       if (search) {
         query.or = [
-          { license_name: { like: `%${search}%` } },
-          { license_number: { like: `%${search}%` } },
+          { licence_id: { like: `%${search}%` } }
         ];
       }
 
