@@ -539,6 +539,7 @@ exports.purchaseplan = async (req, res) => {
             stripe_customer_id: get_user.stripe_customer_id,
             stripe_plan_id: get_subscription_plan.stripe_plan_id,
             card_id: card_id,
+            cancel_at:""
         });
         // console.log(create_subscription,"=================================create_subscription")
         if (
@@ -649,7 +650,7 @@ exports.cancelPlans = async (req, res) => {
         }
         let getSubsQuery = {
             status: 'active',
-            user_id: user_id,
+            user_id: req.body.user_id,
             subscription_plan_id: subscription_plan_id,
 
         };
@@ -679,7 +680,7 @@ exports.cancelPlans = async (req, res) => {
       }
      
     } catch (err) {
-        // console.log(err, '============================err');
+        console.log(err, '============================err');
         return res.status(400).json({
             success: false,
             error: { message: '' + err },
