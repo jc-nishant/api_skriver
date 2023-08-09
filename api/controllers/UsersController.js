@@ -765,8 +765,9 @@ module.exports = {
   },
 
   editProfile: async (req, res) => {
-    let data = req.body;
     try {
+      let data = req.body;
+      // console.log(data,"--------------data")
       var id = req.param('id');
       if (!id || id == undefined) {
         return res.status(404).json({
@@ -780,14 +781,10 @@ module.exports = {
       } else if (data.firstName && !data.lastName) {
         data.fullName = data.firstName;
       }
-      if (
-        req.body.api_key &&
-        req.body.has_after_call_transcript &&
-        req.body.has_real_time_streaming_transcript &&
-        req.body.has_sentiment
-      ) {
+      if (data.api_key) {
+        var randomStr = uuid.v4();
         let obj = {
-          license_id: req.body.api_key,
+          licence_id: randomStr,
           has_after_call_transcript: req.body.has_after_call_transcript,
           has_real_time_streaming_transcript:
             req.body.has_real_time_streaming_transcript,
@@ -795,9 +792,7 @@ module.exports = {
           startDate: req.body.startDate,
           endDate: req.body.endDate,
         };
-        // console.log(obj,"===================obj")
         const created = await License.create(obj).fetch();
-
         data.license_id = created.id;
       }
       Users.updateOne({ id: id }, data).then(async (user) => {
@@ -898,7 +893,7 @@ module.exports = {
             licence_id: req.body.api_key,
             has_after_call_transcript: req.body.has_after_call_transcript,
             has_real_time_streaming_transcript:
-            req.body.has_real_time_streaming_transcript,
+              req.body.has_real_time_streaming_transcript,
             has_sentiment: req.body.has_sentiment,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
