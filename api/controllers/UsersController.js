@@ -907,10 +907,9 @@ module.exports = {
 
         var newUser = await Users.create(req.body).fetch();
         if (newUser) {
-          // console.log(newUser, "--------------------newUser")
-          if (newUser.licence_id) {
-            const updatedLicence = await License.update(
-              { id: newUser.licence_id },
+          if (newUser.license_id) {
+            const updatedLicence = await License.updateOne(
+              { id: newUser.license_id },
               { isAssigned: true }
             );
           }
