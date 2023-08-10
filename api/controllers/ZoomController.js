@@ -115,7 +115,7 @@ module.exports = {
             }
             let meetingNumber = req.body.meetingNumber
             let role = req.body.role
-            let signature = (generateSignature(constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
+            let signature = (generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
             return res.status(200).json({
                 success: true,
                 code: 200,
