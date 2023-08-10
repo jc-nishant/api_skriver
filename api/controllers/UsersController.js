@@ -900,47 +900,44 @@ module.exports = {
           };
 
           const created = await License.create(obj).fetch();
-          // console.log(created,"=========================created")
-
           req.body.licence_id = created.id;
+
+          var newUser = await Users.create(req.body).fetch();
+          const updateuser = await Users.updateOne({ id: newUser.id },
+            { license_id: created.id }
+          );
+        } else {
+          var newUser = await Users.create(req.body).fetch();
         }
 
-        var newUser = await Users.create(req.body).fetch();
-        if (newUser) {
-          if (newUser.license_id) {
-            const updatedLicence = await License.updateOne(
-              { id: newUser.license_id },
-              { isAssigned: true }
-            );
-          }
-          if (req.body.role == "sub_admin") {
-            add_sub_adminEmail({
-              email: newUser.email,
-              fullName: newUser.fullName,
-              password: password,
-              role: newUser.role,
-            });
-
-          } else {
-            addUserEmail({
-              email: newUser.email,
-              fullName: newUser.fullName,
-              password: password,
-              role: newUser.role,
-            });
-
-          }
-
-          return res.status(200).json({
-            success: true,
-            code: 200,
-            data: newUser,
-            message: 'User added successfully',
+        if (req.body.role == "sub_admin") {
+          add_sub_adminEmail({
+            email: newUser.email,
+            fullName: newUser.fullName,
+            password: password,
+            role: newUser.role,
           });
+
+        } else {
+          addUserEmail({
+            email: newUser.email,
+            fullName: newUser.fullName,
+            password: password,
+            role: newUser.role,
+          });
+
         }
+
+        return res.status(200).json({
+          success: true,
+          code: 200,
+          data: newUser,
+          message: 'User added successfully',
+        });
+
       }
     } catch (err) {
-      console.log(err, "================err")
+      // console.log(err, "================err")
       return res
         .status(400)
         .json({ success: false, error: { code: 400, message: '' + err } });
