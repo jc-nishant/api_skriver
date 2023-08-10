@@ -3,6 +3,7 @@ var constant = require('../../config/local.js');
 const crypto = require('crypto');
 const axios = require('axios');
 var request = require('request');
+const { Console } = require('console');
 
 // const refreshToken = 'eyJhbGciOiJIUzUxMiIsInYiOiIyLjAiLCJraWQiOiI8S0lEPiJ9.eyJ2ZXIiOiI2IiwiY2xpZW50SWQiOiI8Q2xpZW50X0lEPiIsImNvZGUiOiI8Q29kZT4iLCJpc3MiOiJ1cm46em9vbTpjb25uZWN0OmNsaWVudGlkOjxDbGllbnRfSUQ-IiwiYXV0aGVudGljYXRpb25JZCI6IjxBdXRoZW50aWNhdGlvbl9JRD4iLCJ1c2VySWQiOiI8VXNlcl9JRD4iLCJncm91cE51bWJlciI6MCwiYXVkIjoiaHR0cHM6Ly9vYXV0aC56b29tLnVzIiwiYWNjb3VudElkIjoiPEFjY291bnRfSUQ-IiwibmJmIjoxNTgwMTQ2OTkzLCJleHAiOjIwNTMxODY5OTMsInRva2VuVHlwZSI6InJlZnJlc2hfdG9rZW4iLCJpYXQiOjE1ODAxNDY5OTMsImp0aSI6IjxKVEk-IiwidG9sZXJhbmNlSWQiOjI1fQ.Xcn_1i_tE6n-wy6_-3JZArIEbiP4AS3paSD0hzb0OZwvYSf-iebQBr0Nucupe57HUDB5NfR9VuyvQ3b74qZAfA';
 // const clientId = 'cuqUzwYJT66ZXG1aJTqIjg';
@@ -96,8 +97,7 @@ module.exports = {
                 const iat = Math.round(new Date().getTime() / 1000) - 30
                 const exp = iat + 60 * 602
                 const oHeader = { alg: 'HS256', typ: 'JWT' }
-                // let meetingNumber = req.body.meetingNumber
-                // let role = req.body.role
+
 
                 const oPayload = {
                     sdkKey: key,
@@ -108,17 +108,24 @@ module.exports = {
                     exp: exp,
                     tokenExp: exp
                 }
-
                 const sHeader = JSON.stringify(oHeader)
                 const sPayload = JSON.stringify(oPayload)
                 const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
                 return sdkJWT
             }
+            let meetingNumber = req.body.meetingNumber
+            let role = req.body.role
+            let signature = (generateSignature(constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
+            return res.status(200).json({
+                success: true,
+                code: 200,
+                data: signature,
 
-            console.log(generateSignature(constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
+            });
+
         }
         catch (err) {
-            return res.status(400).json({ success: true, code: 400, error: "" + err });
+            return res.status(400).json({ success: false, code: 400, error: "" + err });
 
         }
     },
@@ -199,12 +206,12 @@ module.exports = {
             });
 
             return res.status(200).json({
-                        success: true,
-                        code: 200,
-                        data: data,
-                    });
+                success: true,
+                code: 200,
+                data: data,
+            });
         } catch (error) {
-            return res.status(500).json({ error:error });
+            return res.status(500).json({ error: error });
 
         }
 
