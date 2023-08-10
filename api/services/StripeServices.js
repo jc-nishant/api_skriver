@@ -9,7 +9,7 @@ exports.create_product = async (options) => {
 }
 
 exports.create_plan = async (options) => {
-// console.log(options,"====================================options")
+    // console.log(options,"====================================options")
     const plan = await stripe.plans.create({
         nickname: options.name,
         amount: Number(options.amount) * 100,
@@ -141,10 +141,13 @@ exports.delete_source = async (options) => {
 }
 
 exports.buy_subscription = async (options) => {
+    // console.log(options,"=================options")
     let create_subscription = await stripe.subscriptions.create({
         customer: options.stripe_customer_id,
         default_source: options.card_id,
         collection_method: "charge_automatically",
+        cancel_at: options.cancel_at,
+
         items: [
             {
                 plan: options.stripe_plan_id,
@@ -196,7 +199,7 @@ exports.create_coupon = async (options) => {
     if (options.percent_off) {
         payload.percent_off = Number(options.percent_off);                      // 
     } else if (options.amount_off) {
-        payload.amount_off = Number(options.amount_off)*100;                       // required if percent_off is not passed
+        payload.amount_off = Number(options.amount_off) * 100;                       // required if percent_off is not passed
         payload.currency = options.currency ? options.currency : 'USD'  // if amount off then need currency is required 
     }
 

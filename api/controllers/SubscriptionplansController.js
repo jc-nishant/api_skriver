@@ -276,8 +276,9 @@ exports.getAllPlans = async (req, res) => {
                         data.isActive = true;
                         data.valid_upto = find_subscription.valid_upto;
                         data.interval_count = find_subscription.interval_count;
-                    }else {
+                    } else {
                         data.isActive = false;
+                        data.valid_upto = find_subscription.valid_upto;
                     }
                 } else {
                     data.isActive = false;
@@ -466,7 +467,7 @@ exports.purchaseplan = async (req, res) => {
             isDeleted: false,
             status: 'active',
         });
-        // console.log(get_subscription_plan,"================================get_subscription_plan")
+        // console.log(get_subscription_plan, "================================get_subscription_plan")
         if (!get_subscription_plan) {
             return res.status(400).json({
                 success: true,
@@ -490,7 +491,7 @@ exports.purchaseplan = async (req, res) => {
         // console.log(card_details,"=============card_details")
         if (!card_details) {
             return res.status(400).json({
-                success: true,
+                success: false,
                 message: constants.subscriptionplan.INVALID_CARD,
             });
         }
@@ -534,14 +535,22 @@ exports.purchaseplan = async (req, res) => {
                 // console.log(error);
             }
         }
-
-        let create_subscription = await Services.StripeServices.buy_subscription({
-            stripe_customer_id: get_user.stripe_customer_id,
-            stripe_plan_id: get_subscription_plan.stripe_plan_id,
-            card_id: card_id,
-            cancel_at:""
-        });
-        // console.log(create_subscription,"=================================create_subscription")
+        let create_subscription = {}
+        var today = new Date();
+        if (get_subscription_plan.plan_type == "free") {
+            create_subscription = await Services.StripeServices.buy_subscription({
+                stripe_customer_id: get_user.stripe_customer_id,
+                stripe_plan_id: get_subscription_plan.stripe_plan_id,
+                card_id: card_id,
+                cancel_at : new Date(new Date().setDate(today.getDate() + 30))
+            });;
+        }else{
+            create_subscription = await Services.StripeServices.buy_subscription({
+                stripe_customer_id: get_user.stripe_customer_id,
+                stripe_plan_id: get_subscription_plan.stripe_plan_id,
+                card_id: card_id,
+            });
+        }
         if (
             create_subscription &&
             ['trialing', 'active'].includes(create_subscription.status)
@@ -550,7 +559,6 @@ exports.purchaseplan = async (req, res) => {
                 status: 'inactive',
                 user_id: user_id,
             });
-            // console.log(get_inactive_subscription,"======================================get_inactive_subscription")
             if (get_inactive_subscription) {
                 let updateSubscription = await Subscription.updateOne(
                     { id: get_inactive_subscription.id },
@@ -656,29 +664,29 @@ exports.cancelPlans = async (req, res) => {
         };
         // console.log(getSubsQuery);
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
-        if(!get_existing_subscription){
+        if (!get_existing_subscription) {
             return res.status(400).json({
                 success: false,
                 message: "subscription plan do not exist",
             });
         }
-      if(get_existing_subscription){
-        let delete_subscription = await Services.StripeServices.delete_subscription({
-            stripe_subscription_id: get_existing_subscription.stripe_subscription_id
-        });
-        if (delete_subscription) {
-            let updateSubscription = await Subscription.updateOne(
-                { id: get_existing_subscription.id },
-                { status: 'cancelled', updatedBy: req.identity.id, });
+        if (get_existing_subscription) {
+            let delete_subscription = await Services.StripeServices.delete_subscription({
+                stripe_subscription_id: get_existing_subscription.stripe_subscription_id
+            });
+            if (delete_subscription) {
+                let updateSubscription = await Subscription.updateOne(
+                    { id: get_existing_subscription.id },
+                    { status: 'cancelled', updatedBy: req.identity.id, });
                 // console.log(updateSubscription,"=================================updateSubscription")
                 return res.status(200).json({
                     success: true,
                     message: "Plan cancel successfully",
                 });
+            }
+
         }
-       
-      }
-     
+
     } catch (err) {
         console.log(err, '============================err');
         return res.status(400).json({
