@@ -94,7 +94,7 @@ module.exports = {
             function generateSignature(key, secret, meetingNumber, role) {
 
                 const iat = Math.round(new Date().getTime() / 1000) - 30
-                const exp = iat + 60*602
+                const exp = iat + 60 * 602
                 const oHeader = { alg: 'HS256', typ: 'JWT' }
 
                 const oPayload = {
@@ -141,16 +141,13 @@ module.exports = {
     },
 
     createMeeting: async (req, res) => {
-        const accessToken = 'eyJhbGciOiJIUzUxMiIsInYiOiIyLjAiLCJraWQiOiI8S0lEPiJ9.eyJ2ZXIiOiI2IiwiY2xpZW50SWQiOiI8Q2xpZW50X0lEPiIsImNvZGUiOiI8Q29kZT4iLCJpc3MiOiJ1cm46em9vbTpjb25uZWN0OmNsaWVudGlkOjxDbGllbnRfSUQ-IiwiYXV0aGVudGljYXRpb25JZCI6IjxBdXRoZW50aWNhdGlvbl9JRD4iLCJ1c2VySWQiOiI8VXNlcl9JRD4iLCJncm91cE51bWJlciI6MCwiYXVkIjoiaHR0cHM6Ly9vYXV0aC56b29tLnVzIiwiYWNjb3VudElkIjoiPEFjY291bnRfSUQ-IiwibmJmIjoxNTgwMTQ2OTkzLCJleHAiOjE1ODAxNTA1OTMsInRva2VuVHlwZSI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTU4MDE0Njk5MywianRpIjoiPEpUST4iLCJ0b2xlcmFuY2VJZCI6MjV9.F9o_w7_lde4Jlmk_yspIlDc-6QGmVrCbe_6El-xrZehnMx7qyoZPUzyuNAKUKcHfbdZa6Q4QBSvpd6eIFXvjHw';
-
+        const accessToken = req.body.token;
+        let type = req.body.type
+        let topic = req.body.topic
         const meetingData = {
-            topic: 'Meeting Title',
-            type: 2, // 2 for scheduled meeting, 1 for instant meeting
-            start_time: '2023-08-10T12:00:00Z', // Replace with the desired start time in UTC
-            duration: 60, // Meeting duration in minutes
-            timezone: 'UTC', // Timezone in which the meeting will be held
-            password: 'meeting_password', // Optional meeting password
-            agenda: 'Meeting agenda or description',
+
+            topic: topic,
+            type: type, // 2 for scheduled meeting, 1 for instant meeting
             settings: {
                 host_video: true, // Host video on when the meeting starts
                 participant_video: true, // Participant video on when the meeting starts
@@ -209,16 +206,10 @@ module.exports = {
             console.error('Error refreshing access token:', error);
         }
     },
-
-
-
-
-
-
     authenticate: async (req, res) => {
-        try{
-        let code = req.body.code
-        // console.log(code,"===============code")
+        try {
+            let code = req.body.code
+            // console.log(code,"===============code")
             var options = {
                 method: 'POST',
                 url: 'https://zoom.us/oauth/token',
@@ -242,13 +233,13 @@ module.exports = {
 
             request(options, function (error, response, body) {
                 if (error) throw new Error(error);
-                else{
+                else {
                     return res.status(200).json({
                         data: body,
                     });
                 }
             });
-        }catch(err){
+        } catch (err) {
             return res.status(500).json({ error: 'Error obtaining access token' });
         }
 
