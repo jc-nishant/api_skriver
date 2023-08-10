@@ -72,62 +72,66 @@ module.exports = {
 
     generateSignature: async function (req, res) {
         try {
-            // const meetingNumber = 74282522589
-            // const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
-            // const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
-            // const timestamp = new Date().getTime() - 30000; // 30 seconds before to account for latency
-            // console.log(timestamp, "==============timestamp")
-            // const msg = Buffer.from(apiKey + meetingNumber + timestamp + '0').toString('base64');
-            // const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
-            // const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.0.${hash}`).toString('base64');
-            // return res.status(200).json({
-            //     success: true,
-            //     code: 200,
-            //     signature: signature,
-            //     meetingNumber: meetingNumber,
-            //     timestamp: timestamp
 
-            // });
-
-            const KJUR = require('jsrsasign')
-            // https://www.npmjs.com/package/jsrsasign
-
-            function generateSignature(key, secret, meetingNumber, role) {
-
-                const iat = Math.round(new Date().getTime() / 1000) - 30
-                const exp = iat + 60 * 602
-                const oHeader = { alg: 'HS256', typ: 'JWT' }
-
-
-                const oPayload = {
-                    sdkKey: key,
-                    appKey: key,
-                    mn: meetingNumber,
-                    role: role,
-                    iat: iat,
-                    exp: exp,
-                    tokenExp: exp
-                }
-                const sHeader = JSON.stringify(oHeader)
-                const sPayload = JSON.stringify(oPayload)
-                const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
-
-                // let sdkJWT = HMACSHA256(
-                //     base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
-                //     constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
-                // );
-                console.log(sdkJWT, '==============sdkJWT');
-                return sdkJWT
-            }
             let meetingNumber = req.body.meetingNumber
             let role = req.body.role
-            let signature = (generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
+
+            // const meetingNumber = 74282522589
+            const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
+            const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
+            const timestamp = new Date().getTime() - 30000; // 30 seconds before to account for latency
+            console.log(timestamp, "==============timestamp")
+            const msg = Buffer.from(apiKey + meetingNumber + timestamp + '0').toString('base64');
+            const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
+            const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.0.${hash}`).toString('base64');
             return res.status(200).json({
                 success: true,
                 code: 200,
                 data: signature,
+                signature: signature,
+                meetingNumber: meetingNumber,
+                timestamp: timestamp
 
             });
+
+            // const KJUR = require('jsrsasign')
+            // // https://www.npmjs.com/package/jsrsasign
+
+            // function generateSignature(key, secret, meetingNumber, role) {
+
+            //     const iat = Math.round(new Date().getTime() / 1000) - 30
+            //     const exp = iat + 60 * 602
+            //     const oHeader = { alg: 'HS256', typ: 'JWT' }
+
+
+            //     const oPayload = {
+            //         sdkKey: key,
+            //         appKey: key,
+            //         mn: meetingNumber,
+            //         role: role,
+            //         iat: iat,
+            //         exp: exp,
+            //         tokenExp: exp
+            //     }
+            //     const sHeader = JSON.stringify(oHeader)
+            //     const sPayload = JSON.stringify(oPayload)
+            //     const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
+
+            //     // let sdkJWT = HMACSHA256(
+            //     //     base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
+            //     //     constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
+            //     // );
+            //     console.log(sdkJWT, '==============sdkJWT');
+            //     return sdkJWT
+            // }
+
+            // let signature = (generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
+            // return res.status(200).json({
+            //     success: true,
+            //     code: 200,
+            //     data: signature,
+
+            // });
 
         }
         catch (err) {
