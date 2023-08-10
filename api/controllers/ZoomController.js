@@ -96,6 +96,8 @@ module.exports = {
                 const iat = Math.round(new Date().getTime() / 1000) - 30
                 const exp = iat + 60 * 602
                 const oHeader = { alg: 'HS256', typ: 'JWT' }
+                // let meetingNumber = req.body.meetingNumber
+                // let role = req.body.role
 
                 const oPayload = {
                     sdkKey: key,
@@ -113,7 +115,7 @@ module.exports = {
                 return sdkJWT
             }
 
-            console.log(generateSignature("cuqUzwYJT66ZXG1aJTqIjg", "cuqUzwYJT66ZXG1aJTqIjg", 73883497176, 1))
+            console.log(generateSignature(constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
         }
         catch (err) {
             return res.status(400).json({ success: true, code: 400, error: "" + err });
@@ -141,41 +143,69 @@ module.exports = {
     },
 
     createMeeting: async (req, res) => {
-        const accessToken = req.body.token;
-        let type = req.body.type
-        let topic = req.body.topic
-        const meetingData = {
-
-            topic: topic,
-            type: type, // 2 for scheduled meeting, 1 for instant meeting
-            settings: {
-                host_video: true, // Host video on when the meeting starts
-                participant_video: true, // Participant video on when the meeting starts
-                join_before_host: false, // Participants can't join before host
-                mute_upon_entry: true, // Participants are muted upon entry
-                watermark: false, // No watermark on videos
-                approval_type: 0, // Automatically approve participants
-                audio: 'both', // Both telephony and VoIP audio options available
-                auto_recording: 'none', // No auto
-            }
-        }
-
         try {
-            const response = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
+
+
+            const accessToken = req.body.token;
+            let type = req.body.type
+            let topic = req.body.topic
+            // const meetingData = {
+
+            //     topic: topic,
+            //     type: type, // 2 for scheduled meeting, 1 for instant meeting
+            //     settings: {
+            //         host_video: true, // Host video on when the meeting starts
+            //         participant_video: true, // Participant video on when the meeting starts
+            //         join_before_host: true, // Participants can't join before host
+            //         mute_upon_entry: true, // Participants are muted upon entry
+            //         watermark: false, // No watermark on videos
+            //         // approval_type: 0, // Automatically approve participants
+            //         // audio: 'both', // Both telephony and VoIP audio options available
+            //         // auto_recording: 'none', // No auto
+            //     }
+            // }
+
+            // try {
+            //     const response = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
+            //         headers: {
+            //             'Authorization': `Bearer ${accessToken}`,
+            //             'Content-Type': 'application/json',
+            //         },
+            //     });
+            //     return res.status(200).json({
+            //         success: true,
+            //         code: 200,
+            //         data: response,
+            //     });
+
+            //     // Process the response
+            // } catch (error) {
+            //     console.error('Error creating meeting:', error);
+            // }
+
+            const meetingData = {
+                topic: topic,
+                type: type, // Scheduled meeting
+                approval_type: 2,
+                // Add other meeting properties as needed
+                join_before_host: true,
+            };
+
+            const { data } = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
             });
-            return res.status(200).json({
-                success: true,
-                code: 200,
-                data: response,
-            });
 
-            // Process the response
+            return res.status(200).json({
+                        success: true,
+                        code: 200,
+                        data: data,
+                    });
         } catch (error) {
-            console.error('Error creating meeting:', error);
+            return res.status(500).json({ error:error });
+
         }
 
 
@@ -210,35 +240,56 @@ module.exports = {
         try {
             let code = req.body.code
             // console.log(code,"===============code")
-            var options = {
-                method: 'POST',
-                url: 'https://zoom.us/oauth/token',
-                qs: {
-                    grant_type: 'authorization_code',
-                    //The code below is a sample Authorization Code. Replace it with your actual Authorization Code while making requests.
-                    code: code,
-                    //The uri below is a sample redirect_uri. Replace it with your actual redirect_uri while making requests.
-                    redirect_uri: 'https://portal.jcsoftwaresolution.in/home',
-                    code_verifier: "QhFM2njqjoT6g6BVsxkUU41vI90xxYDe2sblQ6ANDU8"
-                },
-                headers: {
-                    /**The credential below is a sample base64 encoded credential. Replace it with "Authorization: 'Basic ' + Buffer.from(your_app_client_id + ':' + your_app_client_secret).toString('base64')"
-                     **/
-                    // "Authorization": `Basic ${Buffer.from("cuqUzwYJT66ZXG1aJTqIjg:N09S1FUHby8TXwlKVVlSg7LyE8O3Go45").toString('base64')}`,
-                    "Authorization": 'Basic ' + Buffer.from(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID + ':' + constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET).toString('base64'),
-                    "Content-Type": "application/x-www-form-urlencoded"
+            // var options = {
+            //     method: 'POST',
+            //     url: 'https://zoom.us/oauth/token',
+            //     qs: {
+            //         grant_type: 'authorization_code',
+            //         //The code below is a sample Authorization Code. Replace it with your actual Authorization Code while making requests.
+            //         code: code,
+            //         //The uri below is a sample redirect_uri. Replace it with your actual redirect_uri while making requests.
+            //         redirect_uri: 'https://portal.jcsoftwaresolution.in/zoom',
+            //         code_verifier: "QhFM2njqjoT6g6BVsxkUU41vI90xxYDe2sblQ6ANDU8"
+            //     },
+            //     headers: {
+            //         /**The credential below is a sample base64 encoded credential. Replace it with "Authorization: 'Basic ' + Buffer.from(your_app_client_id + ':' + your_app_client_secret).toString('base64')"
+            //          **/
+            //         // "Authorization": `Basic ${Buffer.from("cuqUzwYJT66ZXG1aJTqIjg:N09S1FUHby8TXwlKVVlSg7LyE8O3Go45").toString('base64')}`,
+            //         "Authorization": 'Basic ' + Buffer.from(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID + ':' + constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET).toString('base64'),
+            //         "Content-Type": "application/x-www-form-urlencoded"
 
+            //     },
+            // };
+
+            // request(options, function (error, response, body) {
+            //     if (error) throw new Error(error);
+            //     else {
+            //         return res.status(200).json({
+            //             data: body,
+            //         });
+            //     }
+            // });
+
+            var FormData = require('form-data');
+            var bodyFormData = new FormData();
+            bodyFormData.append('code', code);
+            bodyFormData.append('grant_type', 'authorization_code');
+            bodyFormData.append('redirect_uri', 'https://portal.jcsoftwaresolution.in/zoom');
+            bodyFormData.append('code_verifier', 'QhFM2njqjoT6g6BVsxkUU41vI90xxYDe2sblQ6ANDU8');
+            let url = 'https://zoom.us/oauth/token';
+
+            var config = {
+                headers: {
+                    'Authorization': `Basic ${Buffer.from(`${constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID}:${constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET}:`).toString('base64')}`,
+                    ...bodyFormData.getHeaders()
                 },
             };
 
-            request(options, function (error, response, body) {
-                if (error) throw new Error(error);
-                else {
-                    return res.status(200).json({
-                        data: body,
-                    });
-                }
+            let { data } = await axios.post(url, bodyFormData, config);
+            return res.status(200).json({
+                data: data,
             });
+
         } catch (err) {
             return res.status(500).json({ error: 'Error obtaining access token' });
         }
