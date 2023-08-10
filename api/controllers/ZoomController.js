@@ -96,6 +96,8 @@ module.exports = {
                 const iat = Math.round(new Date().getTime() / 1000) - 30
                 const exp = iat + 60 * 602
                 const oHeader = { alg: 'HS256', typ: 'JWT' }
+                // let meetingNumber = req.body.meetingNumber
+                // let role = req.body.role
 
                 const oPayload = {
                     sdkKey: key,
@@ -113,7 +115,7 @@ module.exports = {
                 return sdkJWT
             }
 
-            console.log(generateSignature("cuqUzwYJT66ZXG1aJTqIjg", "cuqUzwYJT66ZXG1aJTqIjg", 73883497176, 1))
+            console.log(generateSignature(constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
         }
         catch (err) {
             return res.status(400).json({ success: true, code: 400, error: "" + err });
@@ -151,12 +153,12 @@ module.exports = {
             settings: {
                 host_video: true, // Host video on when the meeting starts
                 participant_video: true, // Participant video on when the meeting starts
-                join_before_host: false, // Participants can't join before host
+                join_before_host: true, // Participants can't join before host
                 mute_upon_entry: true, // Participants are muted upon entry
                 watermark: false, // No watermark on videos
-                approval_type: 0, // Automatically approve participants
-                audio: 'both', // Both telephony and VoIP audio options available
-                auto_recording: 'none', // No auto
+                // approval_type: 0, // Automatically approve participants
+                // audio: 'both', // Both telephony and VoIP audio options available
+                // auto_recording: 'none', // No auto
             }
         }
 
@@ -218,7 +220,7 @@ module.exports = {
                     //The code below is a sample Authorization Code. Replace it with your actual Authorization Code while making requests.
                     code: code,
                     //The uri below is a sample redirect_uri. Replace it with your actual redirect_uri while making requests.
-                    redirect_uri: 'https://portal.jcsoftwaresolution.in/home',
+                    redirect_uri: 'https://portal.jcsoftwaresolution.in/zoom',
                     code_verifier: "QhFM2njqjoT6g6BVsxkUU41vI90xxYDe2sblQ6ANDU8"
                 },
                 headers: {
