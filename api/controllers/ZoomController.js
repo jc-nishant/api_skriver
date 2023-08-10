@@ -110,12 +110,12 @@ module.exports = {
                 }
                 const sHeader = JSON.stringify(oHeader)
                 const sPayload = JSON.stringify(oPayload)
-                // const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
+                const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
 
-                let sdkJWT = HMACSHA256(
-                    base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
-                    constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
-                );
+                // let sdkJWT = HMACSHA256(
+                //     base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
+                //     constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
+                // );
                 console.log(sdkJWT, '==============sdkJWT');
                 return sdkJWT
             }
