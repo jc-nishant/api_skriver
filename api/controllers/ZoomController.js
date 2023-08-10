@@ -110,7 +110,13 @@ module.exports = {
                 }
                 const sHeader = JSON.stringify(oHeader)
                 const sPayload = JSON.stringify(oPayload)
-                const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
+                // const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
+
+                let sdkJWT = HMACSHA256(
+                    base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
+                    constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
+                );
+                console.log(sdkJWT, '==============sdkJWT');
                 return sdkJWT
             }
             let meetingNumber = req.body.meetingNumber
@@ -201,11 +207,11 @@ module.exports = {
                     join_before_host: true, // Participants can't join before host
                     mute_upon_entry: true, // Participants are muted upon entry
                     watermark: false, // No watermark on videos
-                    in_meeting : true,
+                    in_meeting: true,
                     approval_type: 2, // Automatically approve participants
                     audio: 'both', // Both telephony and VoIP audio options available
                     // auto_recording: 'none', // No auto,
-                    show_join_info : true
+                    show_join_info: true
                 }
             };
 
