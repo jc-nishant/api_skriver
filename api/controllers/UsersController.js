@@ -906,8 +906,10 @@ module.exports = {
           const updateuser = await Users.updateOne({ id: newUser.id },
             { license_id: created.id }
           );
+        } else {
+          var newUser = await Users.create(req.body).fetch();
         }
-        var newUser = await Users.create(req.body).fetch();
+
         if (req.body.role == "sub_admin") {
           add_sub_adminEmail({
             email: newUser.email,
