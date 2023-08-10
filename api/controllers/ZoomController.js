@@ -193,7 +193,7 @@ module.exports = {
             const meetingData = {
                 topic: topic,
                 type: type, // Scheduled meeting
-                approval_type: 2,
+                // approval_type: 2,
                 // Add other meeting properties as needed
                 join_before_host: true,
             };
@@ -281,7 +281,7 @@ module.exports = {
             var bodyFormData = new FormData();
             bodyFormData.append('code', code);
             bodyFormData.append('grant_type', 'authorization_code');
-            bodyFormData.append('redirect_uri', 'https://portal.jcsoftwaresolution.in/zoom');
+            bodyFormData.append('redirect_uri', 'https://skriver.jcsoftwaresolution.in/zoom');
             bodyFormData.append('code_verifier', 'QhFM2njqjoT6g6BVsxkUU41vI90xxYDe2sblQ6ANDU8');
             let url = 'https://zoom.us/oauth/token';
 
