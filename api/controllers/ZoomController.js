@@ -195,7 +195,18 @@ module.exports = {
                 type: type, // Scheduled meeting
                 // approval_type: 2,
                 // Add other meeting properties as needed
-                join_before_host: true,
+                settings: {
+                    host_video: true, // Host video on when the meeting starts
+                    participant_video: true, // Participant video on when the meeting starts
+                    join_before_host: true, // Participants can't join before host
+                    mute_upon_entry: true, // Participants are muted upon entry
+                    watermark: false, // No watermark on videos
+                    in_meeting : true,
+                    approval_type: 2, // Automatically approve participants
+                    audio: 'both', // Both telephony and VoIP audio options available
+                    // auto_recording: 'none', // No auto,
+                    show_join_info : true
+                }
             };
 
             const { data } = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
