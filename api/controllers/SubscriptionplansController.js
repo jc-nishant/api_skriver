@@ -278,7 +278,7 @@ exports.getAllPlans = async (req, res) => {
                         data.interval_count = find_subscription.interval_count;
                     } else {
                         data.isActive = false;
-                        data.valid_upto = find_subscription.valid_upto;
+                        data.valid_upto = find_subscriptions.valid_upto;
                     }
                 } else {
                     data.isActive = false;
@@ -292,6 +292,7 @@ exports.getAllPlans = async (req, res) => {
             data: get_subscriptionPlan,
         });
     } catch (err) {
+        console.log(err,"----------------------------err    ")
         return res.status(400).json({
             success: false,
             error: { code: 400, message: err.toString() },
