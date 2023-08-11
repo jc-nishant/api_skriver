@@ -17,6 +17,7 @@
     "i": "^0.3.7",
     "jsonwebtoken": "^8.5.1",
     "jsrsasign": "^10.8.6",
+    "node-cron": "^3.0.2",
     "nodemailer": "^6.7.0",
     "nodemailer-smtp-transport": "^2.7.4",
     "npm": "^9.8.1",

@@ -142,17 +142,12 @@ module.exports = {
                 query.status = status;
               }
             
-            if (search) {
-                // query.or = [{
-                //     // license_number: { 'like': `%${search}%` },
-                //     license_name: { 'like': `%${search}%` },
-                // }]
+              if (search) {
                 query.or = [
-                    { license_name: { 'like': `%${search}%` } },
-                    { license_number: { 'like': `%${search}%` } },
-                ]
-            }
-
+                  { name: { like: `%${search}%` } },
+                  { description: { like: `%${search}%` } },
+                ];
+              }
             query.isDeleted = false
 
             let total = await Features.count(query)
@@ -172,6 +167,7 @@ module.exports = {
                 })
             }
         } catch (err) {
+            console.log(err,"==============err")
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
