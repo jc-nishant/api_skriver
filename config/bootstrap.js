@@ -10,6 +10,8 @@
  */
 
 const smtpTransport = require('nodemailer-smtp-transport');
+const Services = require('../api/services/index');
+const cron = require('node-cron');
 
 module.exports.bootstrap = async function () {
   // By convention, this is a good place to set up fake data during development.
@@ -78,4 +80,32 @@ module.exports.bootstrap = async function () {
       pass: 'test!234',
     });
   }
+  // subscription cancel
+  cron.schedule("0 */12 * * *", async () => {
+    let date = new Date();
+    date.setDate(date.getDate() - 1)
+    let update_subscriptions = await Subscription.update({
+      status: { in: ["active", "inactive"] },
+      valid_upto: { "<": date }
+    },
+      {
+        status: "cancelled",
+      }).fetch();
+
+    if (update_subscriptions && update_subscriptions.length > 0) {
+      for await (let item of update_subscriptions) {
+        try {
+          let update_user = await Users.updateOne({ id: item.user_id }, {
+            blue_tick_enabled: false
+          });
+
+          let delete_old_subscription = await Services.StripeServices.delete_subscription({
+            stripe_subscription_id: item.stripe_subscription_id
+          });
+        } catch (error) {
+          console.log(error, '===error');
+        }
+      }
+    }
+  })
 };
