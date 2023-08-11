@@ -592,11 +592,13 @@ exports.purchaseplan = async (req, res) => {
             let add_subscription = await Subscription.create(
                 create_subscription_payload
             ).fetch();
+
             let update = await Users.updateOne(
                 { id: user_id },
                 {
                     stripe_subscription_id: create_subscription.id,
                     subscription_plan_id: get_subscription_plan.id,
+                    blue_tick_enabled: true,
                 }
             );
             return res.status(200).json({
