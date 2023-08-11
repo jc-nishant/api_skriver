@@ -121,6 +121,9 @@ module.exports = {
       isIn: ['active', 'deactive'],
       defaultsTo: 'active',
     },
+    blue_tick_enabled: {type: 'Boolean',defaultsTo: false,
+    allowNull: true,},
+
 
 
   },
