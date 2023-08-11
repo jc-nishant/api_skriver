@@ -118,9 +118,23 @@ module.exports = {
         req.body['status'] = 'active';
         req.body['role'] = req.body.role ? req.body.role : 'user';
 
-        // if (req.body.firstName && req.body.lastName) {
-        //     req.body["fullName"] = req.body.firstName + ' ' + req.body.lastName
-        // }
+        function addOneYear(Year) {
+          Year.setFullYear(Year.getFullYear() + 1);
+          return Year;
+        }
+        var today_date = new Date();
+        const newDate = addOneYear(date);
+        console.log(newDate)
+        let obj = {
+          licence_id: req.body.api_key,
+          has_after_call_transcript: "false",
+          has_real_time_streaming_transcript: "false",
+          has_sentiment: "false",
+          startDate: today_date,
+          endDate: newDate,
+        }
+        const created = await License.create(obj).fetch();
+        req.body.license_id = created.id;     
         var newUser = await Users.create(req.body).fetch();
         if (newUser) {
           userVerifyLink({
