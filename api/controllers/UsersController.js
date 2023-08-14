@@ -1075,8 +1075,7 @@ forgotPasswordEmail = function (options) {
               <div class="about_mail" style="
                   text-align: center;left: 50%;background: #e5e5e575;width: 100%; max-width: 80%;padding: 30px; margin:     3rem auto;"><h3 class="heading_mail" style="font-size: 55px;color: #1340B6;margin:0px;"> You’ve Got It!</h3>
                   <p class="dashboard" style="margin-bottom: 0px;margin-top: 12px;font-size: 22px;
-                  line-height: 33px;"> Dear User, Thanks for your registering with our platform
-                  We hope you had a good experience. Below are the features which you got in your package or subscription:.</p>
+                  line-height: 33px;"> Dear User, You have requested to reset your password. Below is your verification code.</p>
               </div>
               <div class="center_text" style="text-align: center; margin: 21px auto;width: 300px;margin: auto;">
                       <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
