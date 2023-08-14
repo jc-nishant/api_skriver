@@ -896,13 +896,6 @@ module.exports = {
         }
 
         //  if (req.body.firstName && req.body.lastName) {
-
-        if (
-          req.body.api_key &&
-          req.body.has_after_call_transcript &&
-          req.body.has_real_time_streaming_transcript &&
-          req.body.has_sentiment
-        ) {
           let obj = {
             licence_id: req.body.api_key,
             has_after_call_transcript: req.body.has_after_call_transcript,
@@ -914,16 +907,12 @@ module.exports = {
           };
 
           const created = await License.create(obj).fetch();
-          req.body.licence_id = created.id;
+          req.body.license_id = created.id;
 
           var newUser = await Users.create(req.body).fetch();
           const updateuser = await Users.updateOne({ id: newUser.id },
             { license_id: created.id }
           );
-        } else {
-          var newUser = await Users.create(req.body).fetch();
-        }
-
         if (req.body.role == "sub_admin") {
           add_sub_adminEmail({
             email: newUser.email,
