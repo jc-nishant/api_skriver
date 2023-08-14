@@ -982,57 +982,6 @@ module.exports = {
     }
   },
 };
-
-// userVerifyLink = async (options) => {
-//   let email = options.email;
-//   // console.log(options, "==================options")
-//   message = '';
-//   message += `
-//   <!DOCTYPE html>
-//   <html lang="en">
-
-//   <head>
-//       <meta charset="UTF-8">
-//       <meta http-equiv="X-UA-Compatible" content="IE=edge">
-//       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//       <title>Document</title>
-//   </head>
-
-//   <body style="font-family: sans-serif;">
-
-//       <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
-//           <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
-//               <img src="${credentials.BACK_WEB_URL}/images/check_mark2.png" style="width: 80px; height: 80px;">
-//               <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">You’Re In!</h1>
-//               <p>Thank you for joining SK River, You are Going to love it here. </p>
-
-//               <img src="${credentials.BACK_WEB_URL}/images/logo_img.png" style="width:170px; height: 85px;margin-top: 20px; object-fit: contain;">
-
-//               <p style="width: 134px; height: 1px;background: #164E63;margin: 22px auto;    margin-top: 14px;"></p>
-
-//                   <a href="${credentials.BACK_WEB_URL}verifyUser?id=${options.id}"  style="padding: 8px 25px; font-size: 12px;cursor: pointer; color: #fff; background: #2fc0f9; border-radius: 50px; border: 1px solid #2fc0f9;"
-//                   type="text">Verify Email</a>
-//               <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our support team!</p>
-
-//           </div>
-//           <p style="width: 20px; height: 185px; background: #164E63; position: absolute;bottom: 0px;left: 0px;margin:0px;">
-//           </p>
-//           <!-- <p
-//               style="width: 50px; height: 18px; background: #164E63; position: absolute;bottom: 0px; right: 0px;margin:0px;">
-//           </p> -->
-//           <p style="width: 20px; height: 185px; background: #164E63; position: absolute;top: 0px;right: 0px;margin:0px;">
-//           </p>
-//           <!-- <p style="width: 50px; height: 18px; background: #164E63; position: absolute;top: 0px;left: 0px;margin:0px;">
-//           </p> -->
-//       </div>
-
-//   </body>
-
-//   </html>
-// `;
-//   SmtpController.sendEmail(email, 'Email Verification', message);
-// };
-
 userVerifyLink = async (options) => {
   let email = options.email;
   // console.log(options, "==================options")
@@ -1045,7 +994,7 @@ userVerifyLink = async (options) => {
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Forget Password</title>
-  </head><body style="font-family:sans-serif;">
+      </head><body style="font-family:sans-serif;">
           <div class="main" style=" height:100%; width:800px;align-items:center;display:flex; margin: auto;" >
               <div class="email" style="width: 500px; height:fit-content;margin: 50px auto; padding: 2rem; 
                    position:relative;  background-image: url('${credentials.BACK_WEB_URL}images/Email Template (6).jpg'); width: 900px;background-position: center;
@@ -1055,60 +1004,41 @@ userVerifyLink = async (options) => {
                        <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
                   </div>
                   </div>
-                  <div class="about_mail" style="
-                  text-align: center;left: 50%;background: #e5e5e575;width: 100%; max-width: 80%;padding: 30px; margin: 3rem auto;">
-                      <h3 class="heading_mail" style="font-size: 55px;
-                      color: #1340B6;margin:0px;"> You’ve Got It!</h3>
-                      <p class="dashboard" style="margin-bottom: 0px;
-                      margin-top: 12px;
-                      font-size: 22px;
-                      line-height: 33px;"> Dear User, Thanks for your registering with our platform
-      We hope you had a good experience. Below are the features which you got in your package or subscription:.</p>
-                  </div>
-                  <div class="center_text" style="
-                  text-align: center;
-                  margin: 21px auto;
-                  width: 300px;
-          margin: auto;">
-                      <div class="line" style="height: 7px;
-                      background: #F1532B;
-                      margin-top: 13px;
-                      width: 70px;
-                      margin: 12px auto;"></div>
-       <div class="text" style="    display: flex;
-       align-items: center;
-       justify-content: center;
-       height: 40px;
-      ">
-       <span>
-          <img src="${credentials.BACK_WEB_URL}images/Vector (2).png" style="height:20px; width:20px; margin-right: 10px;">
+              <div class="about_mail" style="
+                  text-align: center;left: 50%;background: #e5e5e575;width: 100%; max-width: 80%;padding: 30px; margin:     3rem auto;"><h3 class="heading_mail" style="font-size: 55px;color: #1340B6;margin:0px;"> You’ve Got It!</h3><p class="dashboard" style="margin-bottom: 0px;margin-top: 12px;font-size: 22px;
+                  line-height: 33px;"> Dear User, Thanks for your registering with our platform
+                  We hope you had a good experience. Below are the features which you got in your package or subscription:.</p>
+              </div>
+              <div class="center_text" style="text-align: center; margin: 21px auto;width: 300px;margin: auto;">
+                      <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
+              </div>
+       <div class="text" style="display:flex;align-items: center;justify-content: center;height: 40px;"><span>
+          <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
        </span>
-       <p class="about_time" style="font-size: 16px;
-          color: #514e4e;
-          border-bottom: 1px solid #e3e1e1;
-          padding-bottom: 10px;"> Time Tracking
-        </p>
+       <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+      </p>
       </div>
       <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;"><span>
-         <img src="${credentials.BACK_WEB_URL}images/Vector (2).png" style="height:20px; width:20px; margin-right: 10px;">
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
       </span>
          <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking</p>
       </div>
       <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;">
       <span>
-         <img src="${credentials.BACK_WEB_URL}images/Vector (2).png" style="height:20px; width:20px; margin-right: 10px;">
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
       </span>
-         <p class="about_time" style="font-size: 16px;
-         color: #514e4e;
-         border-bottom: 1px solid #e3e1e1;
-         padding-bottom: 10px;"> Time Tracking</p>
-      </div></div>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+         </p>
+      </div>
+      </div>
       <div class="verify" style="text-align: center;margin: 2rem auto; width: 400px;">
-
-      <a href="${credentials.BACK_WEB_URL}verifyUser?id=${options.id}"style="padding: 8px 25px; font-size: 12px;cursor: pointer; class="send_mail" style="border: none;background: #1342BB;width: 217px;color: #fff; height: 40px;border-radius: 10px;font-size:14px;
-      type="text"> Go to your account</a>
-  <p class="email_noti" style="font-size: 16px;color: #939393;line-height: 27px;"> To help us serve you better in the future, we’d love to hear about your experience with our website. We appreciate your time and we value your feedback</p></div>
- </div></div>
+      <a href="${credentials.BACK_WEB_URL}verifyUser?id=${options.id}"style="padding: 8px 25px; font-size: 12px;cursor: pointer; class="send_mail" style="border: none;background: #1342BB;width: 217px;color: #fff; height: 40px;border-radius: 10px;font-size:14px;type="text"> Go to your account
+      </a>
+  <p class="email_noti" style="font-size: 16px;color: #939393;line-height: 27px;"> To help us serve you better in the future, we’d love to hear about your experience with our website. We appreciate your time and we value your feedback
+  </p>
+    </div>
+  </div>
+</div>
   </body>
   </html>
 `;
@@ -1125,40 +1055,60 @@ forgotPasswordEmail = function (options) {
   message = '';
 
   message += ` 
-      <!DOCTYPE html>
-      <html lang="en">
-      
-      <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Document</title>
-      </head>
-      
-      <body style="font-family: sans-serif;">
-      
-          <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
-              <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
-                  <h1 style="    margin-top: 10px; font-size: 26px;color: #23a2d4;">Reset Password</h1>
-                  <p style="font-size: 15px;"> We have received your request to reset your password.</p>
-                  <div style="margin-bottom: 14px; ">
-                  <img src="${credentials.BACK_WEB_URL}/images/logo.png" style="width: 80px;"/>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Forget Password</title>
+      </head><body style="font-family:sans-serif;">
+          <div class="main" style=" height:100%; width:800px;align-items:center;display:flex; margin: auto;" >
+              <div class="email" style="width: 500px; height:fit-content;margin: 50px auto; padding: 2rem; 
+                   position:relative;  background-image: url('${credentials.BACK_WEB_URL}images/Email Template (6).jpg'); width: 900px;background-position: center;
+                   background-repeat: no-repeat;
+                   background-size: cover; border-radius: 40px; border: 1px solid #616666;"><div class="check-mark " style="text-align: center;">
+                      <img src="${credentials.BACK_WEB_URL}images/SKRIVER.png" style="width: 160px;height: auto;">
+                       <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
+                  </div>
+                  </div>
+              <div class="about_mail" style="
+                  text-align: center;left: 50%;background: #e5e5e575;width: 100%; max-width: 80%;padding: 30px; margin:     3rem auto;"><h3 class="heading_mail" style="font-size: 55px;color: #1340B6;margin:0px;"> You’ve Got It!</h3>
+                  <p class="dashboard" style="margin-bottom: 0px;margin-top: 12px;font-size: 22px;
+                  line-height: 33px;"> Dear User, You have requested to reset your password. Below is your verification code.</p>
               </div>
-              <div style="padding: 15px; border:3px solid rgba(11, 10, 10, 0.54); border-radius: 8px; max-width: 356px; color: #000; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #8080808a;">
-              Your verification code is <b>${verificationCode}</b>
-              </div><p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our support team!</p>
+              <div class="center_text" style="text-align: center; margin: 21px auto;width: 300px;margin: auto;">
+                      <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
               </div>
-              <p style="width: 20px; height: 185px; background: #164E63; position: absolute;bottom: 0px;left: 0px;margin:0px;">
-              </p>
-          
-              <p style="width: 20px; height: 185px; background: #164E63; position: absolute;top: 0px;right: 0px;margin:0px;">
-              </p>
-        
-          </div>
-      
-      </body>
-      
-      </html>
+       <div class="text" style="display:flex;align-items: center;justify-content: center;height: 40px;"><span>
+          <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+       </span>
+       <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+      </p>
+      </div>
+      <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;"><span>
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+      </span>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking</p>
+      </div>
+      <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;">
+      <span>
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+      </span>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+         </p>
+      </div>
+      </div>
+      <div class="verify" style="text-align: center;margin: 2rem auto; width: 400px;">
+      <p class="dashboard" style="margin-bottom: 0px;margin-top: 12px;font-size: 22px;
+      line-height: 33px;color:#500050;"> Your verification code is <b>${verificationCode}.</p>
+  <p class="email_noti" style="font-size: 16px;color: #939393;line-height: 27px;"> To help us serve you better in the future, we’d love to hear about your experience with our website. We appreciate your time and we value your feedback
+  </p>
+    </div>
+  </div>
+</div>
+  </body>
+  </html>
     `;
 
   SmtpController.sendEmail(email, 'Reset Password', message);
@@ -1174,48 +1124,66 @@ add_sub_adminEmail = async (options) => {
   }
   message = '';
   message += `
-                    <body style="font-family: sans-serif;">
-                    <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
-                        <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
-                            <img src="${credentials.BACK_WEB_URL}/images/Check_Mark.png" style="width: 80px; height: 80px;">
-                            <h1 style="    margin-top: 10px; 
-                            font-style: normal;
-                            font-weight: 600;
-                            font-size: 20px;
-                            line-height: 23px;
-                            color: #2759A7;">You’Re In!</h1>
-                    <p style="
-                    font-size: 16px;
-                    font-weight: 200;
-                    text-align: center;">Thank you for joining SK River, You are Going to love it here.</p>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Forget Password</title>
+      </head><body style="font-family:sans-serif;">
+          <div class="main" style=" height:100%; width:800px;align-items:center;display:flex; margin: auto;" >
+              <div class="email" style="width: 500px; height:fit-content;margin: 50px auto; padding: 2rem; 
+                   position:relative;  background-image: url('${credentials.BACK_WEB_URL}images/Email Template (6).jpg'); width: 900px;background-position: center;
+                   background-repeat: no-repeat;
+                   background-size: cover; border-radius: 40px; border: 1px solid #616666;"><div class="check-mark " style="text-align: center;">
+                      <img src="${credentials.BACK_WEB_URL}images/SKRIVER.png" style="width: 160px;height: auto;">
+                       <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
+                  </div>
+                  </div>
+              <div class="about_mail" style="
+                  text-align: center;left: 50%;background: #e5e5e575;width: 100%; max-width: 80%;padding: 30px; margin:     3rem auto;"><h3 class="heading_mail" style="font-size: 55px;color: #1340B6;margin:0px;"> You’ve Got It!</h3><p class="dashboard" style="margin-bottom: 0px;margin-top: 12px;font-size: 22px;
+                  line-height: 33px;"> Dear User, Your account has been created on the Skriver by Admin.
+                  Below are your system generated credentials,
+                  <b>please change the password immediately after login.</b></p>
+              </div>
 
-              <div style="padding: 15px; font-size: 15px; border:3px solid color: #2759A7; border-radius: 8px; max-width: 356px; background: #fff; color: #2759A7; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #f2f4f7;">
+              <div style="text-align: center;"padding: 15px; font-size: 15px; border:3px solid color: #2759A7; border-radius: 8px; max-width: 356px; background: #fff; color: #2759A7; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #f2f4f7;">
                 <p><b>Email:</b>${options.email}</p>
                 <p><b>Password:</b>${options.password}</p>
               </div>
-              <p style="font-weight: 400; font-size: 15px; padding-bottom: 20px;text-align: center;" >
-                Let’s get you logged in to<br>setup your account.
-              </p>
-              <div style="margin-top: 16px; margin-bottom: 12px;">
-                <a href="${credentials.ADMIN_WEB_URL}login" style="background-color: #2759A7; color: #fff; border-radius: 30px; padding: 10px 12px; text-decoration:none"> Log In Now</a>
+              <div class="center_text" style="text-align: center; margin: 21px auto;width: 300px;margin: auto;">
+                      <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
               </div>
-              <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
-                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
-                <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our <a style="
-                color: #0b4eb8;
-                text-decoration: auto;" href="">support team!</a> </p>
-        </div>
-        <p style="
-    width: 19px;
-    height: 50%; background: #2859a7; position: absolute;bottom: 0px;left: 0px;margin:0px;">
-        </p>
-   
-        <p style="
-    width: 19px;
-    height: 50%; background: #2859a7; position: absolute;top: 0px;right: 0px;margin:0px;">
-        </p>
+       <div class="text" style="display:flex;align-items: center;justify-content: center;height: 40px;"><span>
+          <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+       </span>
+       <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+      </p>
+      </div>
+      <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;"><span>
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+      </span>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking</p>
+      </div>
+      <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;">
+      <span>
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+      </span>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+         </p>
+      </div>
+      </div>
+      <div class="verify" style="text-align: center;margin: 2rem auto; width: 400px;">
+      <a href="${credentials.ADMIN_WEB_URL}login"style="padding: 8px 25px; font-size: 12px;cursor: pointer; class="send_mail" style="border: none;background: #1342BB;width: 217px;color: #fff; height: 40px;border-radius: 10px;font-size:14px;type="text"> Go to your account
+      </a>
+  <p class="email_noti" style="font-size: 16px;color: #939393;line-height: 27px;"> To help us serve you better in the future, we’d love to hear about your experience with our website. We appreciate your time and we value your feedback
+  </p>
     </div>
-</body>
+  </div>
+</div>
+  </body>
+  </html>
     `;
 
   SmtpController.sendEmail(email, 'Registration', message);
@@ -1232,48 +1200,66 @@ addUserEmail = async (options) => {
   }
   message = '';
   message += `
-                    <body style="font-family: sans-serif;">
-                    <div style="width:600px;margin: auto;margin-top: 2rem;box-shadow: 0px 0px 20px -15px #000;position: relative;">
-                        <div style="text-align: center; padding: 3rem 9rem;padding-bottom: 0.5rem;">
-                            <img src="${credentials.BACK_WEB_URL}/images/Check_Mark.png" style="width: 80px; height: 80px;">
-                            <h1 style="    margin-top: 10px; 
-                            font-style: normal;
-                            font-weight: 600;
-                            font-size: 20px;
-                            line-height: 23px;
-                            color: #2759A7;">You’Re In!</h1>
-                    <p style="
-                    font-size: 16px;
-                    font-weight: 200;
-                    text-align: center;">Thank you for joining SK River, You are Going to love it here.</p>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Forget Password</title>
+      </head><body style="font-family:sans-serif;">
+          <div class="main" style=" height:100%; width:800px;align-items:center;display:flex; margin: auto;" >
+              <div class="email" style="width: 500px; height:fit-content;margin: 50px auto; padding: 2rem; 
+                   position:relative;  background-image: url('${credentials.BACK_WEB_URL}images/Email Template (6).jpg'); width: 900px;background-position: center;
+                   background-repeat: no-repeat;
+                   background-size: cover; border-radius: 40px; border: 1px solid #616666;"><div class="check-mark " style="text-align: center;">
+                      <img src="${credentials.BACK_WEB_URL}images/SKRIVER.png" style="width: 160px;height: auto;">
+                       <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
+                  </div>
+                  </div>
+              <div class="about_mail" style="
+                  text-align: center;left: 50%;background: #e5e5e575;width: 100%; max-width: 80%;padding: 30px; margin:     3rem auto;"><h3 class="heading_mail" style="font-size: 55px;color: #1340B6;margin:0px;"> You’ve Got It!</h3><p class="dashboard" style="margin-bottom: 0px;margin-top: 12px;font-size: 22px;
+                  line-height: 33px;"> Dear User, Your account has been created on the Skriver by Admin.
+                  Below are your system generated credentials,
+                  <b>please change the password immediately after login.</b></p>
+              </div>
 
-              <div style="padding: 15px; font-size: 15px; border:3px solid color: #2759A7; border-radius: 8px; max-width: 356px; background: #fff; color: #2759A7; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #f2f4f7;">
+              <div style="text-align: center;"padding: 15px; font-size: 15px; border:3px solid color: #2759A7; border-radius: 8px; max-width: 356px; background: #fff; color: #2759A7; margin-left: auto; margin-right:auto; box-shadow: 0px 0px 8px 0px #f2f4f7;">
                 <p><b>Email:</b>${options.email}</p>
                 <p><b>Password:</b>${options.password}</p>
               </div>
-              <p style="font-weight: 400; font-size: 15px; padding-bottom: 20px;text-align: center;" >
-                Let’s get you logged in to<br>setup your account.
-              </p>
-              <div style="margin-top: 16px; margin-bottom: 12px;">
-                <a href="${credentials.FRONT_WEB_URL}login" style="background-color: #2759A7; color: #fff; border-radius: 30px; padding: 10px 12px; text-decoration:none"> Log In Now</a>
+              <div class="center_text" style="text-align: center; margin: 21px auto;width: 300px;margin: auto;">
+                      <div class="line" style="height: 7px;background: #F1532B;margin-top: 13px;width: 70px;margin: 12px auto;">
               </div>
-              <p style="font-weight: 400; font-size: 16px; line-height: 24px; color: #626262; text-align: center; position: relative; top: 15px;">
-                <a href="${credentials.FRONT_WEB_URL}" taget="_blank" style="text-decoration:none"><b>Go to website</b></a></br>
-                <p style="color: #626262;font-size: 11px;margin-top: 3rem;">Got Questions? Contact our <a style="
-                color: #0b4eb8;
-                text-decoration: auto;" href="">support team!</a> </p>
-        </div>
-        <p style="
-    width: 19px;
-    height: 50%; background: #2859a7; position: absolute;bottom: 0px;left: 0px;margin:0px;">
-        </p>
-   
-        <p style="
-    width: 19px;
-    height: 50%; background: #2859a7; position: absolute;top: 0px;right: 0px;margin:0px;">
-        </p>
+       <div class="text" style="display:flex;align-items: center;justify-content: center;height: 40px;"><span>
+          <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+       </span>
+       <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+      </p>
+      </div>
+      <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;"><span>
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+      </span>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking</p>
+      </div>
+      <div class="text" style="display: flex;align-items: center;justify-content: center;height: 40px;">
+      <span>
+         <img src="${credentials.BACK_WEB_URL}images/Vector.png" style="height:20px; width:20px; margin-right: 10px;">
+      </span>
+         <p class="about_time" style="font-size: 16px;color: #514e4e;border-bottom: 1px solid #e3e1e1;padding-bottom: 10px;"> Time Tracking
+         </p>
+      </div>
+      </div>
+      <div class="verify" style="text-align: center;margin: 2rem auto; width: 400px;">
+      <a href="${credentials.FRONT_WEB_URL}login"style="padding: 8px 25px; font-size: 12px;cursor: pointer; class="send_mail" style="border: none;background: #1342BB;width: 217px;color: #fff; height: 40px;border-radius: 10px;font-size:14px;type="text"> Go to your account
+      </a>
+  <p class="email_noti" style="font-size: 16px;color: #939393;line-height: 27px;"> To help us serve you better in the future, we’d love to hear about your experience with our website. We appreciate your time and we value your feedback
+  </p>
     </div>
-</body>
+  </div>
+</div>
+  </body>
+  </html>
     `;
 
   SmtpController.sendEmail(email, 'Registration', message);
