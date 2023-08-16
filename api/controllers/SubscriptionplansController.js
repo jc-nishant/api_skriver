@@ -551,6 +551,7 @@ exports.purchaseplan = async (req, res) => {
                 stripe_customer_id: get_user.stripe_customer_id,
                 stripe_plan_id: get_subscription_plan.stripe_plan_id,
                 card_id: card_id,
+                interval_count:req.body.interval_count
             });
         }
         if (
@@ -581,9 +582,7 @@ exports.purchaseplan = async (req, res) => {
                 interval: get_subscription_plan.interval
                     ? get_subscription_plan.interval
                     : 'month',
-                interval_count: get_subscription_plan.interval_count
-                    ? get_subscription_plan.interval_count
-                    : 1,
+                interval_count: req.body.interval_count,
                 trial_period_days: get_subscription_plan.trial_period_days
                     ? get_subscription_plan.trial_period_days
                     : 30,
