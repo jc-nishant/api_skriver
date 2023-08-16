@@ -86,10 +86,19 @@ module.exports = {
             let query = {};
 
             if (sortBy) {
-                sortBy = sortBy.toString();
-            } else {
-                sortBy = 'createdAt desc';
-            }
+                let typeArr = [];
+                typeArr = sortBy.split(' ');
+                let sortType = typeArr[1];
+                let field = typeArr[0];
+                sortquery[field ? field : 'updatedAt'] = sortType
+                  ? sortType == 'desc'
+                    ? -1
+                    : 1
+                  : -1;
+              } else {
+                sortquery = { updatedAt: -1 };
+                sortBy = 'updatedAt desc';
+              }
             if(status){
                 query.status = status
             }
@@ -133,8 +142,6 @@ module.exports = {
                     error: { code: 400, message: constantObj.comapany.ID_MISSING }
                 })
             }
-            req.body.updatedBy = req.identity.id;
-
             let update_details = await Company.updateOne({ id: id }, req.body);
             if (update_details) {
                 return res.status(200).json({

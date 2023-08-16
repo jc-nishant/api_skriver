@@ -104,13 +104,14 @@ module.exports = {
                 let sortType = typeArr[1];
                 let field = typeArr[0];
                 sortquery[field ? field : 'updatedAt'] = sortType
-                    ? sortType == 'desc'
-                        ? -1
-                        : 1
-                    : -1;
-            } else {
+                  ? sortType == 'desc'
+                    ? -1
+                    : 1
+                  : -1;
+              } else {
                 sortquery = { updatedAt: -1 };
-            }
+                sortBy = 'updatedAt desc';
+              }
             let total = await Roles.count(query)
             let findroles = await Roles.find(query).sort(sortBy).skip(skipNo).limit(count)
             return res.status(200).json({
