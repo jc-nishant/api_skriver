@@ -238,13 +238,14 @@ exports.getAllPlans = async (req, res) => {
             let sortType = typeArr[1];
             let field = typeArr[0];
             sortquery[field ? field : 'updatedAt'] = sortType
-                ? sortType == 'desc'
-                    ? -1
-                    : 1
-                : -1;
-        } else {
+              ? sortType == 'desc'
+                ? -1
+                : 1
+              : -1;
+          } else {
             sortquery = { updatedAt: -1 };
-        }
+            sortBy = 'updatedAt desc';
+          }
         let total = await Subscriptionplans.count(query);
         let get_subscriptionPlan = await Subscriptionplans.find(query)
             .sort(sortBy)
