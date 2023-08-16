@@ -32,14 +32,12 @@ module.exports = {
                 }
             }
         } catch (err) {
-            // console.log(err,"=======================err")
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
             })
         }
     },
-
     getcompany: async (req, res) => {
         try {
             let id = req.query.id;
@@ -49,8 +47,6 @@ module.exports = {
                     message: "id is required",
                 })
             }
-
-
             let get_comapany = await Company.findOne({ id: id, isDeleted: false });
             if (get_comapany) {
                 return res.status(200).json({
@@ -71,7 +67,6 @@ module.exports = {
             })
         }
     },
-
     getcompanylisting: async (req, res) => {
         try {
             let search = req.param('search');
@@ -132,7 +127,6 @@ module.exports = {
             })
         }
     },
-
     editcompany: async (req, res) => {
         try {
             let { id } = req.body;
@@ -161,7 +155,6 @@ module.exports = {
             })
         }
     },
-
     deletecompany: async (req, res) => {
         try {
             const id = req.param("id");
@@ -189,7 +182,6 @@ module.exports = {
                 }
             }
         } catch (err) {
-            //(err);
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: "" + err }
