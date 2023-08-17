@@ -466,296 +466,388 @@
 const revai = require('revai-node-sdk');
 const mic = require('mic');
 module.exports = {
-    audioconnection: async (req, res) => {
+    // audioconnection: async (req, res) => {
 
-<<<<<<< HEAD
-    generatetoken: async (req, res) => {
-        try {
-            function generateSignature(key, secret, meetingNumber, role) {
+    // generatetoken: async (req, res) => {
+    //     try {
+    //         function generateSignature(key, secret, meetingNumber, role) {
 
-                const iat = Math.round(new Date().getTime() / 1000) - 30
-                const exp = iat + 60 * 60 * 2
-                const oHeader = { alg: 'HS256', typ: 'JWT' }
+    //             const iat = Math.round(new Date().getTime() / 1000) - 30
+    //             const exp = iat + 60 * 60 * 2
+    //             const oHeader = { alg: 'HS256', typ: 'JWT' }
 
-                const oPayload = {
-                    sdkKey: constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID,
-                    appKey: constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID,
-                    mn: req.body.mn,
-                    role: req.body.role,
-                    iat: iat,
-                    exp: exp,
-                    tokenExp: exp
-                }
+    //             const oPayload = {
+    //                 sdkKey: constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID,
+    //                 appKey: constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID,
+    //                 mn: req.body.mn,
+    //                 role: req.body.role,
+    //                 iat: iat,
+    //                 exp: exp,
+    //                 tokenExp: exp
+    //             }
 
-                const sHeader = JSON.stringify(oHeader)
-                const sPayload = JSON.stringify(oPayload)
-                const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
-                return sdkJWT
-            }
-            let token = generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, 123456789, 0)
-            return res.status(200).json({
-                success: true,
-                code: 200,
-                data: token,
+    //             const sHeader = JSON.stringify(oHeader)
+    //             const sPayload = JSON.stringify(oPayload)
+    //             const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
+    //             return sdkJWT
+    //         }
+    //         let token = generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, 123456789, 0)
+    //         return res.status(200).json({
+    //             success: true,
+    //             code: 200,
+    //             data: token,
 
-            });
-        } catch (err) {
-            return res.status(400).json({ success: true, code: 400, error: "" + err });
-        }
-    },
-
+    //         });
+    //     } catch (err) {
+    //         return res.status(400).json({ success: true, code: 400, error: "" + err });
+    //     }
+    // },
 
 
-    // card_1NdC4XASL6ACfqPSO0B9ZrCr
 
-    generateSignature: async function (req, res) {
-        try {
+    // // card_1NdC4XASL6ACfqPSO0B9ZrCr
 
-            let meetingNumber = req.body.meetingNumber
-            let role = req.body.role
+    // generateSignature: async function (req, res) {
+    //     try {
 
-            // const meetingNumber = 74282522589
-            const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
-            const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
-            const timestamp = new Date().getTime() - 30000; // 30 seconds before to account for latency
-            console.log(timestamp, "==============timestamp")
-            const msg = Buffer.from(apiKey + meetingNumber + timestamp + '0').toString('base64');
-            const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
-            const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.0.${hash}`).toString('base64');
-            return res.status(200).json({
-                success: true,
-                code: 200,
-                data: signature,
-                signature: signature,
-                meetingNumber: meetingNumber,
-                timestamp: timestamp
+    //         let meetingNumber = req.body.meetingNumber
+    //         let role = req.body.role
 
-            });
+    //         // const meetingNumber = 74282522589
+    //         const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
+    //         const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
+    //         const timestamp = new Date().getTime() - 30000; // 30 seconds before to account for latency
+    //         console.log(timestamp, "==============timestamp")
+    //         const msg = Buffer.from(apiKey + meetingNumber + timestamp + '0').toString('base64');
+    //         const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
+    //         const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.0.${hash}`).toString('base64');
+    //         return res.status(200).json({
+    //             success: true,
+    //             code: 200,
+    //             data: signature,
+    //             signature: signature,
+    //             meetingNumber: meetingNumber,
+    //             timestamp: timestamp
 
-            // const KJUR = require('jsrsasign')
-            // // https://www.npmjs.com/package/jsrsasign
+    //         });
 
-            // function generateSignature(key, secret, meetingNumber, role) {
+    //         // const KJUR = require('jsrsasign')
+    //         // // https://www.npmjs.com/package/jsrsasign
 
-            //     const iat = Math.round(new Date().getTime() / 1000) - 30
-            //     const exp = iat + 60 * 602
-            //     const oHeader = { alg: 'HS256', typ: 'JWT' }
+    //         // function generateSignature(key, secret, meetingNumber, role) {
 
-
-            //     const oPayload = {
-            //         sdkKey: key,
-            //         appKey: key,
-            //         mn: meetingNumber,
-            //         role: role,
-            //         iat: iat,
-            //         exp: exp,
-            //         tokenExp: exp
-            //     }
-            //     const sHeader = JSON.stringify(oHeader)
-            //     const sPayload = JSON.stringify(oPayload)
-            //     const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
-
-            //     // let sdkJWT = HMACSHA256(
-            //     //     base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
-            //     //     constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
-            //     // );
-            //     console.log(sdkJWT, '==============sdkJWT');
-            //     return sdkJWT
-            // }
-
-            // let signature = (generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
-            // return res.status(200).json({
-            //     success: true,
-            //     code: 200,
-            //     data: signature,
-
-            // });
-
-        }
-        catch (err) {
-            return res.status(400).json({ success: false, code: 400, error: "" + err });
-
-        }
-    },
-
-    validateSignature: async (req, res) => {
-        const receivedSignature = req.body.signature; // The received signature from the request
-        const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
-        const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
-        const meetingNumber = req.body.meetingNumber;
-        const timestamp = req.body.timestamp;
-        const role = req.body.role;
-
-        const msg = Buffer.from(apiKey + meetingNumber + timestamp + role).toString('base64');
-        const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
-        const recreatedSignature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.${role}.${hash}`).toString('base64');
-
-        if (receivedSignature === recreatedSignature) {
-            return res.json({ valid: true });
-        } else {
-            return res.json({ valid: false });
-        }
-    },
-
-    createMeeting: async (req, res) => {
-        try {
+    //         //     const iat = Math.round(new Date().getTime() / 1000) - 30
+    //         //     const exp = iat + 60 * 602
+    //         //     const oHeader = { alg: 'HS256', typ: 'JWT' }
 
 
-            const accessToken = req.body.token;
-            let type = req.body.type
-            let topic = req.body.topic
-            // const meetingData = {
+    //         //     const oPayload = {
+    //         //         sdkKey: key,
+    //         //         appKey: key,
+    //         //         mn: meetingNumber,
+    //         //         role: role,
+    //         //         iat: iat,
+    //         //         exp: exp,
+    //         //         tokenExp: exp
+    //         //     }
+    //         //     const sHeader = JSON.stringify(oHeader)
+    //         //     const sPayload = JSON.stringify(oPayload)
+    //         //     const sdkJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, secret)
 
-            //     topic: topic,
-            //     type: type, // 2 for scheduled meeting, 1 for instant meeting
-            //     settings: {
-            //         host_video: true, // Host video on when the meeting starts
-            //         participant_video: true, // Participant video on when the meeting starts
-            //         join_before_host: true, // Participants can't join before host
-            //         mute_upon_entry: true, // Participants are muted upon entry
-            //         watermark: false, // No watermark on videos
-            //         // approval_type: 0, // Automatically approve participants
-            //         // audio: 'both', // Both telephony and VoIP audio options available
-            //         // auto_recording: 'none', // No auto
-            //     }
-            // }
+    //         //     // let sdkJWT = HMACSHA256(
+    //         //     //     base64UrlEncode(oHeader) + '.' + base64UrlEncode(oPayload),
+    //         //     //     constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET
+    //         //     // );
+    //         //     console.log(sdkJWT, '==============sdkJWT');
+    //         //     return sdkJWT
+    //         // }
 
-            // try {
-            //     const response = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
-            //         headers: {
-            //             'Authorization': `Bearer ${accessToken}`,
-            //             'Content-Type': 'application/json',
-            //         },
-            //     });
-            //     return res.status(200).json({
-            //         success: true,
-            //         code: 200,
-            //         data: response,
-            //     });
+    //         // let signature = (generateSignature(constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID, constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET, meetingNumber, role))
+    //         // return res.status(200).json({
+    //         //     success: true,
+    //         //     code: 200,
+    //         //     data: signature,
 
-            //     // Process the response
-            // } catch (error) {
-            //     console.error('Error creating meeting:', error);
-            // }
+    //         // });
 
-            const meetingData = {
-                topic: topic,
-                type: type, // Scheduled meeting
-                // approval_type: 2,
-                // Add other meeting properties as needed
-                settings: {
-                    host_video: true, // Host video on when the meeting starts
-                    participant_video: true, // Participant video on when the meeting starts
-                    join_before_host: true, // Participants can't join before host
-                    mute_upon_entry: true, // Participants are muted upon entry
-                    watermark: false, // No watermark on videos
-                    in_meeting: true,
-                    approval_type: 2, // Automatically approve participants
-                    audio: 'both', // Both telephony and VoIP audio options available
-                    // auto_recording: 'none', // No auto,
-                    show_join_info: true
-                }
-            };
+    //     }
+    //     catch (err) {
+    //         return res.status(400).json({ success: false, code: 400, error: "" + err });
 
-            const { data } = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-=======
-        const token = req.body.token;
+    //     }
+    // },
 
-        // initialize client with audio configuration and access token
-        const audioConfig = new revai.AudioConfig(
-    /* contentType */ "audio/x-raw",
-    /* layout */      "interleaved",
-    /* sample rate */ 16000,
-    /* format */      "S16LE",
-    /* channels */    1
-        );
->>>>>>> 9cdbf26c54fc1ca1e961a11b6689bbe4126d2b56
+    // validateSignature: async (req, res) => {
+    //     const receivedSignature = req.body.signature; // The received signature from the request
+    //     const apiKey = constant.ZOOM_MEETING_SDK_KEY_OR_CLIENT_ID;
+    //     const apiSecret = constant.ZOOM_MEETING_SDK_SECRET_OR_CLIENT_SECRET;
+    //     const meetingNumber = req.body.meetingNumber;
+    //     const timestamp = req.body.timestamp;
+    //     const role = req.body.role;
 
-        // initialize microphone configuration
-        // note: microphone device id differs
-        // from system to system and can be obtained with
-        // arecord --list-devices and arecord --list-pcms
-        const micConfig = {
-    /* sample rate */ rate: 16000,
-    /* channels */    channels: 1,
-    /* device id */   device: 'hw:0,0'
-        };
+    //     const msg = Buffer.from(apiKey + meetingNumber + timestamp + role).toString('base64');
+    //     const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64');
+    //     const recreatedSignature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.${role}.${hash}`).toString('base64');
 
-        var client = new revai.RevAiStreamingClient(token, audioConfig);
+    //     if (receivedSignature === recreatedSignature) {
+    //         return res.json({ valid: true });
+    //     } else {
+    //         return res.json({ valid: false });
+    //     }
+    // },
 
-        var micInstance = mic(micConfig);
+    // createMeeting: async (req, res) => {
+    //     try {
 
-        // create microphone stream
-        var micStream = micInstance.getAudioStream();
 
-        // create event responses
-        client.on('close', (code, reason) => {
-            return res.status(404).json({
-                success: false,
-                error: {
-                    code: 404,
-                    message: `Connection closed, ${code}: ${reason}`
-                  },
-            })
-        });
-        client.on('httpResponse', code => {
-            return res.status(200).json({
-                success: true,
-                code: 200,
-                message: `Streaming client received http response with code: ${code}`,
-            })
-        });
-        client.on('connectFailed', error => {
-            return res.status(404).json({
-                success: false,
-                error: {
-                    code: 404,
-                    message: `Connection failed with error: ${error}`
-                  },
-            })
-        });
-        client.on('connect', connectionMessage => {
-            return res.status(200).json({
-                success: true,
-                code: 200,
-                data: connectionMessage,
-                message: `Connected with message`,
-            })
-            // console.log(`Connected with message: ${connectionMessage}`);
-        });
-        micStream.on('error', error => {
-            return res.status(404).json({
-                success: false,
-                error: {
-                    code: 404,
-                    message: `Microphone input stream error: ${error}`
-                  },
-            })
-        });
+    //         const accessToken = req.body.token;
+    //         let type = req.body.type
+    //         let topic = req.body.topic
+    //         // const meetingData = {
+
+    //         //     topic: topic,
+    //         //     type: type, // 2 for scheduled meeting, 1 for instant meeting
+    //         //     settings: {
+    //         //         host_video: true, // Host video on when the meeting starts
+    //         //         participant_video: true, // Participant video on when the meeting starts
+    //         //         join_before_host: true, // Participants can't join before host
+    //         //         mute_upon_entry: true, // Participants are muted upon entry
+    //         //         watermark: false, // No watermark on videos
+    //         //         // approval_type: 0, // Automatically approve participants
+    //         //         // audio: 'both', // Both telephony and VoIP audio options available
+    //         //         // auto_recording: 'none', // No auto
+    //         //     }
+    //         // }
+
+    //         // try {
+    //         //     const response = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
+    //         //         headers: {
+    //         //             'Authorization': `Bearer ${accessToken}`,
+    //         //             'Content-Type': 'application/json',
+    //         //         },
+    //         //     });
+    //         //     return res.status(200).json({
+    //         //         success: true,
+    //         //         code: 200,
+    //         //         data: response,
+    //         //     });
+
+    //         //     // Process the response
+    //         // } catch (error) {
+    //         //     console.error('Error creating meeting:', error);
+    //         // }
+
+    //         const meetingData = {
+    //             topic: topic,
+    //             type: type, // Scheduled meeting
+    //             // approval_type: 2,
+    //             // Add other meeting properties as needed
+    //             settings: {
+    //                 host_video: true, // Host video on when the meeting starts
+    //                 participant_video: true, // Participant video on when the meeting starts
+    //                 join_before_host: true, // Participants can't join before host
+    //                 mute_upon_entry: true, // Participants are muted upon entry
+    //                 watermark: false, // No watermark on videos
+    //                 in_meeting: true,
+    //                 approval_type: 2, // Automatically approve participants
+    //                 audio: 'both', // Both telephony and VoIP audio options available
+    //                 // auto_recording: 'none', // No auto,
+    //                 show_join_info: true
+    //             }
+    //         };
+
+    //         const { data } = await axios.post('https://api.zoom.us/v2/users/me/meetings', meetingData, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${accessToken}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
+    //     const token = req.body.token;
+
+    //     // initialize client with audio configuration and access token
+    //     const audioConfig = new revai.AudioConfig(
+    // /* contentType */ "audio/x-raw",
+    // /* layout */      "interleaved",
+    // /* sample rate */ 16000,
+    // /* format */      "S16LE",
+    // /* channels */    1
+    //     );
+
+    //     // initialize microphone configuration
+    //     // note: microphone device id differs
+    //     // from system to system and can be obtained with
+    //     // arecord --list-devices and arecord --list-pcms
+    //     const micConfig = {
+    // /* sample rate */ rate: 16000,
+    // /* channels */    channels: 1,
+    // /* device id */   device: 'hw:0,0'
+    //     };
+
+    //     var client = new revai.RevAiStreamingClient(token, audioConfig);
+
+    //     var micInstance = mic(micConfig);
+
+    //     // create microphone stream
+    //     var micStream = micInstance.getAudioStream();
+
+    //     // create event responses
+    //     client.on('close', (code, reason) => {
+    //         return res.status(404).json({
+    //             success: false,
+    //             error: {
+    //                 code: 404,
+    //                 message: `Connection closed, ${code}: ${reason}`
+    //               },
+    //         })
+    //     });
+    //     client.on('httpResponse', code => {
+    //         return res.status(200).json({
+    //             success: true,
+    //             code: 200,
+    //             message: `Streaming client received http response with code: ${code}`,
+    //         })
+    //     });
+    //     client.on('connectFailed', error => {
+    //         return res.status(404).json({
+    //             success: false,
+    //             error: {
+    //                 code: 404,
+    //                 message: `Connection failed with error: ${error}`
+    //               },
+    //         })
+    //     });
+    //     client.on('connect', connectionMessage => {
+    //         return res.status(200).json({
+    //             success: true,
+    //             code: 200,
+    //             data: connectionMessage,
+    //             message: `Connected with message`,
+    //         })
+    //         // console.log(`Connected with message: ${connectionMessage}`);
+    //     });
+    //     micStream.on('error', error => {
+    //         return res.status(404).json({
+    //             success: false,
+    //             error: {
+    //                 code: 404,
+    //                 message: `Microphone input stream error: ${error}`
+    //               },
+    //         })
+    //     });
 
         // begin streaming session
-        var stream = client.start();
+        // var stream = client.start();
 
-        // create event responses
-        stream.on('data', data => {
-            console.log(data);
-        });
-        stream.on('end', function () {
-            console.log("End of Stream");
-        });
+        // // create event responses
+        // stream.on('data', data => {
+        //     console.log(data);
+        // });
+        // stream.on('end', function () {
+        //     console.log("End of Stream");
+        // });
 
-        // pipe the microphone audio to Rev AI client
-        micStream.pipe(stream);
+        // // pipe the microphone audio to Rev AI client
+        // micStream.pipe(stream);
 
-        // start the microphone
-        micInstance.start();
+        // // start the microphone
+        // micInstance.start();
 
         // Forcibly ends the streaming session
         // stream.end();
+
+audioconnection: async (req, res) => {
+
+    const token = req.body.token;
+  
+    // initialize client with audio configuration and access token
+    const audioConfig = new revai.AudioConfig(
+  /* contentType */ "audio/x-raw",
+  /* layout */      "interleaved",
+  /* sample rate */ 16000,
+  /* format */      "S16LE",
+  /* channels */    1
+    );
+  
+    // initialize microphone configuration
+    // note: microphone device id differs
+    // from system to system and can be obtained with
+    // arecord --list-devices and arecord --list-pcms
+    const micConfig = {
+  /* sample rate */ rate: 16000,
+  /* channels */    channels: 1,
+  /* device id */   device: 'hw:0,0'
+    };
+  
+    var client = new revai.RevAiStreamingClient(token, audioConfig);
+  
+    var micInstance = mic(micConfig);
+  
+    // create microphone stream
+    var micStream = micInstance.getAudioStream();
+  
+    // create event responses
+    client.on('close', (code, reason) => {
+        return res.status(404).json({
+            success: false,
+            error: {
+                code: 404,
+                message: `Connection closed, ${code}: ${reason}`
+              },
+        })
+    });
+    client.on('httpResponse', code => {
+        return res.status(200).json({
+            success: true,
+            code: 200,
+            message: `Streaming client received http response with code: ${code}`,
+        })
+    });
+    client.on('connectFailed', error => {
+        return res.status(404).json({
+            success: false,
+            error: {
+                code: 404,
+                message: `Connection failed with error: ${error}`
+              },
+        })
+    });
+    client.on('connect', connectionMessage => {
+        return res.status(200).json({
+            success: true,
+            code: 200,
+            data: connectionMessage,
+            message: `Connected with message`,
+        })
+        // console.log(`Connected with message: ${connectionMessage}`);
+    });
+    micStream.on('error', error => {
+        return res.status(404).json({
+            success: false,
+            error: {
+                code: 404,
+                message: `Microphone input stream error: ${error}`
+              },
+        })
+    });
+  
+    // begin streaming session
+    var stream = client.start();
+  
+    // create event responses
+    stream.on('data', data => {
+        console.log(data);
+    });
+    stream.on('end', function () {
+        console.log("End of Stream");
+    });
+  
+    // pipe the microphone audio to Rev AI client
+    micStream.pipe(stream);
+  
+    // start the microphone
+    micInstance.start();
+  
+    // Forcibly ends the streaming session
+    // stream.end();
+  }
     }
-}
