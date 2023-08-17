@@ -141,7 +141,6 @@ exports.delete_source = async (options) => {
 }
 
 exports.buy_subscription = async (options) => {
-    // console.log(options,"=================options")
     let create_subscription = await stripe.subscriptions.create({
         customer: options.stripe_customer_id,
         default_source: options.card_id,

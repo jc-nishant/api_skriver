@@ -95,10 +95,6 @@ module.exports.bootstrap = async function () {
     if (update_subscriptions && update_subscriptions.length > 0) {
       for await (let item of update_subscriptions) {
         try {
-          let update_user = await Users.updateOne({ id: item.user_id }, {
-            blue_tick_enabled: false
-          });
-
           let delete_old_subscription = await Services.StripeServices.delete_subscription({
             stripe_subscription_id: item.stripe_subscription_id
           });
