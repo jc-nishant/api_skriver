@@ -121,13 +121,13 @@ module.exports.routes = {
     "get /comapany": "CompanyController.getcompany",
     'delete /comapany': "CompanyController.deletecompany",
 
-    "post /token": "ZoomController.generatetoken",
-    'POST /generateSignature': 'ZoomController.generateSignature',
-    'POST /validateSignature': 'ZoomController.validateSignature',
-    'POST /createMeeting': 'ZoomController.createMeeting',
-    'post /authenticate': 'ZoomController.authenticate',
-    'GET /zoom/callback': 'ZoomController.callback',
-    'GET /gettoken': 'ZoomController.getToken'
+    // "post /token": "ZoomController.generatetoken",
+    // 'POST /generateSignature': 'ZoomController.generateSignature',
+    // 'POST /validateSignature': 'ZoomController.validateSignature',
+    // 'POST /createMeeting': 'ZoomController.createMeeting',
+    // 'post /authenticate': 'ZoomController.authenticate',
+    // 'GET /zoom/callback': 'ZoomController.callback',
+    'post /audio/connection': 'ZoomController.audioconnection'
 
 
 
