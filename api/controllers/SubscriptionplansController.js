@@ -238,14 +238,14 @@ exports.getAllPlans = async (req, res) => {
             let sortType = typeArr[1];
             let field = typeArr[0];
             sortquery[field ? field : 'updatedAt'] = sortType
-              ? sortType == 'desc'
-                ? -1
-                : 1
-              : -1;
-          } else {
+                ? sortType == 'desc'
+                    ? -1
+                    : 1
+                : -1;
+        } else {
             sortquery = { updatedAt: -1 };
             sortBy = 'updatedAt desc';
-          }
+        }
         let total = await Subscriptionplans.count(query);
         let get_subscriptionPlan = await Subscriptionplans.find(query)
             .sort(sortBy)
@@ -293,7 +293,7 @@ exports.getAllPlans = async (req, res) => {
             data: get_subscriptionPlan,
         });
     } catch (err) {
-        console.log(err,"----------------------------err    ")
+        console.log(err, "----------------------------err    ")
         return res.status(400).json({
             success: false,
             error: { code: 400, message: err.toString() },
@@ -502,9 +502,7 @@ exports.purchaseplan = async (req, res) => {
             status: 'active',
             user_id: user_id,
         };
-        // console.log(getSubsQuery);
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
-        // console.log(get_existing_subscription,"======get_existing_subscription")
 
         if (
             get_existing_subscription &&
@@ -544,15 +542,15 @@ exports.purchaseplan = async (req, res) => {
                 stripe_customer_id: get_user.stripe_customer_id,
                 stripe_plan_id: get_subscription_plan.stripe_plan_id,
                 card_id: card_id,
-                cancel_at : new Date(new Date().setDate(today.getDate() + 30))
-            });;
-        }else{
+                cancel_at: new Date(new Date().setDate(today.getDate() + 30))
+            });
+        } else {
             create_subscription = await Services.StripeServices.buy_subscription({
                 stripe_customer_id: get_user.stripe_customer_id,
                 stripe_plan_id: get_subscription_plan.stripe_plan_id,
                 card_id: card_id,
-                interval_count:req.body.interval_count
-            });
+            })
+            // console.log(create_subscription,"=============create_subscription")
         }
         if (
             create_subscription &&
@@ -571,7 +569,11 @@ exports.purchaseplan = async (req, res) => {
                     }
                 );
             }
-
+            let months = req.body.month
+            const newDate = new Date();
+            newDate.setMonth(newDate.getMonth() + months);
+            // Format the newDate as a string in ISO 8601 format
+            const valid_upto = newDate.toISOString();
             let create_subscription_payload = {
                 user_id: user_id,
                 subscription_plan_id: get_subscription_plan.id,
@@ -579,20 +581,19 @@ exports.purchaseplan = async (req, res) => {
                 addedBy: req.identity.id,
                 name: get_subscription_plan.name ? get_subscription_plan.name : '',
                 amount: get_subscription_plan.amount,
-                interval: get_subscription_plan.interval
-                    ? get_subscription_plan.interval
-                    : 'month',
-                interval_count: req.body.interval_count,
+                interval: req.body.interval,
+                interval_count: req.body.interval_count ? req.body.interval_count
+                    : 1,
                 trial_period_days: get_subscription_plan.trial_period_days
                     ? get_subscription_plan.trial_period_days
                     : 30,
-                valid_upto: new Date(create_subscription.current_period_end * 1000),
+                valid_upto: newDate.toISOString()
             };
-
+            // console.log(create_subscription_payload, "=======create_subscription_payload")
             let add_subscription = await Subscription.create(
                 create_subscription_payload
             ).fetch();
-
+            // console.log(add_subscription, "============add_subscription");
             let update = await Users.updateOne(
                 { id: user_id },
                 {
