@@ -31,8 +31,5 @@ module.exports.policies = {
     checkEmail: true,
     getAllUsers: true,
   },
-  // ZoomController:{
-  //   file_submit:true,
-  // }
 
 };
