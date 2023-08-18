@@ -811,11 +811,12 @@ module.exports = {
     detail: async (req, res) => { 
         try {
             let id = req.param("id")
-            let url = `https://api.rev.ai/speechtotext/v1/jobs/${id}`
+            let url = `https://api.rev.ai/speechtotext/v1/jobs/${id}/transcript`
 
             let config = {
                 headers: {
-                    Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`
+                    Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`,
+                    Accept:"text/plain"
                 }
             }
 
