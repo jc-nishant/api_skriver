@@ -127,7 +127,10 @@ module.exports.routes = {
     // 'POST /createMeeting': 'ZoomController.createMeeting',
     // 'post /authenticate': 'ZoomController.authenticate',
     // 'GET /zoom/callback': 'ZoomController.callback',
-    'post /audio/connection': 'ZoomController.audioconnection'
+    'post /audio/connection': 'ZoomController.audioconnection',
+    'post /file/submit': 'ZoomController.file_submit',
+    'get /detail': 'ZoomController.detail',
+    'get /listing': 'ZoomController.listing'
 
 
 

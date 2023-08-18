@@ -465,6 +465,7 @@
 // };
 const revai = require('revai-node-sdk');
 const mic = require('mic');
+const axios = require("axios");
 module.exports = {
     // audioconnection: async (req, res) => {
 
@@ -684,99 +685,182 @@ module.exports = {
     //     };
 
 
-audioconnection: async (req, res) => {
+    audioconnection: async (req, res) => {
 
-    const token = req.body.token;
-  
-    // initialize client with audio configuration and access token
-    const audioConfig = new revai.AudioConfig(
+        const token = req.body.token;
+
+        // initialize client with audio configuration and access token
+        const audioConfig = new revai.AudioConfig(
   /* contentType */ "audio/x-raw",
   /* layout */      "interleaved",
   /* sample rate */ 16000,
   /* format */      "S16LE",
   /* channels */    1
-    );
-  
-    // initialize microphone configuration
-    // note: microphone device id differs
-    // from system to system and can be obtained with
-    // arecord --list-devices and arecord --list-pcms
-    const micConfig = {
+        );
+
+        // initialize microphone configuration
+        // note: microphone device id differs
+        // from system to system and can be obtained with
+        // arecord --list-devices and arecord --list-pcms
+        const micConfig = {
   /* sample rate */ rate: 16000,
   /* channels */    channels: 1,
   /* device id */   device: 'hw:0,0'
-    };
-  
-    var client = new revai.RevAiStreamingClient(token, audioConfig);
-  
-    var micInstance = mic(micConfig);
-  
-    // create microphone stream
-    var micStream = micInstance.getAudioStream();
-  
-    // create event responses
-    client.on('close', (code, reason) => {
-        return res.status(404).json({
-            success: false,
-            error: {
-                code: 404,
-                message: `Connection closed, ${code}: ${reason}`
-              },
-        })
-    });
-    client.on('httpResponse', code => {
-        return res.status(200).json({
-            success: true,
-            code: 200,
-            message: `Streaming client received http response with code: ${code}`,
-        })
-    });
-    client.on('connectFailed', error => {
-        return res.status(404).json({
-            success: false,
-            error: {
-                code: 404,
-                message: `Connection failed with error: ${error}`
-              },
-        })
-    });
-    client.on('connect', connectionMessage => {
-        return res.status(200).json({
-            success: true,
-            code: 200,
-            data: connectionMessage,
-            message: `Connected with message`,
-        })
-        // console.log(`Connected with message: ${connectionMessage}`);
-    });
-    micStream.on('error', error => {
-        return res.status(404).json({
-            success: false,
-            error: {
-                code: 404,
-                message: `Microphone input stream error: ${error}`
-              },
-        })
-    });
-  
-    // begin streaming session
-    var stream = client.start();
-  
-    // create event responses
-    stream.on('data', data => {
-        console.log(data);
-    });
-    stream.on('end', function () {
-        console.log("End of Stream");
-    });
-  
-    // pipe the microphone audio to Rev AI client
-    micStream.pipe(stream);
-  
-    // start the microphone
-    micInstance.start();
-  
-    // Forcibly ends the streaming session
-    // stream.end();
-  }
-    }
+        };
+
+        var client = new revai.RevAiStreamingClient(token, audioConfig);
+
+        var micInstance = mic(micConfig);
+
+        // create microphone stream
+        var micStream = micInstance.getAudioStream();
+
+        // create event responses
+        client.on('close', (code, reason) => {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 404,
+                    message: `Connection closed, ${code}: ${reason}`
+                },
+            })
+        });
+        client.on('httpResponse', code => {
+            return res.status(200).json({
+                success: true,
+                code: 200,
+                message: `Streaming client received http response with code: ${code}`,
+            })
+        });
+        client.on('connectFailed', error => {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 404,
+                    message: `Connection failed with error: ${error}`
+                },
+            })
+        });
+        client.on('connect', connectionMessage => {
+            return res.status(200).json({
+                success: true,
+                code: 200,
+                data: connectionMessage,
+                message: `Connected with message`,
+            })
+            // console.log(`Connected with message: ${connectionMessage}`);
+        });
+        micStream.on('error', error => {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 404,
+                    message: `Microphone input stream error: ${error}`
+                },
+            })
+        });
+
+        // begin streaming session
+        var stream = client.start();
+
+        // create event responses
+        stream.on('data', data => {
+            console.log(data);
+        });
+        stream.on('end', function () {
+            console.log("End of Stream");
+        });
+
+        // pipe the microphone audio to Rev AI client
+        micStream.pipe(stream);
+
+        // start the microphone
+        micInstance.start();
+
+        // Forcibly ends the streaming session
+        // stream.end();
+    },
+    file_submit: async (req, res) => {
+        try {
+            let url = `https://api.rev.ai/speechtotext/v1/jobs`
+
+            let config = {
+                headers: {
+                    Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`
+                }
+            }
+            let body = {
+                source_config: req.body.source_config,
+                metadata: req.body.metadata
+            }
+
+            let { data } = await axios.get(url, config, body)
+            return res.status(200).json({
+                success: true,
+                data: data
+            });
+        }
+        catch (err) {
+            console.log(err)
+            return res.status(400).json({
+                success: false,
+                error: { code: 400, message: "" + err }
+            })
+        }
+
+    },
+    detail: async (req, res) => {
+        try {
+            let id = req.param("id")
+            let url = `https://api.rev.ai/speechtotext/v1/jobs/${id}`
+
+            let config = {
+                headers: {
+                    Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`
+                }
+            }
+
+            let { data } = await axios.get(url, config)
+            return res.status(200).json({
+                success: true,
+                data: data
+            });
+        }
+        catch (err) {
+            console.log(err)
+            return res.status(400).json({
+                success: false,
+                error: { code: 400, message: "" + err }
+            })
+        }
+
+    },
+    listing: async (req, res) => {
+        try {
+            let id = req.param("id")
+            let url = `https://api.rev.ai/speechtotext/v1/jobs/${id}/transcript`
+            let config = {
+                headers: {
+                    Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`,
+                    Accept: 'application/vnd.rev.transcript.v1.0+json',
+                },
+               
+            }
+
+            let { data } = await axios.get(url, config)
+            return res.status(200).json({
+                success: true,
+                data: data
+            });
+        }
+        catch (err) {
+            console.log(err)
+            return res.status(400).json({
+                success: false,
+                error: { code: 400, message: "" + err }
+            })
+        }
+
+    },
+
+}
