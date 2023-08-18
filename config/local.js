@@ -10,7 +10,6 @@
  */
 
 module.exports = {
-
   port: process.env.PORT || 6037,
   BACK_WEB_URL: 'https://skriverapi.jcsoftwaresolution.in/',
   ADMIN_WEB_URL: 'https://newadmin.jcsoftwaresolution.in/',
