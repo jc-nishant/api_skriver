@@ -793,8 +793,7 @@ module.exports = {
                 source_config: req.body.source_config,
                 metadata: req.body.metadata
             }
-
-            let { data } = await axios.get(url, config, body)
+            let { data } = await axios.post(url,body, config)
             return res.status(200).json({
                 success: true,
                 data: data
