@@ -809,7 +809,7 @@ module.exports = {
         }
 
     },
-    detail: async (req, res) => {
+    detail: async (req, res) => { 
         try {
             let id = req.param("id")
             let url = `https://api.rev.ai/speechtotext/v1/jobs/${id}`
