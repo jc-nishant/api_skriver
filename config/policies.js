@@ -33,6 +33,7 @@ module.exports.policies = {
   },
   ZoomController:{
     listing:true,
+    upload:true,
   }
 
 };

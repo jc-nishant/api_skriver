@@ -468,6 +468,7 @@ const mic = require('mic');
 const axios = require("axios");
 const fs = require('fs');
 const path = require('path');
+const { Console } = require('console');
 // const fileUploadDir = sails.config.custom.fileUpload.dirname;
 module.exports = {
     // audioconnection: async (req, res) => {
@@ -866,10 +867,13 @@ module.exports = {
     upload: async (req, res) => {
 
         try {
-           
+
             // Use req.file to access the uploaded blob data
             const blobFile = req.file('blobData');
-
+            const originalFileName = blobFile._files[0].stream.filename;
+            const newFileName = originalFileName + ".webm";
+            // const originalFileName = blobFile._files[0].stream.filename;
+            console.log(newFileName, "===========newFileName")
             // Define the upload directory
             const uploadDirectory = path.resolve(sails.config.appPath, "assets/images/");
             // console.log(uploadDirectory,"==============uploadDirectory")
@@ -877,9 +881,20 @@ module.exports = {
             blobFile.upload(
                 {
                     dirname: uploadDirectory,
+                    saveAs: newFileName,
                     maxBytes: 10000000, // 10 MB or adjust according to your needs
                 },
+
                 async function (err, uploadedFiles) {
+                    uploadedFiles.forEach(async (element, index) => {
+                        // typeArr = element.type.split("/");
+                        // fileExt = typeArr[1];
+                        fileExt = ".webm"
+                        uploadedFiles.push(uploadedFiles + "." + fileExt);
+                        // uploadedFiles[0].fd + "fileExt"
+                        // console.log( uploadedFiles[0],"========= uploadedFiles[0]")
+                    })
+
                     if (err) {
                         return res.serverError(err);
                     }
@@ -888,17 +903,19 @@ module.exports = {
                     }
 
                     // Assuming you want to respond with the file path
-                    const filePath = uploadedFiles[0].fd;
-                    // console.log(filePath, "==================filePath")
-                    // You can do additional processing here, like saving metadata to a database.
-
-                    return res.json({ message: 'Blob data uploaded successfully', filePath });
-        }
+                    const uploadedFile = uploadedFiles[0].fd;
+                    return res.status(200).json({
+                        success: true,
+                        code: 200,
+                        data: uploadedFile,
+                        message: 'Blob data uploaded successfully',
+                    });
+                }
             );
-    } catch(error) {
-        return res.serverError(error);
-    }
-},
+        } catch (error) {
+            return res.serverError(error);
+        }
+    },
 };
 
     // Assuming you have a blobData variable containing the blob data
