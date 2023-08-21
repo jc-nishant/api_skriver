@@ -866,7 +866,11 @@ module.exports = {
     upload: async (req, res) => {
 
         try {
-            const binaryData = req.body.blobData; // Assuming the blob data is sent in the request body as binary data
+            const uploadedFile = req.file('blobData'); // Assuming 'blobData' is the field name in your form
+
+            if (!uploadedFile) {
+              return res.badRequest('No blob data uploaded.');
+            } // Assuming the blob data is sent in the request body as binary data
 
             // Create a unique filename (you can use a timestamp or UUID)
             const fileName = `${Date.now()}.blob`;
@@ -877,10 +881,11 @@ module.exports = {
             console.log(uploadDirectory,"===============uploadDirectory")
 
             // Create the full path for the uploaded file
+            
             const filePath = path.join(uploadDirectory, fileName);
 
             // Write the binary data to a file
-            fs.writeFileSync(filePath, binaryData);
+            fs.writeFileSync(filePath, uploadedFile);
 
             // You can do additional processing here, like saving file metadata to a database.
 
@@ -890,4 +895,21 @@ module.exports = {
         }
 
     },
+    // Assuming you have a blobData variable containing the blob data
+
+// const formData = new FormData();
+// formData.append('blobData', blobData);
+
+// fetch('/uploadBlob', {
+//   method: 'POST',
+//   body: formData,
+// })
+//   .then((response) => response.json())
+//   .then((data) => {
+//     console.log('Uploaded blob data to:', data.filePath);
+//   })
+//   .catch((error) => {
+//     console.error('Error uploading blob data:', error);
+//   });
+
 }
