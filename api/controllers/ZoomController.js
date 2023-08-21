@@ -870,7 +870,7 @@ module.exports = {
             const blobFile = req.file('blobData');
 
             // Define the upload directory
-            const uploadDirectory = path.resolve(sails.config.appPath,   "assets/images/");
+            const uploadDirectory = path.resolve(sails.config.appPath, "assets/images/");
 
             // Configure the file upload settings
             blobFile.upload(
@@ -882,23 +882,22 @@ module.exports = {
                     if (err) {
                         return res.serverError(err);
                     }
-
                     if (!uploadedFiles || uploadedFiles.length === 0) {
                         return res.badRequest('No blob data uploaded.');
                     }
 
                     // Assuming you want to respond with the file path
-                    const filePath = uploadedFiles[0].fd;
-
+                    const filePath = uploadedFiles[0].fd+"webm" ;
+                    // console.log(filePath, "==================filePath")
                     // You can do additional processing here, like saving metadata to a database.
 
                     return res.json({ message: 'Blob data uploaded successfully', filePath });
-                }
-            );
-        } catch (error) {
-            return res.serverError(error);
         }
-    },
+            );
+    } catch(error) {
+        return res.serverError(error);
+    }
+},
 };
 
     // Assuming you have a blobData variable containing the blob data
