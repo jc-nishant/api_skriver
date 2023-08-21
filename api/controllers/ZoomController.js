@@ -871,9 +871,10 @@ module.exports = {
             // Use req.file to access the uploaded blob data
             const blobFile = req.file('blobData');
             const originalFileName = blobFile._files[0].stream.filename;
-            const newFileName = originalFileName + ".webm";
+            var name = generateName();
+            const newFileName = name + ".webm";
             // const originalFileName = blobFile._files[0].stream.filename;
-            console.log(newFileName, "===========newFileName")
+            // console.log(newFileName, "===========newFileName")
             // Define the upload directory
             const uploadDirectory = path.resolve(sails.config.appPath, "assets/images/");
             // console.log(uploadDirectory,"==============uploadDirectory")
@@ -908,8 +909,8 @@ module.exports = {
                         success: true,
                         code: 200,
                         data: uploadedFile,
-                        message: 'Blob data uploaded successfully',
-                    });
+                        message:  'Blob data uploaded successfully',
+                      });
                 }
             );
         } catch (error) {
