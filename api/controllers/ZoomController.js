@@ -870,7 +870,7 @@ module.exports = {
             const blobFile = req.file('blobData');
 
             // Define the upload directory
-            const uploadDirectory = path.resolve(sails.config.appPath, 'uploads');
+            const uploadDirectory = path.resolve(sails.config.appPath,   "assets/images/");
 
             // Configure the file upload settings
             blobFile.upload(
