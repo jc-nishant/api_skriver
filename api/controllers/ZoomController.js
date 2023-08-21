@@ -866,50 +866,55 @@ module.exports = {
     upload: async (req, res) => {
 
         try {
-            const uploadedFile = req.file('blobData'); // Assuming 'blobData' is the field name in your form
+            // Use req.file to access the uploaded blob data
+            const blobFile = req.file('blobData');
 
-            if (!uploadedFile) {
-              return res.badRequest('No blob data uploaded.');
-            } // Assuming the blob data is sent in the request body as binary data
-
-            // Create a unique filename (you can use a timestamp or UUID)
-            const fileName = `${Date.now()}.blob`;
-            console.log(fileName,"===========")
             // Define the upload directory
-            // console.log(path,"==========path")
-            const uploadDirectory = path.resolve(sails.config.appPath,  "assets/images/");
-            console.log(uploadDirectory,"===============uploadDirectory")
+            const uploadDirectory = path.resolve(sails.config.appPath, 'uploads');
 
-            // Create the full path for the uploaded file
-            
-            const filePath = path.join(uploadDirectory, fileName);
+            // Configure the file upload settings
+            blobFile.upload(
+                {
+                    dirname: uploadDirectory,
+                    maxBytes: 10000000, // 10 MB or adjust according to your needs
+                },
+                async function (err, uploadedFiles) {
+                    if (err) {
+                        return res.serverError(err);
+                    }
 
-            // Write the binary data to a file
-            fs.writeFileSync(filePath, uploadedFile);
+                    if (!uploadedFiles || uploadedFiles.length === 0) {
+                        return res.badRequest('No blob data uploaded.');
+                    }
 
-            // You can do additional processing here, like saving file metadata to a database.
+                    // Assuming you want to respond with the file path
+                    const filePath = uploadedFiles[0].fd;
 
-            return res.json({ message: 'Blob data uploaded successfully', filePath: filePath });
+                    // You can do additional processing here, like saving metadata to a database.
+
+                    return res.json({ message: 'Blob data uploaded successfully', filePath });
+                }
+            );
         } catch (error) {
             return res.serverError(error);
         }
-
     },
+};
+
     // Assuming you have a blobData variable containing the blob data
 
-// const formData = new FormData();
-// formData.append('blobData', blobData);
+    // const formData = new FormData();
+    // formData.append('blobData', blobData);
 
-// fetch('/uploadBlob', {
-//   method: 'POST',
-//   body: formData,
-// })
-//   .then((response) => response.json())
-//   .then((data) => {
-//     console.log('Uploaded blob data to:', data.filePath);
-//   })
-//   .catch((error) => {
-//     console.error('Error uploading blob data:', error);
-//   });
+    // fetch('/uploadBlob', {
+    //   method: 'POST',
+    //   body: formData,
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log('Uploaded blob data to:', data.filePath);
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error uploading blob data:', error);
+    //   });
 
-}
