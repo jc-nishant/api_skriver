@@ -56,6 +56,7 @@ module.exports.routes = {
   'post /uploadvideos': 'CommonController.uploadVideos',
   //  "delete /deleteVideo": "CommonController.removeVideo",
   'get /verifyUser': 'UsersController.verifyUser',
+  'post /decodeBase64Vedio': 'CommonController.decodeBase64Vedio',
 
   /**CategoryController  */
 
@@ -129,8 +130,8 @@ module.exports.routes = {
     'post /audio/connection': 'ZoomController.audioconnection',
     'post /file/submit': 'ZoomController.file_submit',
     'get /detail': 'ZoomController.detail',
-    'get /listing': 'ZoomController.listing'
-
+    'get /listing': 'ZoomController.listing',
+    'post /upload': 'ZoomController.upload',
 
 
 };

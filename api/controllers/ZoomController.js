@@ -466,6 +466,9 @@
 const revai = require('revai-node-sdk');
 const mic = require('mic');
 const axios = require("axios");
+const fs = require('fs');
+const path = require('path');
+// const fileUploadDir = sails.config.custom.fileUpload.dirname;
 module.exports = {
     // audioconnection: async (req, res) => {
 
@@ -793,7 +796,7 @@ module.exports = {
                 source_config: req.body.source_config,
                 metadata: req.body.metadata
             }
-            let { data } = await axios.post(url,body, config)
+            let { data } = await axios.post(url, body, config)
             return res.status(200).json({
                 success: true,
                 data: data
@@ -808,7 +811,7 @@ module.exports = {
         }
 
     },
-    detail: async (req, res) => { 
+    detail: async (req, res) => {
         try {
             let id = req.param("id")
             let url = `https://api.rev.ai/speechtotext/v1/jobs/${id}/transcript`
@@ -816,7 +819,7 @@ module.exports = {
             let config = {
                 headers: {
                     Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`,
-                    Accept:"text/plain"
+                    Accept: "text/plain"
                 }
             }
 
@@ -843,7 +846,7 @@ module.exports = {
                     Authorization: `Bearer 02cQFqbHI37x9E1mpuc3OTRQsKJ3xY7NTZgwRGzUFNwh-pKNEP8oOECQkkwpk5qCQRlSID39GycFrvTVB9mcqlYF2UaOE`,
                     Accept: 'application/vnd.rev.transcript.v1.0+json',
                 },
-               
+
             }
 
             let { data } = await axios.get(url, config)
@@ -860,5 +863,31 @@ module.exports = {
         }
 
     },
+    upload: async (req, res) => {
 
+        try {
+            const binaryData = req.body.blobData; // Assuming the blob data is sent in the request body as binary data
+
+            // Create a unique filename (you can use a timestamp or UUID)
+            const fileName = `${Date.now()}.blob`;
+            console.log(fileName,"===========")
+            // Define the upload directory
+            // console.log(path,"==========path")
+            const uploadDirectory = path.resolve(sails.config.appPath,  "assets/images/");
+            console.log(uploadDirectory,"===============uploadDirectory")
+
+            // Create the full path for the uploaded file
+            const filePath = path.join(uploadDirectory, fileName);
+
+            // Write the binary data to a file
+            fs.writeFileSync(filePath, binaryData);
+
+            // You can do additional processing here, like saving file metadata to a database.
+
+            return res.json({ message: 'Blob data uploaded successfully', filePath: filePath });
+        } catch (error) {
+            return res.serverError(error);
+        }
+
+    },
 }

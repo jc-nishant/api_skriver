@@ -229,9 +229,9 @@ module.exports = {
 
       let query = {};
       query.id = itemId;
-     
+
       Model.findOne(query).exec(async (err, data) => {
-        
+
         if (err) {
           return res.json({
             success: false,
@@ -453,6 +453,32 @@ module.exports = {
       message: "Video Deleted Successfully.",
     });
   },
+  decodeBase64Vedio: function (dataString) {
+    console.log("in decode")
+    try {
+
+      var matches = dataString.match(/^data:(.*?);base64,/),
+        response = {};
+      console.log(dataString, "=========================dataString")
+      console.log(matches)
+      if (matches) {
+
+        if (matches.length !== 2) {
+          return new Error('Invalid input string');
+        }
+
+        response.type = matches[1];
+        data1 = dataString.split(',').pop().trim()
+
+        response.data = new Buffer(data1, 'base64');
+      } else {
+        response.error = "Invalid File";
+      }
+    } catch (err) { console.log(err) }
+    return response;
+
+  },
+
 };
 
 function timeConvert(n) {

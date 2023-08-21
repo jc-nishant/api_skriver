@@ -31,5 +31,8 @@ module.exports.policies = {
     checkEmail: true,
     getAllUsers: true,
   },
+  ZoomController:{
+    listing:true,
+  }
 
 };
