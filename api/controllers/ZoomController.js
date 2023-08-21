@@ -866,12 +866,13 @@ module.exports = {
     upload: async (req, res) => {
 
         try {
+           
             // Use req.file to access the uploaded blob data
             const blobFile = req.file('blobData');
 
             // Define the upload directory
             const uploadDirectory = path.resolve(sails.config.appPath, "assets/images/");
-
+            // console.log(uploadDirectory,"==============uploadDirectory")
             // Configure the file upload settings
             blobFile.upload(
                 {
@@ -887,7 +888,7 @@ module.exports = {
                     }
 
                     // Assuming you want to respond with the file path
-                    const filePath = uploadedFiles[0].fd+"webm" ;
+                    const filePath = uploadedFiles[0].fd;
                     // console.log(filePath, "==================filePath")
                     // You can do additional processing here, like saving metadata to a database.
 
