@@ -909,30 +909,39 @@ module.exports = {
                         success: true,
                         code: 200,
                         data: uploadedFile,
-                        message:  'Blob data uploaded successfully',
-                      });
+                        message: 'Blob data uploaded successfully',
+                    });
                 }
             );
         } catch (error) {
             return res.serverError(error);
         }
     },
-};
 
-    // Assuming you have a blobData variable containing the blob data
+    delete: async (req, res) => {
+        try {
+            // Use req.file to access the uploaded blob data
+            // import { RevAiApiClient } from 'revai-node-sdk';
+            // var accessToken = "yourAccessToken";
+            // var jobId = "yourJobId";
 
-    // const formData = new FormData();
-    // formData.append('blobData', blobData);
+            // Initialize your client with your access token
+            var client = new RevAiApiClient(accessToken);
 
-    // fetch('/uploadBlob', {
-    //   method: 'POST',
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log('Uploaded blob data to:', data.filePath);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error uploading blob data:', error);
-    //   });
+            // Delete job
+            await client.deleteJob(jobId);
 
+            return res.status(200).json({
+                success: true,
+                code: 200,
+                data: uploadedFile,
+                message: 'Data deleted successfully',
+            });
+        }
+
+        catch (error) {
+            return res.serverError(error);
+        }
+    },
+
+}
