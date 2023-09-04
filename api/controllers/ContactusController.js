@@ -35,7 +35,7 @@ module.exports = {
                 return res.status(200).json({
                     success: true,
                     data: contact,
-                    message: "Company added succesfully"
+                    message: "Thankyou for your query we will get back to you soon."
                 })
             }
         } catch (err) {
