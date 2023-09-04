@@ -107,31 +107,35 @@ module.exports.routes = {
   'put /cancelPlans': 'SubscriptionPlansController.cancelPlans',
 
 
-    /**Features */
-    "post /feature": "FeaturesController.addFeatures",
-    "put /feature": "FeaturesController.editfeature",
-    "get /features": "FeaturesController.getAllFeatures",
-    "get /feature": "FeaturesController.findSingleFeature",
-    'delete /feature': "FeaturesController.deleteFeature",
+  /**Features */
+  "post /feature": "FeaturesController.addFeatures",
+  "put /feature": "FeaturesController.editfeature",
+  "get /features": "FeaturesController.getAllFeatures",
+  "get /feature": "FeaturesController.findSingleFeature",
+  'delete /feature': "FeaturesController.deleteFeature",
 
 
-    // company routes
-    "post /comapany": "CompanyController.addcomapny",
-    "put /comapany": "CompanyController.editcompany",
-    "get /comapanies": "CompanyController.getcompanylisting",
-    "get /comapany": "CompanyController.getcompany",
-    'delete /comapany': "CompanyController.deletecompany",
+  // company routes
+  "post /comapany": "CompanyController.addcomapny",
+  "put /comapany": "CompanyController.editcompany",
+  "get /comapanies": "CompanyController.getcompanylisting",
+  "get /comapany": "CompanyController.getcompany",
+  'delete /comapany': "CompanyController.deletecompany",
 
-    // "post /token": "ZoomController.generatetoken",
-    // 'POST /generateSignature': 'ZoomController.generateSignature',
-    // 'POST /validateSignature': 'ZoomController.validateSignature',
-    // 'POST /createMeeting': 'ZoomController.createMeeting',
-    // 'post /authenticate': 'ZoomController.authenticate',
-    'post /audio/connection': 'ZoomController.audioconnection',
-    'post /file/submit': 'ZoomController.file_submit',
-    'get /detail': 'ZoomController.detail',
-    'get /listing': 'ZoomController.listing',
-    'post /upload': 'ZoomController.upload',
+  // "post /token": "ZoomController.generatetoken",
+  // 'POST /generateSignature': 'ZoomController.generateSignature',
+  // 'POST /validateSignature': 'ZoomController.validateSignature',
+  // 'POST /createMeeting': 'ZoomController.createMeeting',
+  // 'post /authenticate': 'ZoomController.authenticate',
+  'post /audio/connection': 'ZoomController.audioconnection',
+  'post /file/submit': 'ZoomController.file_submit',
+  'get /detail': 'ZoomController.detail',
+  'get /listing': 'ZoomController.listing',
+  'post /upload': 'ZoomController.upload',
+
+
+  // contactus routes
+  'post /contactus': 'ContactusController.contactus',
 
 
 };
