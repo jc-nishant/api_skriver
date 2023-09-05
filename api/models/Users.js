@@ -51,13 +51,13 @@ module.exports = {
     },
     role: {
       type: 'string',
-      isIn: ['user', 'sub_admin','admin'],
+      isIn: ['user', 'sub_admin', 'admin'],
       defaultsTo: 'user',
     },
     verificationCode: {
       type: 'string',
     },
-   
+
 
     domain: {
       type: 'string',
@@ -114,16 +114,30 @@ module.exports = {
     role_id: { model: 'roles', },
 
     license_id: { model: 'license', },
-    company_id: {model: 'company',},
+    company_id: { model: 'company', },
 
     status: {
       type: 'string',
       isIn: ['active', 'deactive'],
       defaultsTo: 'active',
     },
-    blue_tick_enabled: {type: 'Boolean',defaultsTo: false,
-    allowNull: true,},
-
+    blue_tick_enabled: {
+      type: 'Boolean', defaultsTo: false,
+      allowNull: true,
+    },
+    auto_start: {
+      type: 'Boolean',
+      defaultsTo: false,
+      allowNull: true
+    },
+    brand_name: {
+      type: 'string',
+      allowNull: true
+    },
+    brand_image: {
+      type: 'string',
+      allowNull: true
+    }
 
 
   },
