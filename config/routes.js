@@ -137,6 +137,10 @@ module.exports.routes = {
   // contactus routes
   'post /contactus': 'ContactusController.contactus',
   'get /contactus': 'ContactusController.getAllContactus',
+  'get /contactsus': 'ContactusController.ContactusDetails',
+
+
+  
   
 
 

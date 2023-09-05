@@ -56,8 +56,6 @@ module.exports = {
     listCategory: async (req, res) => {
         try {
 
-            console.log('in categoru');
-
             var search = req.param('search');
             var isDeleted = req.param('isDeleted');
             var page = req.param('page');

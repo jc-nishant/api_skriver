@@ -11,123 +11,147 @@ const SmtpController = require('../controllers/SmtpController');
 var constantObj = sails.config.constants;
 module.exports = {
 
-    contactus: async (req, res) => {
-        try {
-            if (!req.body.email || typeof req.body.email == undefined) {
-                return res.status(404).json({
-                    success: false,
-                    error: { code: 404, message: constantObj.user.EMAIL_REQUIRED },
-                });
-            }
-            req.body.updatedBy = req.identity.id;
-            req.body.addedBy = req.identity.id
-            const contact = await Contactus.create(req.body).fetch();
-            let find = await Users.findOne({id:req.identity.id})
-            if (find) {
-                sendContactUs({
-                    email: find.email,
-                    fullName: find.fullName,
-                    messagee:contact.message,
-                    id: find.id,
-                });
-                return res.status(200).json({
-                    success: true,
-                    data: contact,
-                    message: "Thankyou for your query we will get back to you soon."
-                })
-            }
-        } catch (err) {
-            return res.status(400).json({
-                success: false,
-                error: { code: 400, message: "" + err }
-            })
-        }
-    },
-    getAllContactus: async (req, res) => {
-        try {
-          var search = req.param('search');
-          var status = req.param('status');
-          var isDeleted = req.param('isDeleted');
-          var page = req.param('page');
-          var type = req.param('type');
-          var sortBy = req.param('sortBy');
-          let company = req.param('company');
-          if (!page) {
-            page = 1;
-          }
-          var count = parseInt(req.param('count'));
-          if (!count) {
-            count = 1000;
-          }
-          var skipNo = (page - 1) * count;
-          var query = {};
-          if (search) {
-            query.or = [
-              { fullName: { like: `%${search}%` } },
-              { email: { like: `%${search}%` } },
-            ];
-          }
-          if (company) {
-            query.company_id = Number(company);
-          }
-          if (isDeleted) {
-            if (isDeleted === 'true') {
-                isDeleted = true;
-            } else {
-                isDeleted = false;
-            }
-            query.isDeleted = isDeleted;
+  contactus: async (req, res) => {
+    try {
+      if (!req.body.email || typeof req.body.email == undefined) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 404, message: constantObj.user.EMAIL_REQUIRED },
+        });
+      }
+      req.body.updatedBy = req.identity.id;
+      req.body.addedBy = req.identity.id
+      const contact = await Contactus.create(req.body).fetch();
+      let find = await Users.findOne({ id: req.identity.id })
+      if (find) {
+        sendContactUs({
+          email: find.email,
+          fullName: find.fullName,
+          messagee: contact.message,
+          id: find.id,
+        });
+        return res.status(200).json({
+          success: true,
+          data: contact,
+          message: "Thankyou for your query we will get back to you soon."
+        })
+      }
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: "" + err }
+      })
+    }
+  },
+  getAllContactus: async (req, res) => {
+    try {
+      var search = req.param('search');
+      var status = req.param('status');
+      var isDeleted = req.param('isDeleted');
+      var page = req.param('page');
+      var type = req.param('type');
+      var sortBy = req.param('sortBy');
+      let company = req.param('company');
+      if (!page) {
+        page = 1;
+      }
+      var count = parseInt(req.param('count'));
+      if (!count) {
+        count = 1000;
+      }
+      var skipNo = (page - 1) * count;
+      var query = {};
+      if (search) {
+        query.or = [
+          { fullName: { like: `%${search}%` } },
+          { email: { like: `%${search}%` } },
+        ];
+      }
+      if (company) {
+        query.company_id = Number(company);
+      }
+      if (isDeleted) {
+        if (isDeleted === 'true') {
+          isDeleted = true;
         } else {
-            query.isDeleted = false;
+          isDeleted = false;
         }
-          if (status) {
-            query.status = status;
-          }
-          if (type) {
-            query.type = type;
-          }
-          let sortquery = {};
-          if (sortBy) {
-            let typeArr = [];
-            typeArr = sortBy.split(' ');
-            let sortType = typeArr[1];
-            let field = typeArr[0];
-            sortquery[field ? field : 'updatedAt'] = sortType
-              ? sortType == 'desc'
-                ? -1
-                : 1
-              : -1;
-          } else {
-            sortquery = { updatedAt: -1 };
-            sortBy = 'updatedAt desc';
-          }
-    
-          let total = await Contactus.count(query);
-          let find = await Contactus.find(query)
-            .sort(sortBy)
-            .skip(skipNo)
-            .limit(count)
-          return res.status(200).json({
-            success: true,
-            total: total,
-            data: find,
-          });
-        } catch (err) {
-          console.log(err, '====================err');
-          return res.status(400).json({
-            success: false,
-            error: { code: 400, message: err.toString() },
-          });
-        }
-      },
+        query.isDeleted = isDeleted;
+      } else {
+        query.isDeleted = false;
+      }
+      if (status) {
+        query.status = status;
+      }
+      if (type) {
+        query.type = type;
+      }
+      let sortquery = {};
+      if (sortBy) {
+        let typeArr = [];
+        typeArr = sortBy.split(' ');
+        let sortType = typeArr[1];
+        let field = typeArr[0];
+        sortquery[field ? field : 'updatedAt'] = sortType
+          ? sortType == 'desc'
+            ? -1
+            : 1
+          : -1;
+      } else {
+        sortquery = { updatedAt: -1 };
+        sortBy = 'updatedAt desc';
+      }
 
-    
+      let total = await Contactus.count(query);
+      let find = await Contactus.find(query)
+        .sort(sortBy)
+        .skip(skipNo)
+        .limit(count)
+      return res.status(200).json({
+        success: true,
+        total: total,
+        data: find,
+      });
+    } catch (err) {
+      console.log(err, '====================err');
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: err.toString() },
+      });
+    }
+  },
+  ContactusDetails: async function (req, res) {
+    var id = req.param('id');
+    if (!id || typeof id == undefined) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: 'Id is required' },
+      });
+    }
+    var Details = await Contactus.findOne({ where: { id: id } })
+    if (!Details) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: 'Id is invalid' },
+      });
+
+    } else {
+      return res.status(200).json({
+        success: true,
+        code: 200,
+        data: Details,
+      });
+    }
+
+  },
+
+
 };
 sendContactUs = async (options) => {
-    let email = options.email;
-    // console.log(options, "==================options")
-    message = '';
-    message += `
+  let email = options.email;
+  // console.log(options, "==================options")
+  message = '';
+  message += `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -183,5 +207,5 @@ sendContactUs = async (options) => {
     </body>
     </html>
   `;
-    SmtpController.sendEmail(email, 'ContactUs', message);
-  };
+  SmtpController.sendEmail(email, 'ContactUs', message);
+};
