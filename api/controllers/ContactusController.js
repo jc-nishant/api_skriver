@@ -1,5 +1,3 @@
-const UsersController = require("./UsersController");
-
 /**
  * ContactusController
  *
