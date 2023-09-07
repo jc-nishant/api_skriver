@@ -300,163 +300,6 @@ exports.getAllPlans = async (req, res) => {
         });
     }
 };
-// exports.getAllPlansFrontend = async (req, res) => {
-//     try {
-//         let search = req.param('search');
-//         let page = req.param('page');
-//         let count = req.param('count');
-//         let planType = req.param('planType');
-//         let status = req.param('status');
-//         let priceType = req.param('priceType');
-//         let addedBy = req.param('addedBy');
-
-//         if (!page) {
-//             page = 1;
-//         }
-//         if (!count) {
-//             count = 10;
-//         }
-//         let skipNo = (page - 1) * count;
-//         let query = {};
-//         query.$and = [];
-
-//         if (search) {
-//             query.$or = [
-//                 { name: { $regex: search, '$options': 'i' } },
-//                 { planType: { $regex: search, '$options': 'i' } },
-//                 { priceType: { $regex: search, '$options': 'i' } },
-//             ]
-//         }
-//         if (addedBy) {
-//             query.addedBy = ObjectId(addedBy);
-//         }
-//         if (planType) {
-//             query.planType = planType
-//         }
-
-//         if (status) {
-//             query.$and.push({ status: status })
-//         }
-//         if (priceType) {
-//             query.$and.push({ priceType: priceType })
-//         }
-
-//         query.$and.push({ isDeleted: false })
-
-//         db.collection("subscriptionplan").aggregate([
-//             {
-//                 $project: {
-//                     id: "$_id",
-//                     name: "$name",
-//                     planType: "$planType",
-//                     price: "$price",
-//                     features: "$features",
-//                     categoryPlanId: "$categoryPlanId",
-//                     isDeleted: "$isDeleted",
-//                     deletedAt: "$deletedAt",
-//                     addedBy: "$addedBy",
-//                     category: "$category",
-//                     limit: "$limit",
-//                     status: "$status",
-//                     user: "$user",
-//                     priceType: "$priceType",
-//                     updatedBy: "$updatedBy",
-//                     updatedAt: "$updatedAt",
-//                     createdAt: "$createdAt",
-//                     deletedBy: "$deletedBy"
-//                 },
-//             },
-//             {
-//                 $match: query,
-//             },
-//             {
-//                 $sort: { createdAt: -1 },
-//             },
-//         ]).toArray((err, totalResult) => {
-//             console.log(err);
-//             if (err) {
-//                 return res.status(400).json({
-//                     success: false,
-//                     error: { message: "" + err },
-//                 });
-//             }
-//             db.collection("subscriptionplan").aggregate([
-//                 {
-//                     $project: {
-//                         id: "$_id",
-//                         name: "$name",
-//                         planType: "$planType",
-//                         price: "$price",
-//                         features: "$features",
-//                         categoryPlanId: "$categoryPlanId",
-//                         category: "$category",
-//                         isDeleted: "$isDeleted",
-//                         deletedAt: "$deletedAt",
-//                         addedBy: "$addedBy",
-//                         status: "$status",
-//                         priceType: "$priceType",
-//                         limit: "$limit",
-//                         paymentType: "$paymentType",
-//                         user: "$user",
-//                         updatedBy: "$updatedBy",
-//                         updatedAt: "$updatedAt",
-//                         createdAt: "$createdAt",
-//                         deletedBy: "$deletedBy"
-//                     },
-//                 },
-//                 {
-//                     $match: query,
-//                 },
-//                 {
-//                     $sort: { createdAt: -1 },
-//                 },
-//                 {
-//                     $skip: skipNo,
-//                 },
-//                 {
-//                     $limit: Number(count),
-//                 },
-//             ]).toArray((err, result) => {
-//                 if (err) {
-//                     return res.status(400).json({
-//                         success: false,
-//                         error: { message: err },
-//                     });
-//                 } else {
-
-//                     let resData = {
-//                         total_count: totalResult.length,
-//                         data: result
-//                     }
-
-//                     if (!req.param('page') && !req.param('count')) {
-//                         resData = {
-//                             total_count: totalResult.length,
-//                             data: result
-//                         }
-//                         return res.status(200).json({
-//                             success: true,
-//                             message: constants.subscriptionplan.ALL_PLAN_DATA,
-//                             data: resData
-//                         });
-//                     }
-
-//                     return res.status(200).json({
-//                         success: true,
-//                         message: constants.subscriptionplan.ALL_PLAN_DATA,
-//                         data: resData
-//                     });
-//                 }
-//             });
-//         })
-//     }
-//     catch (err) {
-//         return res.status(400).json({
-//             success: false,
-//             error: { message: "" + err },
-//         });
-//     }
-// };
 
 exports.purchaseplan = async (req, res) => {
     try {
@@ -696,6 +539,54 @@ exports.cancelPlans = async (req, res) => {
         return res.status(400).json({
             success: false,
             error: { message: '' + err },
+        });
+    }
+};
+exports.myActiveSubscription = async (req, res) => {
+    try {
+        const user_id = req.param('user_id');
+        if (!user_id) {
+            return res.status(404).json({
+                success: false,
+                message: constants.subscriptionplan.USER_ID_REQUIRED,
+            })
+        }
+        let get_user_active_subscription = await Subscription.findOne({
+            user_id: user_id,
+            status: 'active',
+        });
+
+        if (get_user_active_subscription) {
+            let findplan = await Subscriptionplans.findOne({ id: get_user_active_subscription.subscription_plan_id })
+            get_user_active_subscription.subscription_plan_id = findplan
+            return res.status(200).json({
+                success: true,
+                data: get_user_active_subscription,
+                message: constants.subscriptionplan.ACTIVE_SUBSCRIPTION_FETCHED,
+            })
+        }
+
+        let get_user_inactive_subscription = await Subscription.findOne({
+            user_id: user_id,
+            status: 'inactive',
+            valid_upto: { '>=': new Date() },
+        });
+        if (get_user_inactive_subscription) {
+            return response.success(get_user_inactive_subscription, constants.subscriptionplan.ACTIVE_SUBSCRIPTION_FETCHED, req, res);
+        } else {
+            return res.status(200).json({
+                success: false,
+                error: {
+                    code: 200,
+                    message: constants.subscriptionplan.NO_SUBSCRIPTION_FOUND,
+                    data: {},
+                },
+            });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            error: { message: '' + error },
         });
     }
 };

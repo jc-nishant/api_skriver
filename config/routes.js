@@ -105,6 +105,8 @@ module.exports.routes = {
   'delete /subscriptionplan': 'SubscriptionPlansController.removePlans',
   'post /purchaseplan': 'SubscriptionPlansController.purchaseplan',
   'put /cancelPlans': 'SubscriptionPlansController.cancelPlans',
+  'get /active/subscriptionplans': 'SubscriptionPlansController.myActiveSubscription',
+  
 
 
   /**Features */

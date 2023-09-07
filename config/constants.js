@@ -108,6 +108,9 @@ module.exports.constants = {
     PLAN_UPDATED: 'Subscription plan updated successfully.',
     ALL_PLAN_DATA: 'All SubscriptionPlan fetch successfully.',
     DELETE_PLAN: 'SubscriptionPlan deleted successfully.',
+    USER_ID_REQUIRED:"User id is required.",
+    ACTIVE_SUBSCRIPTION_FETCHED: "Active subscription fetched successfully",
+    NO_SUBSCRIPTION_FOUND: "No subscription found",
   },
 
 
