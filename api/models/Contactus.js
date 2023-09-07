@@ -24,6 +24,11 @@ module.exports = {
     message: {
       type: 'string',
     },
+    status: {
+      type: 'string',
+      isIn: ['active', 'deactive'],
+      defaultsTo: 'active'
+    },
     addedBy: { model: 'users' },
     updatedBy: { model: 'users' },
     isDeleted: { type: 'Boolean', defaultsTo: false },
