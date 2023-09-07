@@ -30,14 +30,10 @@ exports.addSubscriptionPlan = async (req, res) => {
         let created_product = await Services.StripeServices.create_product({
             name: name,
         });
-        // console.log(created_product, '===========================created_product');
         if (created_product) {
             let pricing = req.body.pricing;
-            // console.log(pricing,"======================pricing")
             if (pricing && pricing.length > 0) {
                 for (let itm of pricing) {
-                    // console.log(itm,"==========itm")
-                    // console.log(itm.price,"=====================itm2")
                     let plan_payload = {
                         nickname: name,
                         amount: itm.price,
@@ -49,17 +45,13 @@ exports.addSubscriptionPlan = async (req, res) => {
                         product_id: created_product.id,
                         currency: 'USD',
                     };
-
-                    // console.log(plan_payload,"====================plan_payload")
                     let create_plan = await Services.StripeServices.create_plan(
                         plan_payload
                     );
-                    // console.log(create_plan, '==========================create_plan');
                     if (create_plan) {
                         req.body.addedBy = req.identity.id;
                         req.body.stripe_plan_id = create_plan.id;
                         req.body.stripe_product_id = created_product.id;
-                        // console.log(req.body, "===================create_subscription_plan")
                         let create_subscription_plan = await Subscriptionplans.create(
                             req.body
                         ).fetch();
@@ -91,7 +83,6 @@ exports.addSubscriptionPlan = async (req, res) => {
                 let create_subscription_plan = await Subscriptionplans.create(
                     req.body
                 ).fetch();
-                // console.log(create_subscription_plan, "==================create_subscription_plan111")
                 if (create_subscription_plan) {
                     return res.status(200).json({
                         success: true,
@@ -509,7 +500,6 @@ exports.cancelPlans = async (req, res) => {
             subscription_plan_id: subscription_plan_id,
 
         };
-        // console.log(getSubsQuery);
         let get_existing_subscription = await Subscription.findOne(getSubsQuery);
         if (!get_existing_subscription) {
             return res.status(400).json({
@@ -525,7 +515,6 @@ exports.cancelPlans = async (req, res) => {
                 let updateSubscription = await Subscription.updateOne(
                     { id: get_existing_subscription.id },
                     { status: 'cancelled', updatedBy: req.identity.id, });
-                // console.log(updateSubscription,"=================================updateSubscription")
                 return res.status(200).json({
                     success: true,
                     message: "Plan cancel successfully",
@@ -535,7 +524,6 @@ exports.cancelPlans = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err, '============================err');
         return res.status(400).json({
             success: false,
             error: { message: '' + err },
