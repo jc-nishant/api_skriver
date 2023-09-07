@@ -13,7 +13,7 @@ module.exports = {
 
     status: {
       type: 'string',
-      isIn: ['active', 'deactive','cancel'],
+      isIn: ['active', 'deactive', 'cancel'],
       defaultsTo: 'active',
     },
     stripe_plan_id: { type: 'string' },
@@ -25,6 +25,8 @@ module.exports = {
     description: { type: 'string' },
     plan_type: { type: 'string' },
     numberOfDays: { type: 'string' },
+    noOfUser: { type: 'string' },
+    time: { type: 'string' },
     allowedProducts: { type: 'string' },
     extraProductPrice: { type: 'string' },
     pricing: { type: 'json' },
