@@ -115,6 +115,8 @@ module.exports = {
 
     license_id: { model: 'license', },
     company_id: { model: 'company', },
+    company: {  model: 'users', },
+    customer: {  model: 'users', },
 
     status: {
       type: 'string',
