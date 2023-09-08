@@ -51,7 +51,7 @@ module.exports = {
     },
     role: {
       type: 'string',
-      isIn: ['user', 'sub_admin', 'admin'],
+      isIn: ['user', 'sub_admin', 'company','customer'],
       defaultsTo: 'user',
     },
     verificationCode: {
