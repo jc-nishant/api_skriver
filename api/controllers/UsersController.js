@@ -492,7 +492,7 @@ module.exports = {
       }
 
       if (company) {
-        query.company_id = Number(company);
+        query.company = Number(company);
       }
 
       query.isDeleted = false;
@@ -524,7 +524,7 @@ module.exports = {
         .skip(skipNo)
         .limit(count)
         .populate('license_id')
-        .populate('company_id');
+        .populate('company');
       return res.status(200).json({
         success: true,
         total: total,
