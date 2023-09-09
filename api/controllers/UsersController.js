@@ -666,7 +666,7 @@ module.exports = {
     Users.findOne({
       email: data.email.toLowerCase(),
       isDeleted: false,
-      role: { in: ['user'] },
+      role: { in: ['user','company','customer'] },
     }).then((data) => {
       // console.log(data,"==============data")
       if (data === undefined) {
