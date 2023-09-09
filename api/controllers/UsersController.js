@@ -326,7 +326,6 @@ module.exports = {
         where: {
           email: req.body.email.toLowerCase(),
           isDeleted: false,
-          role: 'user',
         },
       });
       // console.log(user, "==============user")
