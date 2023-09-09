@@ -135,6 +135,9 @@ module.exports.routes = {
   'get /detail': 'ZoomController.detail',
   'get /listing': 'ZoomController.listing',
   'post /upload': 'ZoomController.upload',
+  'get /list/record': 'ZoomController.listingzoomrecord',
+
+  
 
 
   // contactus routes

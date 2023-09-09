@@ -798,6 +798,13 @@ module.exports = {
                 metadata: req.body.metadata
             }
             let { data } = await axios.post(url, body, config)
+            console.log(data.id == data.fileid)
+            let payload = { ...data };
+            payload.fileid = payload.id;
+            // payload.created_on = payload.created_on;
+            delete payload.id;
+            payload.addedBy = req.identity.id
+            let save_record = await Zoomrecord.create(payload)
             return res.status(200).json({
                 success: true,
                 data: data
@@ -909,30 +916,82 @@ module.exports = {
                         success: true,
                         code: 200,
                         data: uploadedFile,
-                        message:  'Blob data uploaded successfully',
-                      });
+                        message: 'Blob data uploaded successfully',
+                    });
                 }
             );
         } catch (error) {
             return res.serverError(error);
         }
     },
+
+    listingzoomrecord: async (req, res) => {
+        try {
+            var search = req.param('search');
+            var page = req.param('page');
+            var sortBy = req.param('sortBy');
+            if (!page) {
+                page = 1;
+            }
+            var count = parseInt(req.param('count'));
+            if (!count) {
+                count = 1000;
+            }
+            var skipNo = (page - 1) * count;
+            var query = {};
+            if (search) {
+                query.or = [
+                    { name: { like: `%${search}%` } },
+                ];
+            }
+            let sortquery = {};
+            if (sortBy) {
+                let typeArr = [];
+                typeArr = sortBy.split(' ');
+                let sortType = typeArr[1];
+                let field = typeArr[0];
+                sortquery[field ? field : 'updatedAt'] = sortType
+                    ? sortType == 'desc'
+                        ? -1
+                        : 1
+                    : -1;
+            } else {
+                sortquery = { updatedAt: -1 };
+                sortBy = 'updatedAt desc';
+            }
+            let total = await Zoomrecord.count(query);
+            let find = await Zoomrecord.find(query)
+                .sort(sortBy)
+                .skip(skipNo)
+                .limit(count)
+            return res.status(200).json({
+                success: true,
+                total: total,
+                data: find,
+            });
+        } catch (err) {
+            return res.status(400).json({
+                success: false,
+                error: { code: 400, message: err.toString() },
+            });
+        }
+    },
 };
 
-    // Assuming you have a blobData variable containing the blob data
+// Assuming you have a blobData variable containing the blob data
 
-    // const formData = new FormData();
-    // formData.append('blobData', blobData);
+// const formData = new FormData();
+// formData.append('blobData', blobData);
 
-    // fetch('/uploadBlob', {
-    //   method: 'POST',
-    //   body: formData,
-    // })
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log('Uploaded blob data to:', data.filePath);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error uploading blob data:', error);
-    //   });
+// fetch('/uploadBlob', {
+//   method: 'POST',
+//   body: formData,
+// })
+//   .then((response) => response.json())
+//   .then((data) => {
+//     console.log('Uploaded blob data to:', data.filePath);
+//   })
+//   .catch((error) => {
+//     console.error('Error uploading blob data:', error);
+//   });
 
