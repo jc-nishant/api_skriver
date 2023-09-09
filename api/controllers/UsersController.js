@@ -501,14 +501,14 @@ module.exports = {
 
       if (isDeleted) {
         if (isDeleted === 'true') {
-            isDeleted = true;
+          isDeleted = true;
         } else {
-            isDeleted = false;
+          isDeleted = false;
         }
         query.isDeleted = isDeleted;
-    } else {
+      } else {
         query.isDeleted = false;
-    }
+      }
       if (status) {
         query.status = status;
       }
@@ -680,7 +680,7 @@ module.exports = {
     Users.findOne({
       email: data.email.toLowerCase(),
       isDeleted: false,
-      role: { in: ['user','company','customer'] },
+      role: { in: ['user', 'company', 'customer'] },
     }).then((data) => {
       if (data === undefined) {
         return res.status(404).json({
@@ -909,23 +909,23 @@ module.exports = {
         }
 
         //  if (req.body.firstName && req.body.lastName) {
-          let obj = {
-            licence_id: req.body.api_key,
-            has_after_call_transcript: req.body.has_after_call_transcript,
-            has_real_time_streaming_transcript:
-              req.body.has_real_time_streaming_transcript,
-            has_sentiment: req.body.has_sentiment,
-            startDate: req.body.startDate,
-            endDate: req.body.endDate,
-          };
+        let obj = {
+          licence_id: req.body.api_key,
+          has_after_call_transcript: req.body.has_after_call_transcript,
+          has_real_time_streaming_transcript:
+            req.body.has_real_time_streaming_transcript,
+          has_sentiment: req.body.has_sentiment,
+          startDate: req.body.startDate,
+          endDate: req.body.endDate,
+        };
 
-          const created = await License.create(obj).fetch();
-          req.body.license_id = created.id;
+        const created = await License.create(obj).fetch();
+        req.body.license_id = created.id;
 
-          var newUser = await Users.create(req.body).fetch();
-          const updateuser = await Users.updateOne({ id: newUser.id },
-            { license_id: created.id }
-          );
+        var newUser = await Users.create(req.body).fetch();
+        const updateuser = await Users.updateOne({ id: newUser.id },
+          { license_id: created.id }
+        );
         if (req.body.role == "sub_admin") {
           add_sub_adminEmail({
             email: newUser.email,
@@ -981,6 +981,27 @@ module.exports = {
       return res
         .status(400)
         .json({ success: false, error: { code: 400, message: '' + err } });
+    }
+  },
+  getCompanyCount: async (req, res) => {
+    try {
+      var user = await Users.find({ company: req.body.company })
+      let sum = 0
+      for (let itm of user) {
+        if (itm.zoom_count && itm.zoom_count != null) {
+          sum = sum + Number(itm.zoom_count)
+
+        }
+      }
+      return res.status(200).json({
+        success: true,
+        totalUsers: sum,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 400, message: '' + err },
+      });
     }
   },
 };

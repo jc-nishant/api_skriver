@@ -47,6 +47,7 @@ module.exports.routes = {
   'get /user/detail': 'UsersController.userDetail',
   'put /edit/profile': 'UsersController.editProfile',
   'delete /user/delete': 'UsersController.deleteuser',
+  'post /company/count': 'UsersController.getCompanyCount',
 
   /** CommonController */
 
