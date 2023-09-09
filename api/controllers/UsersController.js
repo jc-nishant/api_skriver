@@ -447,7 +447,8 @@ module.exports = {
 
     var userDetails = await Users.find({ where: { id: id } })
       .populate('license_id')
-      .populate('company_id');
+      .populate('company')
+      .populate('customer')
 
     return res.status(200).json({
       success: true,
