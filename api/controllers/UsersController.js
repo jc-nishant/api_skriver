@@ -470,6 +470,7 @@ module.exports = {
       var type = req.param('type');
       var sortBy = req.param('sortBy');
       let company = req.param('company');
+      let customer = req.param('customer');
       if (!page) {
         page = 1;
       }
@@ -493,6 +494,9 @@ module.exports = {
 
       if (company) {
         query.company = Number(company);
+      }
+      if (customer) {
+        query.customer = Number(customer);
       }
 
       query.isDeleted = false;
@@ -524,7 +528,8 @@ module.exports = {
         .skip(skipNo)
         .limit(count)
         .populate('license_id')
-        .populate('company');
+        .populate('company')
+        .populate('customer');
       return res.status(200).json({
         success: true,
         total: total,
