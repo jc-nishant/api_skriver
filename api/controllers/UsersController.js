@@ -995,7 +995,7 @@ module.exports = {
       }
       return res.status(200).json({
         success: true,
-        totalUsers: sum,
+        totalzoomCount: sum,
       });
     } catch (err) {
       return res.status(400).json({
