@@ -139,6 +139,10 @@ module.exports = {
     brand_image: {
       type: 'string',
       allowNull: true
+    },
+    zoom_count:{
+      type: 'string',
+      allowNull: true
     }
 
 
