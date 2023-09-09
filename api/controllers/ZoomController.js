@@ -930,7 +930,9 @@ module.exports = {
             var search = req.param('search');
             var page = req.param('page');
             var sortBy = req.param('sortBy');
-            let addedBy = req.param('addedBy')
+            let addedBy = req.param('addedBy');
+            // let company = req.param('company')
+
             if (!page) {
                 page = 1;
             }
@@ -963,11 +965,13 @@ module.exports = {
             if (addedBy) {
                 query.addedBy = Number(addedBy);
             }
+           
             let total = await Zoomrecord.count(query);
             let find = await Zoomrecord.find(query)
                 .sort(sortBy)
                 .skip(skipNo)
                 .limit(count)
+                .populate("addedBy")
             return res.status(200).json({
                 success: true,
                 total: total,
