@@ -499,7 +499,16 @@ module.exports = {
         query.customer = Number(customer);
       }
 
-      query.isDeleted = false;
+      if (isDeleted) {
+        if (isDeleted === 'true') {
+            isDeleted = true;
+        } else {
+            isDeleted = false;
+        }
+        query.isDeleted = isDeleted;
+    } else {
+        query.isDeleted = false;
+    }
       if (status) {
         query.status = status;
       }
@@ -673,7 +682,6 @@ module.exports = {
       isDeleted: false,
       role: { in: ['user','company','customer'] },
     }).then((data) => {
-      // console.log(data,"==============data")
       if (data === undefined) {
         return res.status(404).json({
           success: false,
