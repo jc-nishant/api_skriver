@@ -931,8 +931,8 @@ module.exports = {
             var page = req.param('page');
             var sortBy = req.param('sortBy');
             let addedBy = req.param('addedBy');
-            // let company = req.param('company')
-
+            let company = req.param('company')
+            let customer = req.param('customer')
             if (!page) {
                 page = 1;
             }
@@ -965,17 +965,39 @@ module.exports = {
             if (addedBy) {
                 query.addedBy = Number(addedBy);
             }
-           
+
             let total = await Zoomrecord.count(query);
             let find = await Zoomrecord.find(query)
                 .sort(sortBy)
                 .skip(skipNo)
                 .limit(count)
                 .populate("addedBy")
+            let array = []
+            for (let itm of find) {
+                let data = itm.addedBy
+                if (data !== null) {
+                    if (company) {
+                        if (data.company !== null && data.company == company) {
+                            array.push(itm)
+                        }
+                    } else if (customer) {
+                        if (data.customer !== null && data.customer == customer) {
+                            array.push(itm)
+                        }
+                    } else {
+                        return res.status(200).json({
+                            success: true,
+                            total: total,
+                            data: find,
+                        });
+                    }
+                }
+
+            }
             return res.status(200).json({
                 success: true,
                 total: total,
-                data: find,
+                data: array,
             });
         } catch (err) {
             return res.status(400).json({
