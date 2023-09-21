@@ -434,6 +434,8 @@ exports.purchaseplan = async (req, res) => {
                     stripe_subscription_id: create_subscription.id,
                     subscription_plan_id: get_subscription_plan.id,
                     blue_tick_enabled: true,
+                    time:get_subscription_plan.time,
+
                 }
             );
             return res.status(200).json({

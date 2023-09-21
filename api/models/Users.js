@@ -143,6 +143,10 @@ module.exports = {
     zoom_count:{
       type: 'string',
       allowNull: true
+    },
+    time:{
+      type: 'string',
+      allowNull: true
     }
 
 

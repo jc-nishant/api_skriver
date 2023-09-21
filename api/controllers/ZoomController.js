@@ -805,6 +805,15 @@ module.exports = {
             delete payload.id;
             payload.addedBy = req.identity.id
             let save_record = await Zoomrecord.create(payload)
+            if(req.body.company){
+                let find = await Users.findOne({id:req.body.company})
+                let totalTime = find.time
+                let time = req.body.time
+                // console.log(totalTime,"===========================")
+                let timeLeft = Number(totalTime)-Number(time)
+
+                let update = await Users.updateOne({id:req.body.company},{time:timeLeft})
+            }
             return res.status(200).json({
                 success: true,
                 data: data
