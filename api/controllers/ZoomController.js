@@ -805,14 +805,14 @@ module.exports = {
             delete payload.id;
             payload.addedBy = req.identity.id
             let save_record = await Zoomrecord.create(payload)
-            if(req.body.company){
-                let find = await Users.findOne({id:req.body.company})
+            if (req.body.company) {
+                let find = await Users.findOne({ id: req.body.company })
                 let totalTime = find.time
                 let time = req.body.time
                 // console.log(totalTime,"===========================")
-                let timeLeft = Number(totalTime)-Number(time)
+                let timeLeft = Number(totalTime) - Number(time)
 
-                let update = await Users.updateOne({id:req.body.company},{time:timeLeft})
+                let update = await Users.updateOne({ id: req.body.company }, { time: timeLeft })
             }
             return res.status(200).json({
                 success: true,
@@ -974,7 +974,6 @@ module.exports = {
             if (addedBy) {
                 query.addedBy = Number(addedBy);
             }
-
             let total = await Zoomrecord.count(query);
             let find = await Zoomrecord.find(query)
                 .sort(sortBy)
@@ -982,11 +981,20 @@ module.exports = {
                 .limit(count)
                 .populate("addedBy")
             let array = []
+            let findcompany
+            if (company) {
+                findcompany = await Users.findOne({ id: company })
+                if (findcompany) {
+                    array.push(findcompany)
+                }
+            }
             for (let itm of find) {
                 let data = itm.addedBy
                 if (data !== null) {
                     if (company) {
                         if (data.company !== null && data.company == company) {
+                            // console.log(find,"================find")
+                            // console.log(itm,"======================itm")
                             array.push(itm)
                         }
                     } else if (customer) {
